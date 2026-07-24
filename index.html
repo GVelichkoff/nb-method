@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NB Method — Онлайн коучинг с Недко Богданов</title>
+<meta name="description" content="Персонални тренировъчни програми, хранителни планове и постоянна връзка с твоя треньор. Тренирай умно, не просто трудно.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0D1B21; --petrol:#0F6170; --petrol-deep:#0A4550;
+    --orange:#F97316; --orange-hover:#DD640B;
+    --oat:#E9E4D8; --paper:#F5F3EE; --card:#FFFFFF; --line:#E4E1D7;
+    --gray:#6C7A80; --dark-line:rgba(255,255,255,.14);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter','Segoe UI',sans-serif;color:var(--ink);background:var(--paper)}
+  .disp{font-family:'Oswald','Arial Narrow',sans-serif;text-transform:uppercase;letter-spacing:.05em}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+  .btn{display:inline-block;border:none;cursor:pointer;font-family:inherit;font-weight:700;border-radius:12px;text-decoration:none;text-align:center}
+  .btn.orange{background:var(--orange);color:#FFFFFF;padding:14px 30px;font-size:14px;letter-spacing:.08em;transition:background .15s}
+  .btn.orange:hover{background:var(--orange-hover)}
+  .btn.ghost{background:transparent;color:#fff;border:1px solid var(--dark-line);padding:10px 22px;font-size:13px}
+  .btn.ghost:hover{border-color:var(--orange);color:var(--orange)}
+
+  /* ================= NAV ================= */
+  nav{position:sticky;top:0;z-index:20;background:rgba(13,27,33,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--dark-line)}
+  .navin{max-width:1080px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+  .brand{color:#fff;text-decoration:none;line-height:1;display:flex;align-items:baseline;gap:7px}
+  .brand .nb{font-size:24px;font-weight:700}
+  .brand .method{font-size:13px;font-weight:600;letter-spacing:.3em;color:var(--orange)}
+  .menu{display:flex;align-items:center;gap:22px}
+  .menu a{color:var(--oat);text-decoration:none;font-size:13.5px;font-weight:600}
+  .menu a:hover{color:var(--orange)}
+  .menu .btn.orange{padding:10px 22px;font-size:13px}
+  @media (max-width:760px){ .menu a:not(.btn){display:none} }
+
+  /* ================= HERO ================= */
+  .hero{
+    background:
+      linear-gradient(to right, rgba(13,27,33,.92) 0%, rgba(13,27,33,.55) 55%, rgba(13,27,33,.35) 100%),
+      url('hero.jpg') center center / cover no-repeat,
+      radial-gradient(1100px 560px at 75% 20%, #17758A 0%, #0A4550 55%, #0D1B21 100%);
+    color:#fff;padding:110px 0 120px;position:relative;overflow:hidden;
+  }
+  .hero::before{content:"";position:absolute;inset:0;opacity:.05;pointer-events:none;
+    background:repeating-linear-gradient(135deg,#fff 0 2px,transparent 2px 26px)}
+  .hero .wrap{position:relative}
+  .hero h1{font-size:clamp(34px,5vw,58px);font-weight:700;line-height:1.08;max-width:640px}
+  .hero h1 .dot{color:var(--orange)}
+  .hero p{margin:18px 0 34px;color:var(--oat);font-size:17px;max-width:520px;line-height:1.55}
+  .hero .tag{color:var(--orange);font-weight:700}
+
+  /* ================= SECTIONS ================= */
+  section{padding:74px 0}
+  .kicker{color:var(--orange);font-size:13px;font-weight:700;letter-spacing:.18em;margin-bottom:8px}
+  h2.sec{font-size:clamp(24px,3vw,34px);font-weight:700;margin-bottom:14px}
+  .lead{color:var(--gray);font-size:15.5px;max-width:640px;line-height:1.6;margin-bottom:40px}
+
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media (max-width:860px){ .grid3{grid-template-columns:1fr} }
+
+  .svc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px 24px}
+  .svc .ico{width:46px;height:46px;border-radius:12px;background:var(--petrol);color:#fff;font-size:21px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+  .svc h3{font-size:17px;margin-bottom:8px}
+  .svc p{font-size:14px;color:var(--gray);line-height:1.6}
+
+  /* стъпки */
+  .dark{background:var(--ink);color:#fff}
+  .dark h2.sec{color:#fff}
+  .dark .lead{color:var(--oat)}
+  .step{border:1px solid var(--dark-line);border-radius:16px;padding:26px 22px;background:rgba(255,255,255,.03)}
+  .step .num{color:var(--orange);font-size:34px;font-weight:700;line-height:1;margin-bottom:12px}
+  .step h3{font-size:16px;margin-bottom:8px}
+  .step p{font-size:14px;color:var(--oat);opacity:.85;line-height:1.6}
+
+  /* ================= ЦЕНИ ================= */
+  .price{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:30px 26px;display:flex;flex-direction:column;position:relative}
+  .price.featured{border:2px solid var(--orange);box-shadow:0 12px 40px rgba(237,106,47,.14)}
+  .price .badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;font-size:11px;font-weight:700;letter-spacing:.1em;padding:5px 14px;border-radius:999px}
+  .price h3{font-size:16px;color:var(--petrol);letter-spacing:.1em}
+  .price .amount{margin:16px 0 4px;font-size:42px;font-weight:700;line-height:1}
+  .price .amount small{font-size:15px;font-weight:600;color:var(--gray)}
+  .price .per{font-size:12.5px;color:var(--gray);margin-bottom:20px}
+  .price ul{list-style:none;padding:0;margin:0 0 26px;flex:1}
+  .price li{font-size:14px;padding:8px 0;border-bottom:1px dashed var(--line);color:#2A3B42}
+  .price li::before{content:"✓  ";color:var(--orange);font-weight:700}
+  .price li.no{color:#A9B4B8}
+  .price li.no::before{content:"—  ";color:#C8CFD2}
+
+  /* ================= CTA + FOOTER ================= */
+  .cta{background:linear-gradient(160deg,var(--petrol) 0%,var(--petrol-deep) 100%);color:#fff;text-align:center}
+  .cta h2{font-size:clamp(24px,3.4vw,38px);margin-bottom:14px}
+  .cta p{color:var(--oat);margin-bottom:30px;font-size:15.5px}
+  footer{background:var(--ink);color:var(--oat);padding:34px 0;font-size:13px}
+  .fin{max-width:1080px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:center}
+  footer a{color:var(--orange);text-decoration:none}
+</style>
+</head>
+<body>
+
+<!-- ================= МЕНЮ ================= -->
+<nav>
+  <div class="navin">
+    <a class="brand disp" href="#top"><span class="nb">NB</span><span class="method">METHOD</span></a>
+    <div class="menu">
+      <a href="#uslugi">Услуги</a>
+      <a href="#kak">Как работи</a>
+      <a href="#ceni">Цени</a>
+      <a href="#kontakt">Контакт</a>
+      <a class="btn orange disp" href="login.html">Вход</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header class="hero" id="top">
+  <div class="wrap">
+    <h1 class="disp">Тренирай умно,<br>не просто трудно<span class="dot">.</span></h1>
+    <p>Оптимизирай тялото си с модерната система на <span class="tag">#NBMethod</span> — персонална програма, хранителен план със сметнати макроси и постоянна връзка с твоя треньор.</p>
+    <a class="btn orange disp" href="#ceni">Стартирай #SmartGainz</a>
+  </div>
+</header>
+
+<!-- ================= УСЛУГИ ================= -->
+<section id="uslugi">
+  <div class="wrap">
+    <div class="kicker disp">Какво предлагаме</div>
+    <h2 class="sec disp">Всичко за твоята трансформация — на едно място</h2>
+    <p class="lead">Получаваш собствен профил в платформата NB Method: там те чакат тренировките ти, менюто ти и директна линия към Недко. Без Excel файлове, без разпилени чатове.</p>
+    <div class="grid3">
+      <div class="svc">
+        <div class="ico">◆</div>
+        <h3 class="disp">Smart Training</h3>
+        <p>Седмична тренировъчна програма, изградена за твоята цел и ниво — с точни серии, тежести, почивки и видео демонстрации за всяко упражнение. Отчиташ изпълнението с едно докосване.</p>
+      </div>
+      <div class="svc">
+        <div class="ico">◈</div>
+        <h3 class="disp">Адаптивно хранене</h3>
+        <p>Хранителен план по дни и хранения, със сметнати калории, протеин, въглехидрати, фибри и мазнини за всяка съставка. Менюто се адаптира всяка седмица според прогреса ти.</p>
+      </div>
+      <div class="svc">
+        <div class="ico">◉</div>
+        <h3 class="disp">Тясна комуникация</h3>
+        <p>Личен чат с Недко за всеки въпрос — замяна на храна, техника, мотивация. Плюс седмичен видео разговор за преглед на резултатите, директно в платформата.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= КАК РАБОТИ ================= -->
+<section class="dark" id="kak">
+  <div class="wrap">
+    <div class="kicker disp">Твоята еволюция</div>
+    <h2 class="sec disp">Как работи NB Method</h2>
+    <p class="lead">Системата е проста — ти влагаш усилието, всичко останало е организирано за теб.</p>
+    <div class="grid3">
+      <div class="step">
+        <div class="num disp">01</div>
+        <h3 class="disp">Въвеждащ разговор</h3>
+        <p>Видео среща с Недко: цели, история, навици, оборудване. На тази база се изгражда първата ти програма и хранителен план.</p>
+      </div>
+      <div class="step">
+        <div class="num disp">02</div>
+        <h3 class="disp">Твоят команден център</h3>
+        <p>Получаваш профил в платформата. Всяка седмица там те чака нов план — тренировки, меню, бележки от треньора.</p>
+      </div>
+      <div class="step">
+        <div class="num disp">03</div>
+        <h3 class="disp">Прогрес и корекции</h3>
+        <p>Отчиташ тренировки и тегло, а Недко следи всичко в реално време и коригира курса всяка седмица. #SmartGainz.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ЦЕНИ ================= -->
+<section id="ceni">
+  <div class="wrap">
+    <div class="kicker disp">Цени</div>
+    <h2 class="sec disp">Избери своя план</h2>
+    <p class="lead">Без дълги договори — месец за месец. Започваш с въвеждащ разговор, за да сме сигурни, че сме един за друг.</p>
+    <div class="grid3">
+
+      <div class="price">
+        <h3 class="disp">Старт</h3>
+        <div class="amount">45 <small>€</small></div>
+        <div class="per">на месец</div>
+        <ul>
+          <li>Персонална тренировъчна програма</li>
+          <li>Достъп до платформата NB Method</li>
+          <li>Месечна корекция на програмата</li>
+          <li>Чат поддръжка (отговор до 48 ч.)</li>
+          <li class="no">Хранителен план с макроси</li>
+          <li class="no">Седмичен видео разговор</li>
+        </ul>
+        <a class="btn orange disp" href="form.html?plan=Старт">Запиши се</a>
+      </div>
+
+      <div class="price featured">
+        <div class="badge disp">Най-избиран</div>
+        <h3 class="disp">Insider</h3>
+        <div class="amount">75 <small>€</small></div>
+        <div class="per">на месец</div>
+        <ul>
+          <li>Всичко от „Старт“</li>
+          <li>Хранителен план със сметнати макроси</li>
+          <li>Седмична адаптация на тренировки и меню</li>
+          <li>Личен чат с Недко (отговор до 24 ч.)</li>
+          <li>Месечен видео разговор</li>
+        </ul>
+        <a class="btn orange disp" href="form.html?plan=Insider">Запиши се</a>
+      </div>
+
+      <div class="price">
+        <h3 class="disp">Total 1:1</h3>
+        <div class="amount">125 <small>€</small></div>
+        <div class="per">на месец</div>
+        <ul>
+          <li>Всичко от „Insider“</li>
+          <li>Седмичен видео разговор с Недко</li>
+          <li>Приоритетен чат (отговор същия ден)</li>
+          <li>Анализ на техниката по твои видеа</li>
+          <li>Планиране на състезание / фотосесия</li>
+        </ul>
+        <a class="btn orange disp" href="form.html?plan=Total 1:1">Запиши се</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA / КОНТАКТ ================= -->
+<section class="cta" id="kontakt">
+  <div class="wrap">
+    <h2 class="disp">Готов ли си за еволюцията?</h2>
+    <p>Пиши на Недко за безплатен въвеждащ разговор — 15 минути, без ангажимент.</p>
+    <a class="btn orange disp" href="form.html">Свържи се с Недко</a>
+  </div>
+</section>
+
+<footer>
+  <div class="fin">
+    <span class="disp" style="letter-spacing:.15em">NB METHOD · by Nedko Bogdanov</span>
+    <span>Вече си клиент? <a href="login.html">Влез в профила си →</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

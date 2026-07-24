@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NB Method — Запиши се</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --ink:#0D1B21; --petrol:#0F4C5C; --petrol-deep:#0A3542;
+    --orange:#F97316; --orange-hover:#DD640B;
+    --oat:#E9E4D8; --line:rgba(255,255,255,.16); --danger:#FFB4A0; --ok:#B9D48A;
+  }
+  *{box-sizing:border-box;margin:0}
+  body{min-height:100vh;font-family:'Inter','Segoe UI',sans-serif;color:#fff;
+    background:linear-gradient(160deg,var(--petrol) 0%,var(--petrol-deep) 60%,var(--ink) 100%);
+    display:flex;flex-direction:column;align-items:center;padding:34px 16px 60px}
+  .disp{font-family:'Oswald','Arial Narrow',sans-serif;text-transform:uppercase;letter-spacing:.05em}
+  .brand{text-align:center;margin-bottom:26px;line-height:1;text-decoration:none;color:#fff;display:block}
+  .brand .nb{font-size:44px;font-weight:700}
+  .brand .method{display:inline-block;font-size:15px;font-weight:600;letter-spacing:.42em;color:var(--orange);padding-left:.42em;margin-top:2px}
+  .panel{width:100%;max-width:520px;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:18px;padding:28px}
+  h1{font-size:24px;text-align:center;margin-bottom:6px}
+  .sub{color:var(--oat);font-size:14px;text-align:center;margin-bottom:24px;line-height:1.5}
+  label{display:block;font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--oat);margin:14px 0 5px;text-transform:uppercase}
+  input,textarea,select{width:100%;padding:12px 14px;font-size:15px;font-family:inherit;color:#fff;
+    background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:12px}
+  input::placeholder,textarea::placeholder{color:rgba(255,255,255,.35)}
+  select option{background:#0A3542;color:#fff}
+  input:focus,textarea:focus,select:focus{outline:2px solid var(--orange);border-color:var(--orange)}
+  textarea{min-height:110px;resize:vertical}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media (max-width:480px){ .two{grid-template-columns:1fr} }
+  .send{width:100%;margin-top:24px;padding:15px;font-size:15px;font-weight:700;letter-spacing:.08em;
+    background:var(--orange);color:#FFFFFF;border:none;border-radius:12px;cursor:pointer;font-family:inherit}
+  .send:hover{background:var(--orange-hover)}
+  .send[disabled]{opacity:.6;cursor:default}
+  .msg{font-size:14px;text-align:center;margin-top:14px;min-height:20px;line-height:1.5}
+  .fine{font-size:11.5px;color:var(--oat);opacity:.7;margin-top:16px;text-align:center;line-height:1.5}
+  .back{display:block;text-align:center;margin-top:20px;color:var(--oat);font-size:13px;text-decoration:none}
+  .back:hover{color:var(--orange)}
+  .done{text-align:center;padding:26px 6px}
+  .done .big{font-size:44px;margin-bottom:12px}
+</style>
+</head>
+<body>
+<form name="nb-inquiry" netlify netlify-honeypot="bot-field" hidden>
+  <input type="text" name="Имена"><input type="text" name="Телефон">
+  <input type="text" name="Имейл"><input type="text" name="Тегло сега">
+  <input type="text" name="Желано тегло"><input type="text" name="Здравословни бележки">
+  <input type="text" name="Избран план">
+</form>
+
+<a class="brand disp" href="index.html">
+  <span class="nb">NB</span><br><span class="method">METHOD</span>
+</a>
+
+<div class="panel" id="formpanel">
+  <h1 class="disp">Запиши се за NB Method</h1>
+  <p class="sub">Попълни формата и Недко ще се свърже с теб до 24 часа за безплатен въвеждащ разговор.</p>
+
+  <label for="fname">Три имена *</label>
+  <input id="fname" type="text" placeholder="Иван Петров Иванов" autocomplete="name">
+
+  <label for="fplan">Избери план *</label>
+  <select id="fplan">
+    <option value="">— Избери план —</option>
+    <option value="Старт">Старт · 45 € / месец</option>
+    <option value="Insider">Insider · 75 € / месец</option>
+    <option value="Total 1:1">Total 1:1 · 125 € / месец</option>
+    <option value="Не съм сигурен">Не съм сигурен — Недко да ме посъветва</option>
+  </select>
+
+  <div class="two">
+    <div>
+      <label for="fphone">Телефон *</label>
+      <input id="fphone" type="tel" placeholder="+359 88 ..." autocomplete="tel">
+    </div>
+    <div>
+      <label for="femail">Имейл *</label>
+      <input id="femail" type="email" placeholder="ti@example.com" autocomplete="email">
+    </div>
+  </div>
+
+  <div class="two">
+    <div>
+      <label for="fw">Тегло сега (кг)</label>
+      <input id="fw" type="number" step="0.1" placeholder="напр. 86">
+    </div>
+    <div>
+      <label for="ftw">Желано тегло (кг)</label>
+      <input id="ftw" type="number" step="0.1" placeholder="напр. 78">
+    </div>
+  </div>
+
+  <label for="fhealth">Здравословни проблеми / контузии</label>
+  <textarea id="fhealth" placeholder="Опиши накратко травми, заболявания, приемани лекарства — или напиши „нямам“. Това помага програмата да е безопасна за теб."></textarea>
+
+  <button class="send disp" id="sendbtn" onclick="sendInquiry()">Изпрати заявката</button>
+  <div class="msg" id="fmsg"></div>
+
+  <p class="fine">С изпращането се съгласяваш Недко Богданов да използва данните ти само за връзка с теб относно NB Method. Здравословната информация се споделя доброволно и остава поверителна.</p>
+</div>
+
+<div class="panel done" id="donepanel" hidden>
+  <div class="big">✅</div>
+  <h1 class="disp">Заявката е изпратена!</h1>
+  <p class="sub" style="margin-top:10px">Недко ще се свърже с теб до 24 часа на посочения телефон или имейл, за да уговорите безплатния въвеждащ разговор.</p>
+</div>
+
+<a class="back" href="index.html">← Обратно към сайта</a>
+
+<script>
+/* Същите ключове като в другите файлове */
+const SUPABASE_URL = "https://ncajmvrwueobqbiebphm.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_alDMU4EFhjzX1-XgcvKN-A_Pa5Y_uXH";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* бутон от сайта предизбира плана: form.html?plan=Insider */
+const planFromUrl = new URLSearchParams(location.search).get("plan");
+window.addEventListener("DOMContentLoaded", () => {
+  if (planFromUrl) {
+    const sel = document.getElementById("fplan");
+    [...sel.options].forEach(o => { if (o.value === planFromUrl) sel.value = planFromUrl; });
+  }
+});
+/* събуди базата, докато посетителят попълва */
+
+async function sendInquiry(){
+  const msg = document.getElementById("fmsg");
+  const btn = document.getElementById("sendbtn");
+  const v = id => document.getElementById(id).value.trim();
+  const num = id => { const x = document.getElementById(id).value; return x === "" ? null : parseFloat(x); };
+
+  msg.style.color = "var(--danger)";
+  const name = v("fname"), phone = v("fphone"), email = v("femail");
+  const chosenPlan = document.getElementById("fplan").value;
+  if (name.split(/\s+/).length < 2) { msg.textContent = "Моля, въведи поне две от имената си."; return; }
+  if (!chosenPlan) { msg.textContent = "Моля, избери план."; return; }
+  if (phone.length < 6) { msg.textContent = "Моля, въведи валиден телефон."; return; }
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { msg.textContent = "Моля, въведи валиден имейл."; return; }
+
+  btn.disabled = true; btn.textContent = "Изпраща се…";
+  msg.style.color = "var(--oat)";
+  msg.textContent = "Момент… понякога отнема няколко секунди.";
+  const { error } = await sb.from("nb_inquiries").insert({
+    full_name: name, phone, email,
+    weight_kg: num("fw"), target_weight_kg: num("ftw"),
+    health_notes: v("fhealth") || null,
+    chosen_plan: chosenPlan,
+  });
+  if (error) {
+    btn.disabled = false; btn.textContent = "Изпрати заявката";
+    msg.style.color = "var(--danger)";
+    msg.textContent = "Нещо се обърка: " + error.message;
+    return;
+  }
+
+  /* успехът — веднага */
+  document.getElementById("formpanel").hidden = true;
+  document.getElementById("donepanel").hidden = false;
+  window.scrollTo({ top: 0 });
+
+  /* имейл известие през Netlify Forms — на заден план */
+  try {
+    fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        "form-name": "nb-inquiry",
+        "Имена": name, "Телефон": phone, "Имейл": email,
+        "Тегло сега": num("fw") ?? "—", "Желано тегло": num("ftw") ?? "—",
+        "Здравословни бележки": v("fhealth") || "няма",
+        "Избран план": chosenPlan,
+      }).toString(),
+    }).catch(() => {});
+  } catch (e) {}
+}
+
+sb.from("nb_inquiries").select("id").limit(0).then(() => {}).catch(() => {});
+</script>
+</body>
+</html>
