@@ -825,7 +825,9 @@ function openResultsWindow(){
       ';width:7px;height:7px;background:#F97316;border-radius:50%;transform:translateY(-50%)"></div>';
   }).join("");
 
-  const bodyImg = location.origin + "/body-" + ((me.gender === "male" || me.gender === "other") ? me.gender : "female") + ".png";
+  const bodyDir = location.href.split("/").slice(0, -1).join("/");
+  const bodyImg = bodyDir + "/body-" + ((me.gender === "male" || me.gender === "other") ? me.gender : "female") + ".png";
+  
 
   const pts = logs.filter(p => p.weight_kg != null);
   let chart = "";
