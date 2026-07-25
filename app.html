@@ -268,8 +268,6 @@
     <div class="card" style="padding:16px;margin-bottom:4px" id="prg-chart"></div>
     <h3 class="disp" style="font-size:15px;color:#9FB0B5;margin:24px 0 10px">История</h3>
     <div class="card" style="padding:14px 16px" id="prg-history"></div>
-    <h3 class="disp" style="font-size:15px;color:#9FB0B5;margin:24px 0 10px">Снимки по седмици</h3>
-    <div class="card" style="padding:14px 16px" id="prg-photos"></div>
   </section>
 
   <section id="tab-training" hidden>
@@ -786,7 +784,7 @@ function bodyFromMeasures(logs, which){
 }
 
 /* ---------------- РЕЗУЛТАТИ (нов екран) ---------------- */
-function openResultsWindow(){
+async function openResultsWindow(){
   const logs = progress.slice().sort((a,b) => a.week_start < b.week_start ? -1 : 1);
   if (logs.length < 2) { alert("Резултатите се появяват от втората седмица с мерки. 📏"); return; }
 
@@ -821,40 +819,24 @@ function openResultsWindow(){
       <text x="${tx}" y="${m.y + 13}" text-anchor="${anchor}" font-size="15" font-weight="700" fill="${m.d.col}">${m.d.text} см</text>`;
   }).join("");
 
-  // силует (гладък, като в мокъпа)
-  const body = `<g fill="#1C3B47">
-    <ellipse cx="130" cy="30" rx="15" ry="18"/>
-    <path d="M124,46 h12 v9 h-12 z"/>
-    <path d="M130,55
-      C118,55 109,60 104,68
-      C99,76 96,86 95,98
-      C94,108 92,116 88,126
-      C85,133 83,138 84,143 C85,147 89,146 91,141
-      C94,133 96,124 98,116
-      C97,128 95,140 95,152
-      C95,166 99,178 106,188
-      C101,196 99,206 100,218
-      C101,240 105,262 108,286
-      C107,300 108,312 111,322 L120,322
-      C119,306 120,290 122,272
-      C124,254 127,236 130,222
-      C133,236 136,254 138,272
-      C140,290 141,306 140,322 L149,322
-      C152,312 153,300 152,286
-      C155,262 159,240 160,218
-      C161,206 159,196 154,188
-      C161,178 165,166 165,152
-      C165,140 163,128 162,116
-      C164,124 166,133 169,141
-      C171,146 175,147 176,143
-      C177,138 175,133 172,126
-      C168,116 166,108 165,98
-      C164,86 161,76 156,68
-      C151,60 142,55 130,55 Z"/>
-  </g>`;
-
   const pts = logs.filter(p => p.weight_kg != null);
   let chart = "";
+
+  // снимки по седмици (подписани URL-и, защото прозорецът е отделен документ)
+  let photosHtml = "";
+  const withPh = logs.filter(p => p.photo_url).sort((a,b) => a.week_start < b.week_start ? -1 : 1);
+  if (withPh.length) {
+    const { data: signed } = await sb.storage.from("progress")
+      .createSignedUrls(withPh.map(p => p.photo_url), 3600);
+    const urls = {}; (signed || []).forEach(s => { if (s.signedUrl) urls[s.path] = s.signedUrl; });
+    photosHtml = '<div class="card"><div class="sub" style="margin-bottom:8px">Снимки по седмици</div>' +
+      '<div class="phrow">' + withPh.map(p =>
+        '<div class="phcell"><img src="' + (urls[p.photo_url] || "") + '" loading="lazy" alt="Снимка">' +
+        '<small>' + new Date(p.week_start).toLocaleDateString("bg-BG",{day:"numeric",month:"short"}) +
+        (p.weight_kg ? " · " + p.weight_kg + " кг" : "") + '</small></div>').join("") +
+      '</div></div>';
+  }
+
   if (pts.length >= 2) {
     const W = 520, H = 130, P = 26;
     const ws = pts.map(p => +p.weight_kg);
@@ -880,6 +862,10 @@ function openResultsWindow(){
     '.big{font-size:34px;font-weight:800;line-height:1.1}' +
     '.sub{color:#9FB0B5;font-size:13px}' +
     'svg.bodysvg{width:100%;height:auto;display:block}' +
+    '.phrow{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}' +
+    '.phcell{flex-shrink:0;text-align:center}' +
+    '.phcell img{width:130px;height:180px;object-fit:cover;border-radius:10px;border:1px solid #24424D;background:#0E222A}' +
+    '.phcell small{display:block;margin-top:4px;font-size:11px;color:#9FB0B5}' +
     '.bar{position:fixed;left:0;right:0;bottom:0;background:#0A1A20;border-top:1px solid #24424D;' +
       'padding:12px 14px calc(12px + env(safe-area-inset-bottom));display:flex;justify-content:center}' +
     '.bar button{flex:1;max-width:340px;background:#112B34;border:1px solid #24424D;color:#F0EDE4;' +
@@ -891,8 +877,7 @@ function openResultsWindow(){
       '<div class="sub">от началото (' + startDate + ') · сега: ' + (lastW ? lastW.weight_kg + ' кг' : '—') +
       ' · ' + logs.length + ' седмици</div>' +
     '</div>' +
-    '<div class="card"><svg class="bodysvg" viewBox="0 0 260 340" preserveAspectRatio="xMidYMid meet">' +
-      body + '<g>' + lines + '</g></svg></div>' +
+    (photosHtml || '<div class="card"><div class="sub">Качи снимка при мерките, за да видиш промяната си тук. 📷</div></div>') +
     (chart ? '<div class="card"><div class="sub" style="margin-bottom:6px">Тегло по седмици</div>' + chart + '</div>' : '') +
     '</div>' +
     '<div class="bar"><button onclick="window.close()">← Назад</button></div>' +
@@ -1017,8 +1002,6 @@ function renderProgress(){
     </div>`).join("")
     : `<div class="empty" style="padding:8px">Още няма записани мерки — първият запис е тази седмица! 💪</div>`;
   renderChart();
-  renderPhotos();
-  //renderBody();
 }
 
 function renderChart(){
@@ -1177,23 +1160,8 @@ function copyShop(){
     .catch(() => alert("Копирането не сработи — маркирай и копирай ръчно."));
 }
 
-/* ---------------- СНИМКИ ПО СЕДМИЦИ ---------------- */
-async function renderPhotos(){
-  const el = document.getElementById("prg-photos");
-  const withPh = progress.filter(p => p.photo_url).sort((a,b) => a.week_start < b.week_start ? -1 : 1);
-  if (!withPh.length) {
-    el.innerHTML = `<div class="empty" style="padding:8px">Качи първата си снимка при мерките — след месец сравнението ще те мотивира повече от всичко. 📈</div>`;
-    return;
-  }
-  const { data: signed } = await sb.storage.from("progress")
-    .createSignedUrls(withPh.map(p => p.photo_url), 3600);
-  const urls = {}; (signed || []).forEach(s => { if (s.signedUrl) urls[s.path] = s.signedUrl; });
-  el.innerHTML = `<div class="phrow">` + withPh.map(p => `
-    <div class="phcell">
-      <img src="${urls[p.photo_url] || ""}" loading="lazy" alt="Снимка" onclick="openPhoto(this.src)">
-      <small>${new Date(p.week_start).toLocaleDateString("bg-BG",{day:"numeric",month:"short"})}${p.weight_kg ? " · " + p.weight_kg + " кг" : ""}</small>
-    </div>`).join("") + `</div>`;
-}
+/* ---------------- СНИМКИ ПО СЕДМИЦИ (преместени в екран „Резултати") ---------------- */
+async function renderPhotos(){ /* вече не се ползва тук — виж openResultsWindow */ }
 function openPhoto(src){
   const m = document.createElement("div");
   m.className = "vmodal";
