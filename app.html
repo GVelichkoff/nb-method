@@ -680,12 +680,12 @@ function renderChat(){
   const wD = fmt(delta("weight_kg"), "кг");
   const startDate = new Date(logs[0].week_start).toLocaleDateString("bg-BG",{day:"numeric",month:"short"});
 
-  const marks = [
-    { label: "Гърди", d: fmt(delta("chest_cm"), "см"), y: 118, side: "r" },
-    { label: "Ръка",  d: fmt(delta("arm_cm"), "см"),   y: 96,  side: "l" },
-    { label: "Талия", d: fmt(delta("waist_cm"), "см"), y: 160, side: "r" },
-    { label: "Ханш",  d: fmt(delta("hips_cm"), "см"),  y: 196, side: "l" },
-    { label: "Бедро", d: fmt(delta("thigh_cm"), "см"), y: 255, side: "r" },
+ const marks = [
+    { label: "Гърди", d: fmt(delta("chest_cm")), yp: 35, side: "r" },
+    { label: "Ръка",  d: fmt(delta("arm_cm")),   yp: 48, side: "l" },
+    { label: "Талия", d: fmt(delta("waist_cm")), yp: 50, side: "r" },
+    { label: "Ханш",  d: fmt(delta("hips_cm")),  yp: 57, side: "l" },
+    { label: "Бедро", d: fmt(delta("thigh_cm")), yp: 72, side: "r" },
   ].filter(m => m.d);
 
   const lines = marks.map(m => {
@@ -821,7 +821,7 @@ function openResultsWindow(){
       '</div>' +
       '<div style="position:absolute;top:' + m.yp + '%;' + (isR ? 'right:22%' : 'left:22%') +
       ';width:24%;height:1px;border-top:1.5px dashed #F97316"></div>' +
-      '<div style="position:absolute;top:' + m.yp + '%;' + (isR ? 'right:46%' : 'left:46%') +
+      '<div style="position:absolute;top:' + m.yp + '%;' + (isR ? 'right:48%' : 'left:48%') +
       ';width:7px;height:7px;background:#F97316;border-radius:50%;transform:translateY(-50%)"></div>';
   }).join("");
 
