@@ -180,6 +180,14 @@
       <div class="row">
         <input type="number" id="ac-kcal" placeholder="Цел ккал/ден (по избор)">
         <input type="number" id="ac-protein" placeholder="Цел протеин г/ден (по избор)">
+      </div>
+      <div class="row">
+        <select id="ac-gender" style="flex:1">
+          <option value="">Пол (по избор)</option>
+          <option value="female">Жена</option>
+          <option value="male">Мъж</option>
+          <option value="other">Друго / без значение</option>
+        </select>
         <button class="btn primary" onclick="addClient()">Добави</button>
       </div>
       <div class="err" id="ac-err"></div>
@@ -371,14 +379,16 @@ async function addClient(){
   const email = document.getElementById("ac-email").value.trim();
   const prog = document.getElementById("ac-program").value.trim();
   if (!email || !prog) { err.textContent = "Имейл и име на програма са задължителни."; return; }
+  const gender = document.getElementById("ac-gender").value || null;
   const { error } = await sb.rpc("nb_add_client", {
     p_email: email, p_program: prog,
     p_kcal: parseInt(document.getElementById("ac-kcal").value) || null,
     p_protein: parseInt(document.getElementById("ac-protein").value) || null,
+    p_gender: gender,
   });
   if (error) { err.textContent = error.message; return; }
   document.getElementById("addclient").hidden = true;
-  ["ac-email","ac-program","ac-kcal","ac-protein"].forEach(i => document.getElementById(i).value = "");
+  ["ac-email","ac-program","ac-kcal","ac-protein","ac-gender"].forEach(i => document.getElementById(i).value = "");
   await loadClients();
 }
 
