@@ -3,250 +3,1219 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NB Method — Онлайн коучинг с Недко Богданов</title>
-<meta name="description" content="Персонални тренировъчни програми, хранителни планове и постоянна връзка с твоя треньор. Тренирай умно, не просто трудно.">
+<title>NB Method</title>
+<meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0D1B21">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
   :root{
-    --ink:#0D1B21; --petrol:#0F4C5C; --petrol-deep:#0A3542;
-    --orange:#ED6A2F; --orange-hover:#D95A22;
-    --oat:#E9E4D8; --paper:#F5F3EE; --card:#FFFFFF; --line:#E4E1D7;
-    --gray:#6C7A80; --dark-line:rgba(255,255,255,.14);
+    --ink:#12242B; --paper:#F5F3EE; --card:#FFFFFF; --line:#E4E1D7;
+    --petrol:#0F4C5C; --petrol-soft:#E2EDF0;
+    --olive:#5F7A3D; --olive-soft:#EAF0DF;
+    --amber:#D98E22; --amber-soft:#FBEFDC;
+    --gray:#6C7A80; --danger:#B4432E;
   }
   *{box-sizing:border-box;margin:0}
-  html{scroll-behavior:smooth}
-  body{font-family:'Inter','Segoe UI',sans-serif;color:var(--ink);background:var(--paper)}
-  .disp{font-family:'Oswald','Arial Narrow',sans-serif;text-transform:uppercase;letter-spacing:.05em}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
-  .btn{display:inline-block;border:none;cursor:pointer;font-family:inherit;font-weight:700;border-radius:12px;text-decoration:none;text-align:center}
-  .btn.orange{background:var(--orange);color:#fff;padding:14px 30px;font-size:14px;letter-spacing:.08em;transition:background .15s}
-  .btn.orange:hover{background:var(--orange-hover)}
-  .btn.ghost{background:transparent;color:#fff;border:1px solid var(--dark-line);padding:10px 22px;font-size:13px}
-  .btn.ghost:hover{border-color:var(--orange);color:var(--orange)}
+  body{background:var(--paper);color:var(--ink);font-family:'Inter','Segoe UI',sans-serif;min-height:100vh}
+  .disp{font-family:'Oswald','Arial Narrow',sans-serif;text-transform:uppercase;letter-spacing:.04em}
+  header{background:var(--ink);color:#fff;padding:16px 0 14px}
+  .hwrap,.shell{max-width:960px;margin:0 auto;padding:0 16px}
+  .hwrap{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .logo{background:#fff;color:var(--ink);font-weight:700;font-size:15px;padding:6px 10px;border-radius:8px}
+  .shell{padding-bottom:90px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+  h1{font-size:26px;margin:22px 0 4px}
+  .sub{color:var(--gray);font-size:14px;margin-bottom:16px}
+  .pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px}
+  .btn{border:none;cursor:pointer;font-family:inherit;font-weight:600;border-radius:10px}
+  .btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .empty{padding:24px;text-align:center;color:var(--gray);font-size:14px}
+  /* login */
+  .login{max-width:380px;margin:60px auto;padding:28px}
+  .login h1{margin:0 0 4px;font-size:24px}
+  .login p{color:var(--gray);font-size:13px;margin-bottom:18px}
+  .login label{font-size:12px;font-weight:600;color:var(--gray);display:block;margin:12px 0 4px}
+  .login input{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 14px;font-family:inherit;font-size:14px}
+  .login input:focus{outline:2px solid var(--petrol);border-color:var(--petrol)}
+  .login .btn{width:100%;margin-top:18px;background:var(--petrol);color:#fff;padding:13px;font-size:14px}
+  .err{color:var(--danger);font-size:13px;margin-top:10px;min-height:18px}
+  /* week */
+  .week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:20px}
+  .daycell{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 0 8px;text-align:center;cursor:pointer}
+  .daycell.today{background:var(--petrol);border-color:var(--petrol);color:#fff}
+  .daycell small{font-size:11px;font-weight:600;opacity:.7;display:block}
+  .daycell b{font-size:20px;line-height:1.2}
+  .daycell span{font-size:10px;display:block;margin-top:2px;opacity:.85}
+  .summary{display:grid;gap:12px}
+  .scard{padding:18px}
+  .scard h2{font-size:18px;margin:10px 0 4px}
+  .scard p{font-size:14px;color:var(--gray)}
+  /* training */
+  .ex{padding:16px;display:flex;gap:14px;align-items:flex-start;margin-bottom:10px}
+  .ex.done{opacity:.65}
+  .chk{width:30px;height:30px;border-radius:8px;flex-shrink:0;margin-top:2px;background:var(--paper);color:var(--gray);border:1px solid var(--line);cursor:pointer;font-size:15px}
+  .ex.done .chk{background:var(--petrol);color:#fff;border-color:var(--petrol)}
+  .exhead{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  .exhead strong{font-size:15px}
+  .sets{color:var(--petrol);font-size:14px;font-weight:600}
+  .exnote{font-size:13px;color:var(--gray);margin:4px 0 8px}
+  .demo-btn{background:var(--petrol-soft);color:var(--petrol);padding:7px 12px;font-size:12px}
+  .finish{margin-top:6px;width:100%;background:var(--petrol);color:#fff;padding:14px;font-size:14px}
+  .finish[disabled]{opacity:.5;cursor:default}
+  /* menu */
+  .daytabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px}
+  .daytabs .btn{padding:8px 14px;font-size:13px;flex-shrink:0;background:var(--card);color:var(--ink);border:1px solid var(--line)}
+  .daytabs .btn.on{background:var(--olive);color:#fff;border-color:var(--olive)}
+  .meal{padding:16px;margin-bottom:10px}
+  .mealhead{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px}
+  .mealhead strong{font-size:15px;color:var(--olive)}
+  .macros{font-size:12px;color:var(--gray);font-weight:600}
+  .meal p{font-size:14px;margin-top:6px}
+  .daytotals{padding:12px 16px;display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--gray);margin-bottom:10px;background:var(--olive-soft);border:none}
+  .daytotals b{color:var(--olive);font-size:14px}
+  .ingtbl{margin-top:8px}
+  .ingrow{display:grid;grid-template-columns:1fr 52px 52px 46px 46px 46px 46px;gap:4px;font-size:12.5px;padding:6px 0;border-bottom:1px dashed var(--line);align-items:center}
+  .ingrow:last-child{border-bottom:none}
+  .ingrow .nm{font-weight:600;font-size:13px}
+  .ingrow span:not(.nm){text-align:right;color:var(--gray)}
+  .inghead span{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--gray);font-weight:600}
+  /* chat */
+  .chatbox{padding:16px;display:flex;flex-direction:column;gap:12px;min-height:320px;max-height:55vh;overflow-y:auto}
+  .msg{max-width:82%}
+  .msg .bubble{padding:10px 14px;font-size:14px;line-height:1.45;word-wrap:break-word}
+  .msg.coach{align-self:flex-start}
+  .msg.coach .bubble{background:var(--paper);border:1px solid var(--line);border-radius:14px 14px 14px 4px}
+  .msg.me{align-self:flex-end}
+  .msg.me .bubble{background:var(--petrol);color:#fff;border-radius:14px 14px 4px 14px}
+  .msg .meta{font-size:11px;color:var(--gray);margin-top:3px}
+  .msg.me .meta{text-align:right}
+  .chatrow{display:flex;gap:8px;margin-top:10px}
+  .chatrow input{flex:1;border:1px solid var(--line);border-radius:10px;padding:11px 14px;font-family:inherit;font-size:14px;background:var(--card)}
+  .chatrow input:focus{outline:2px solid var(--petrol);border-color:var(--petrol)}
+  .send{background:var(--petrol);color:#fff;padding:0 20px;font-size:14px}
+  /* video */
+  .callcard{padding:20px;border-top:4px solid var(--amber)}
+  .callcard h2{font-size:22px;margin:12px 0 4px}
+  .callcard p{font-size:14px;color:var(--gray);margin-bottom:4px}
+  .join{margin-top:16px;background:var(--amber);color:#fff;padding:13px 26px;font-size:14px;letter-spacing:.05em;text-decoration:none;display:inline-block}
+  .vframe{margin:14px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#000}
+  .vframe-inner{height:70vh;min-height:420px}
+  .vclose{width:100%;background:var(--ink);color:#fff;padding:12px;font-size:13px;border-radius:0}
+  .past{padding:14px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13px;margin-bottom:8px}
+  .past a{color:var(--petrol)}
+  h3.past-h{font-size:15px;color:var(--gray);margin:22px 0 10px}
+  /* nav */
+  nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+  .navin{display:flex;max-width:960px;margin:0 auto}
+  .navbtn{flex:1;border:none;background:none;cursor:pointer;padding:8px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--gray);font-family:inherit}
+  .navbtn .ico{font-size:17px}
+  .navbtn.on{color:var(--petrol)}
+  .logout{background:none;border:none;color:#fff;opacity:.6;font-size:12px;cursor:pointer;font-family:inherit;margin-top:4px}
+  section[hidden],div[hidden]{display:none}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
-  /* ================= NAV ================= */
-  nav{position:sticky;top:0;z-index:20;background:rgba(13,27,33,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--dark-line)}
-  .navin{max-width:1080px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px}
-  .brand{color:#fff;text-decoration:none;line-height:1;display:flex;align-items:baseline;gap:7px}
-  .brand .nb{font-size:24px;font-weight:700}
-  .brand .method{font-size:13px;font-weight:600;letter-spacing:.3em;color:var(--orange)}
-  .menu{display:flex;align-items:center;gap:22px}
-  .menu a{color:var(--oat);text-decoration:none;font-size:13.5px;font-weight:600}
-  .menu a:hover{color:var(--orange)}
-  .menu .btn.orange{padding:10px 22px;font-size:13px}
-  @media (max-width:760px){ .menu a:not(.btn){display:none} }
+  /* ============ ТЪМНА БРАНД ТЕМА (NB Method) ============ */
+  :root{--orange:#F97316}
+  body{background:#0D1B21;color:#F0EDE4}
+  header{background:#0A1A20}
+  .card{background:#112B34;border-color:#24424D}
+  .sub,.scard p,.exnote,.macros,.msg .meta,.empty,.ingrow span:not(.nm),.inghead span,.callcard p{color:#9FB0B5}
+  .login input{background:#0E222A;border-color:#2A4652;color:#F0EDE4}
+  .login p,.login label{color:#9FB0B5}
+  .login .btn{background:var(--orange)}
+  .err{color:#FFB4A0}
+  .daycell{background:#112B34;border-color:#24424D;color:#F0EDE4}
+  .daycell.today{background:var(--orange);border-color:var(--orange)}
+  .pill[style*="petrol-soft"]{background:#143E4C!important;color:#FFA65C!important}
+  .pill[style*="olive-soft"]{background:#22331B!important;color:#B9D48A!important}
+  .pill[style*="amber-soft"]{background:#3D2C12!important;color:#FFA65C!important}
+  button[style*="background:var(--ink)"]{background:var(--orange)!important}
+  .chk{background:#0E222A;border-color:#2A4652;color:#9FB0B5}
+  .ex.done .chk{background:var(--orange);border-color:var(--orange);color:#fff}
+  .sets{color:#FFA65C}
+  .demo-btn{background:rgba(237,106,47,.16);color:#FFA65C}
+  .finish{background:var(--orange)}
+  .daytabs .btn{background:#112B34;color:#F0EDE4;border-color:#24424D}
+  .daytabs .btn.on{background:#5F7A3D;border-color:#5F7A3D;color:#fff}
+  .daytotals{background:#16262B;color:#9FB0B5}
+  .daytotals b{color:#B9D48A}
+  .mealhead strong{color:#B9D48A}
+  .tip{background:#16262B;color:#B9D48A}
+  .msg.coach .bubble{background:#0E222A;border-color:#2A4652}
+  .msg.me .bubble{background:#0F4C5C}
+  .chatrow input{background:#0E222A;border-color:#2A4652;color:#F0EDE4}
+  .send{background:var(--orange)}
+  .join{background:var(--orange)}
+  .past a{color:#FFA65C}
+  .ingrow{border-bottom-color:#24424D}
+  nav{background:#0A1A20;border-top-color:#24424D}
+  .navbtn{color:#7E939A}
+  .navbtn.on{color:var(--orange)}
 
-  /* ================= HERO ================= */
-  .hero{
-    background:
-      linear-gradient(to right, rgba(13,27,33,.92) 0%, rgba(13,27,33,.55) 55%, rgba(13,27,33,.35) 100%),
-      url('hero.jpg') center center / cover no-repeat,
-      radial-gradient(1100px 560px at 75% 20%, #14586B 0%, #0A3542 55%, #0D1B21 100%);
-    color:#fff;padding:110px 0 120px;position:relative;overflow:hidden;
-  }
-  .hero::before{content:"";position:absolute;inset:0;opacity:.05;pointer-events:none;
-    background:repeating-linear-gradient(135deg,#fff 0 2px,transparent 2px 26px)}
-  .hero .wrap{position:relative}
-  .hero h1{font-size:clamp(34px,5vw,58px);font-weight:700;line-height:1.08;max-width:640px}
-  .hero h1 .dot{color:var(--orange)}
-  .hero p{margin:18px 0 34px;color:var(--oat);font-size:17px;max-width:520px;line-height:1.55}
-  .hero .tag{color:var(--orange);font-weight:700}
-
-  /* ================= SECTIONS ================= */
-  section{padding:74px 0}
-  .kicker{color:var(--orange);font-size:13px;font-weight:700;letter-spacing:.18em;margin-bottom:8px}
-  h2.sec{font-size:clamp(24px,3vw,34px);font-weight:700;margin-bottom:14px}
-  .lead{color:var(--gray);font-size:15.5px;max-width:640px;line-height:1.6;margin-bottom:40px}
-
-  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-  @media (max-width:860px){ .grid3{grid-template-columns:1fr} }
-
-  .svc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px 24px}
-  .svc .ico{width:46px;height:46px;border-radius:12px;background:var(--petrol);color:#fff;font-size:21px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
-  .svc h3{font-size:17px;margin-bottom:8px}
-  .svc p{font-size:14px;color:var(--gray);line-height:1.6}
-
-  /* стъпки */
-  .dark{background:var(--ink);color:#fff}
-  .dark h2.sec{color:#fff}
-  .dark .lead{color:var(--oat)}
-  .step{border:1px solid var(--dark-line);border-radius:16px;padding:26px 22px;background:rgba(255,255,255,.03)}
-  .step .num{color:var(--orange);font-size:34px;font-weight:700;line-height:1;margin-bottom:12px}
-  .step h3{font-size:16px;margin-bottom:8px}
-  .step p{font-size:14px;color:var(--oat);opacity:.85;line-height:1.6}
-
-  /* ================= ЦЕНИ ================= */
-  .price{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:30px 26px;display:flex;flex-direction:column;position:relative}
-  .price.featured{border:2px solid var(--orange);box-shadow:0 12px 40px rgba(237,106,47,.14)}
-  .price .badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;font-size:11px;font-weight:700;letter-spacing:.1em;padding:5px 14px;border-radius:999px}
-  .price h3{font-size:16px;color:var(--petrol);letter-spacing:.1em}
-  .price .amount{margin:16px 0 4px;font-size:42px;font-weight:700;line-height:1}
-  .price .amount small{font-size:15px;font-weight:600;color:var(--gray)}
-  .price .per{font-size:12.5px;color:var(--gray);margin-bottom:20px}
-  .price ul{list-style:none;padding:0;margin:0 0 26px;flex:1}
-  .price li{font-size:14px;padding:8px 0;border-bottom:1px dashed var(--line);color:#2A3B42}
-  .price li::before{content:"✓  ";color:var(--orange);font-weight:700}
-  .price li.no{color:#A9B4B8}
-  .price li.no::before{content:"—  ";color:#C8CFD2}
-
-  /* ================= CTA + FOOTER ================= */
-  .cta{background:linear-gradient(160deg,var(--petrol) 0%,var(--petrol-deep) 100%);color:#fff;text-align:center}
-  .cta h2{font-size:clamp(24px,3.4vw,38px);margin-bottom:14px}
-  .cta p{color:var(--oat);margin-bottom:30px;font-size:15.5px}
-  footer{background:var(--ink);color:var(--oat);padding:34px 0;font-size:13px}
-  .fin{max-width:1080px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:center}
-  footer a{color:var(--orange);text-decoration:none}
+  /* ===== видео плейър ===== */
+  .vmodal{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+  .vmodal video{max-width:100%;max-height:80vh;border-radius:12px;background:#000}
+  .vmodal .vx{position:absolute;top:14px;right:16px;background:#F97316;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer;font-family:inherit}
+  /* ===== седмични мерки ===== */
+  .mrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+  .mrow input{width:100%;border:1px solid #2A4652;border-radius:10px;padding:10px 12px;font-family:inherit;font-size:14px;background:#0E222A;color:#F0EDE4}
+  .mrow input::placeholder{color:#7E939A}
+  .prg-save{background:#F97316;color:#fff;width:100%;padding:12px;font-size:14px;margin-top:6px}
+  .prgrow{display:grid;grid-template-columns:74px repeat(6,1fr);gap:4px;font-size:12px;padding:7px 0;border-bottom:1px dashed #24424D}
+  .prgrow span{text-align:right;color:#9FB0B5}
+  .prgrow span:first-child{text-align:left;font-weight:600;color:#F0EDE4}
+  .prghead span{font-size:10px;text-transform:uppercase;color:#7E939A}
+  .daycell.sel{outline:2px solid #F97316;outline-offset:-2px}
+  .weeknav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+  .weeknav .wn{background:#112B34;border:1px solid #24424D;color:#F0EDE4;padding:8px 18px;font-size:15px}
+  .weeknav .wn[disabled]{opacity:.3;cursor:default}
+  .finish,.send,.join,.prg-save,.login .btn,.daycell.today,.vmodal .vx{color:#FFFFFF !important}
+  button[style*="background:var(--ink)"]{color:#FFFFFF !important}
+  .shopbtn{width:100%;background:#112B34;border:1px solid #24424D;color:#F0EDE4;padding:12px;font-size:14px;margin-bottom:14px}
+  .shoprow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px dashed #24424D;font-size:14px}
+  .shoprow:last-child{border-bottom:none}
+  .shoprow input[type=checkbox]{width:19px;height:19px;accent-color:var(--orange);flex-shrink:0}
+  .shoprow.done label{opacity:.45;text-decoration:line-through}
+  .shoprow label{flex:1;cursor:pointer}
+  .shoprow .qty{color:#9FB0B5;font-size:13px}
+  .phrow{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px}
+  .phcell{flex-shrink:0;text-align:center}
+  .phcell img{width:110px;height:150px;object-fit:cover;border-radius:10px;border:1px solid #24424D;cursor:pointer;background:#0E222A}
+  .phcell small{display:block;margin-top:4px;font-size:11px;color:#9FB0B5}
 </style>
 </head>
 <body>
 
-<!-- ================= МЕНЮ ================= -->
-<nav>
-  <div class="navin">
-    <a class="brand disp" href="#top"><span class="nb">NB</span><span class="method">METHOD</span></a>
-    <div class="menu">
-      <a href="#uslugi">Услуги</a>
-      <a href="#kak">Как работи</a>
-      <a href="#ceni">Цени</a>
-      <a href="#kontakt">Контакт</a>
-      <a class="btn orange disp" href="login.html">Вход</a>
-    </div>
+<!-- ============ ЕКРАН: ВХОД ============ -->
+<div id="screen-login">
+  <div class="card login">
+    <div class="logo disp" style="display:inline-block;margin-bottom:14px">NB</div>
+    <h1 class="disp">NB Method</h1>
+    <p>Персонален онлайн коучинг с Недко Богданов</p>
+    <label for="email">Имейл</label>
+    <input id="email" type="email" autocomplete="email">
+    <label for="pass">Парола</label>
+    <input id="pass" type="password" autocomplete="current-password">
+    <button class="btn" onclick="login()">Вход</button>
+    <div class="err" id="loginerr"></div>
   </div>
-</nav>
+</div>
 
-<!-- ================= HERO ================= -->
-<header class="hero" id="top">
-  <div class="wrap">
-    <h1 class="disp">Тренирай умно,<br>не просто трудно<span class="dot">.</span></h1>
-    <p>Оптимизирай тялото си с модерната система на <span class="tag">#NBMethod</span> — персонална програма, хранителен план със сметнати макроси и постоянна връзка с твоя треньор.</p>
-    <a class="btn orange disp" href="#ceni">Стартирай #SmartGainz</a>
+<!-- ============ ЕКРАН: ПРИЛОЖЕНИЕ ============ -->
+<div id="screen-app" hidden>
+<header>
+  <div class="hwrap">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo disp">NB</div>
+      <div>
+        <div class="disp" style="font-size:16px;font-weight:600">NB Method</div>
+        <div style="font-size:12px;opacity:.65" id="coachname"></div>
+      </div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:13px;font-weight:600" id="username"></div>
+      <div style="font-size:11px;opacity:.65" id="programname"></div>
+      <button class="logout" onclick="changePass()">Смяна на парола</button>
+      <button class="logout" onclick="logout()">Изход</button>
+    </div>
   </div>
 </header>
 
-<!-- ================= УСЛУГИ ================= -->
-<section id="uslugi">
-  <div class="wrap">
-    <div class="kicker disp">Какво предлагаме</div>
-    <h2 class="sec disp">Всичко за твоята трансформация — на едно място</h2>
-    <p class="lead">Получаваш собствен профил в платформата NB Method: там те чакат тренировките ти, менюто ти и директна линия към Недко. Без Excel файлове, без разпилени чатове.</p>
-    <div class="grid3">
-      <div class="svc">
-        <div class="ico">◆</div>
-        <h3 class="disp">Smart Training</h3>
-        <p>Седмична тренировъчна програма, изградена за твоята цел и ниво — с точни серии, тежести, почивки и видео демонстрации за всяко упражнение. Отчиташ изпълнението с едно докосване.</p>
-      </div>
-      <div class="svc">
-        <div class="ico">◈</div>
-        <h3 class="disp">Адаптивно хранене</h3>
-        <p>Хранителен план по дни и хранения, със сметнати калории, протеин, въглехидрати, фибри и мазнини за всяка съставка. Менюто се адаптира всяка седмица според прогреса ти.</p>
-      </div>
-      <div class="svc">
-        <div class="ico">◉</div>
-        <h3 class="disp">Тясна комуникация</h3>
-        <p>Личен чат с Недко за всеки въпрос — замяна на храна, техника, мотивация. Плюс седмичен видео разговор за преглед на резултатите, директно в платформата.</p>
-      </div>
+<main class="shell">
+  <section id="tab-week">
+    <h1 class="disp">Твоята седмица</h1>
+    <p class="sub" id="week-sub"></p>
+    <div class="card" style="padding:14px 16px;margin-bottom:14px" id="mood-card">
+      <div class="disp" style="font-size:14px;margin-bottom:10px">Как се чувстваш днес?</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap" id="mood-btns"></div>
     </div>
-  </div>
-</section>
-
-<!-- ================= КАК РАБОТИ ================= -->
-<section class="dark" id="kak">
-  <div class="wrap">
-    <div class="kicker disp">Твоята еволюция</div>
-    <h2 class="sec disp">Как работи NB Method</h2>
-    <p class="lead">Системата е проста — ти влагаш усилието, всичко останало е организирано за теб.</p>
-    <div class="grid3">
-      <div class="step">
-        <div class="num disp">01</div>
-        <h3 class="disp">Въвеждащ разговор</h3>
-        <p>Видео среща с Недко: цели, история, навици, оборудване. На тази база се изгражда първата ти програма и хранителен план.</p>
+    <div class="card" style="padding:14px 16px;margin-bottom:14px" id="habits-card" hidden>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+        <span class="disp" style="font-size:14px">Навици за днес</span>
+        <span style="font-size:12px;color:#9FB0B5" id="habit-streak"></span>
       </div>
-      <div class="step">
-        <div class="num disp">02</div>
-        <h3 class="disp">Твоят команден център</h3>
-        <p>Получаваш профил в платформата. Всяка седмица там те чака нов план — тренировки, меню, бележки от треньора.</p>
-      </div>
-      <div class="step">
-        <div class="num disp">03</div>
-        <h3 class="disp">Прогрес и корекции</h3>
-        <p>Отчиташ тренировки и тегло, а Недко следи всичко в реално време и коригира курса всяка седмица. #SmartGainz.</p>
-      </div>
+      <div id="habit-list"></div>
     </div>
-  </div>
-</section>
-
-<!-- ================= ЦЕНИ ================= -->
-<section id="ceni">
-  <div class="wrap">
-    <div class="kicker disp">Цени</div>
-    <h2 class="sec disp">Избери своя план</h2>
-    <p class="lead">Без дълги договори — месец за месец. Започваш с въвеждащ разговор, за да сме сигурни, че сме един за друг.</p>
-    <div class="grid3">
-
-      <div class="price">
-        <h3 class="disp">Старт</h3>
-        <div class="amount">45 <small>€</small></div>
-        <div class="per">на месец</div>
-        <ul>
-          <li>Персонална тренировъчна програма</li>
-          <li>Достъп до платформата NB Method</li>
-          <li>Месечна корекция на програмата</li>
-          <li>Чат поддръжка (отговор до 48 ч.)</li>
-          <li class="no">Хранителен план с макроси</li>
-          <li class="no">Седмичен видео разговор</li>
-        </ul>
-        <a class="btn orange disp" href="#kontakt">Запиши се</a>
-      </div>
-
-      <div class="price featured">
-        <div class="badge disp">Най-избиран</div>
-        <h3 class="disp">Insider</h3>
-        <div class="amount">75 <small>€</small></div>
-        <div class="per">на месец</div>
-        <ul>
-          <li>Всичко от „Старт“</li>
-          <li>Хранителен план със сметнати макроси</li>
-          <li>Седмична адаптация на тренировки и меню</li>
-          <li>Личен чат с Недко (отговор до 24 ч.)</li>
-          <li>Месечен видео разговор</li>
-        </ul>
-        <a class="btn orange disp" href="#kontakt">Запиши се</a>
-      </div>
-
-      <div class="price">
-        <h3 class="disp">Total 1:1</h3>
-        <div class="amount">125 <small>€</small></div>
-        <div class="per">на месец</div>
-        <ul>
-          <li>Всичко от „Insider“</li>
-          <li>Седмичен видео разговор с Недко</li>
-          <li>Приоритетен чат (отговор същия ден)</li>
-          <li>Анализ на техниката по твои видеа</li>
-          <li>Планиране на състезание / фотосесия</li>
-        </ul>
-        <a class="btn orange disp" href="#kontakt">Запиши се</a>
-      </div>
-
+    <div class="weeknav">
+      <button class="btn wn" id="wn-old" onclick="switchWeek(1)">← По-стара</button>
+      <span class="disp" id="wn-label" style="font-size:14px"></span>
+      <button class="btn wn" id="wn-new" onclick="switchWeek(-1)">По-нова →</button>
     </div>
-  </div>
-</section>
+    <div class="week" id="weekstrip"></div>
+    <div class="summary" id="summary"></div>
+    <h3 class="disp" style="font-size:15px;color:#9FB0B5;margin:24px 0 10px">Мерки за тази седмица</h3>
+    <div class="card" style="padding:16px">
+      <div class="mrow">
+        <input type="number" step="0.1" id="pw" placeholder="Тегло кг">
+        <input type="number" step="0.1" id="pwa" placeholder="Талия см">
+        <input type="number" step="0.1" id="pch" placeholder="Гърди см">
+        <input type="number" step="0.1" id="phi" placeholder="Ханш см">
+        <input type="number" step="0.1" id="pth" placeholder="Бедро см">
+        <input type="number" step="0.1" id="par" placeholder="Ръка см">
+      </div>
+      <label style="display:block;font-size:12px;color:#9FB0B5;margin:4px 0 6px">📷 Снимка за тази седмица (по избор)</label>
+      <input type="file" id="pphoto" accept="image/*" style="width:100%;color:#9FB0B5;font-size:13px">
+      <button class="btn prg-save disp" onclick="saveProgress()">Запази мерките</button>
+      <div class="err" id="prg-msg" style="text-align:center"></div>
+    </div>
+    <button class="btn shopbtn disp" style="margin-top:24px" onclick="openResultsWindow()">📊 Резултати — виж промяната</button>
+    <div class="card" style="padding:16px;margin-bottom:4px" id="prg-chart"></div>
+    <h3 class="disp" style="font-size:15px;color:#9FB0B5;margin:24px 0 10px">История</h3>
+    <div class="card" style="padding:14px 16px" id="prg-history"></div>
+    <h3 class="disp" style="font-size:15px;color:#9FB0B5;margin:24px 0 10px">Снимки по седмици</h3>
+    <div class="card" style="padding:14px 16px" id="prg-photos"></div>
+  </section>
 
-<!-- ================= CTA / КОНТАКТ ================= -->
-<section class="cta" id="kontakt">
-  <div class="wrap">
-    <h2 class="disp">Готов ли си за еволюцията?</h2>
-    <p>Пиши на Недко за безплатен въвеждащ разговор — 15 минути, без ангажимент.</p>
-    <a class="btn orange disp" href="mailto:trener@nbmethod.bg?subject=Искам въвеждащ разговор — NB Method">Свържи се с Недко</a>
-  </div>
-</section>
+  <section id="tab-training" hidden>
+    <h1 class="disp" id="tr-title">Тренировка</h1>
+    <p class="sub" id="tr-sub"></p>
+    <div id="exlist"></div>
+    <button class="btn disp finish" id="finishbtn" onclick="finishWorkout()">Приключи тренировката и изпрати отчет</button>
+  </section>
 
-<footer>
-  <div class="fin">
-    <span class="disp" style="letter-spacing:.15em">NB METHOD · by Nedko Bogdanov</span>
-    <span>Вече си клиент? <a href="nb-method-login.html">Влез в профила си →</a></span>
-  </div>
-</footer>
+  <section id="tab-menu" hidden>
+    <h1 class="disp">Седмично меню</h1>
+    <p class="sub" id="menu-sub"></p>
+    <button class="btn shopbtn disp" onclick="openShopWindow()">🛒 Списък за пазаруване за седмицата</button>
+    <div class="card" style="padding:16px;margin-bottom:14px" id="shoplist" hidden></div>
+    <div class="daytabs" id="daytabs"></div>
+    <div id="nb_meals"></div>
+  </section>
 
+  <section id="tab-chat" hidden>
+    <h1 class="disp" style="margin-bottom:14px" id="chat-title">Чат</h1>
+    <div class="card chatbox" id="chatbox"></div>
+    <div class="empty" id="chat-hours" hidden style="padding:10px 14px;font-size:13px;text-align:left;background:#112B34;border:1px solid #24424D;border-radius:12px;margin-top:10px"></div>
+    <div class="chatrow">
+      <input id="chatin" placeholder="Напиши съобщение…" aria-label="Съобщение">
+      <button class="btn send" onclick="sendMsg()">Изпрати</button>
+    </div>
+  </section>
+
+  <section id="tab-video" hidden>
+    <h1 class="disp" style="margin-bottom:14px">Видео разговори</h1>
+    <div class="vframe" id="vframe" hidden>
+      <div class="vframe-inner" id="vframe-inner"></div>
+      <button class="btn vclose" onclick="endCall()">Затвори видео разговора</button>
+    </div>
+    <div id="nextcall"></div>
+    <h3 class="disp past-h">Минали разговори</h3>
+    <div id="pastcalls"></div>
+  </section>
+</main>
+
+<nav aria-label="Основна навигация"><div class="navin" id="nav"></div></nav>
+</div>
+
+<script>
+/* ============================================================
+   НАСТРОЙКА — попълни от Supabase → Settings → API
+   ============================================================ */
+const SUPABASE_URL = "https://ncajmvrwueobqbiebphm.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_alDMU4EFhjzX1-XgcvKN-A_Pa5Y_uXH";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+/* Часове, в които клиентите могат да пишат (българско време). null = без ограничение */
+const CHAT_HOURS = { from: 8, to: 22 };
+
+const DAYS = ["Пн","Вт","Ср","Чт","Пт","Сб","Нд"];
+const NAV = [["week","Седмица","▦"],["training","Тренировка","◆"],["menu","Хранене","◈"],["chat","Чат","◉"],["video","Видео","▶"]];
+const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const todayDow = () => ((new Date().getDay() + 6) % 7) + 1; // 1=Пн … 7=Нд
+
+let me, program, plan, workouts = [], exercises = [], meals = [], mealItems = [], calls = [], msgs = [];
+let selDay = todayDow(), selTrainDay = null, chatChannel = null;
+
+/* ---------------- AUTH ---------------- */
+async function login(){
+  const err = document.getElementById("loginerr");
+  err.textContent = "";
+  const { error } = await sb.auth.signInWithPassword({
+    email: document.getElementById("email").value.trim(),
+    password: document.getElementById("pass").value,
+  });
+  if (error) { err.textContent = "Грешен имейл или парола."; return; }
+  boot();
+}
+async function logout(){ await sb.auth.signOut(); location.reload(); }
+document.getElementById("pass").addEventListener("keydown", e => { if (e.key === "Enter") login(); });
+
+/* ---------------- BOOT ---------------- */
+async function boot(){
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return; // stay on login
+
+  const { data: profile } = await sb.from("nb_profiles").select("*").eq("id", session.user.id).single();
+  me = profile;
+
+  if (me.role === "coach") {
+    alert("Здравей, " + me.full_name + "! Треньорският панел е следващата стъпка от изграждането — този файл е клиентското приложение.");
+    return;
+  }
+
+  // active program + coach name
+  const { data: prog } = await sb.from("nb_client_programs")
+    .select("*, coach:coach_id ( full_name )")
+    .eq("client_id", me.id).eq("status", "active").maybeSingle();
+
+  document.getElementById("screen-login").hidden = true;
+  document.getElementById("screen-app").hidden = false;
+  document.getElementById("username").textContent = me.full_name;
+
+  if (!prog) {
+    document.getElementById("summary").innerHTML =
+      `<div class="card empty">Все още нямаш активна програма. Треньорът ти ще я активира скоро.</div>`;
+    renderNav(); return;
+  }
+  program = prog;
+  document.getElementById("coachname").textContent = "Треньор: " + (prog.coach?.full_name || "");
+  document.getElementById("programname").textContent = `Програма: ${prog.program_name} · Седмица ${prog.current_week}`;
+  document.getElementById("chat-title").textContent = "Чат с " + (prog.coach?.full_name?.split(" ")[0] || "треньора");
+  document.getElementById("menu-sub").textContent = prog.daily_kcal_target
+    ? `Цел: ~${prog.daily_kcal_target} ккал / ден` : "Изготвено от твоя треньор";
+
+  const { data: allPlans } = await sb.from("nb_weekly_plans")
+    .select("*").eq("program_id", program.id)
+    .order("week_number", { ascending: false });
+  plans = allPlans || [];
+  planIdx = 0;
+  plan = plans[0] || null;
+  if (plan) await loadPlanData(plan.id);
+
+  const { data: c } = await sb.from("nb_video_calls")
+    .select("*").eq("program_id", program.id).order("scheduled_at", { ascending: false });
+  calls = c || [];
+
+  await loadChat();
+  subscribeChat();
+
+  renderNav(); renderWeek(); renderTraining(); renderMenu(); renderCalls(); loadProgress(); loadMood(); loadHabits();
+}
+
+/* ---------------- NAV ---------------- */
+let tab = "week";
+function go(t){
+  tab = t;
+  NAV.forEach(([id]) => document.getElementById("tab-" + id).hidden = id !== t);
+  document.querySelectorAll(".navbtn").forEach((b,i) => b.classList.toggle("on", NAV[i][0] === t));
+  window.scrollTo({ top: 0 });
+  if (t === "chat") { markRead(); updateChatAvailability(); }
+}
+function renderNav(){
+  document.getElementById("nav").innerHTML = NAV.map(([id,label,ico]) =>
+    `<button class="navbtn${id===tab?" on":""}" onclick="go('${id}')"><span class="ico">${ico}</span>${label}</button>`).join("");
+}
+
+/* ---------------- СЕДМИЦА ---------------- */
+let plans = [], planIdx = 0, selWeekDay = null;
+
+async function loadPlanData(pid){
+  const [{ data: w }, { data: m }] = await Promise.all([
+    sb.from("nb_workouts").select("*").eq("weekly_plan_id", pid).order("day_of_week"),
+    sb.from("nb_meals").select("*").eq("weekly_plan_id", pid).order("day_of_week"),
+  ]);
+  workouts = w || []; meals = m || [];
+  exercises = []; mealItems = [];
+  const ids = workouts.map(x => x.id);
+  if (ids.length) {
+    const { data: ex } = await sb.from("nb_workout_exercises").select("*").in("workout_id", ids).order("position");
+    exercises = ex || [];
+  }
+  const mids = meals.map(x => x.id);
+  if (mids.length) {
+    const { data: mi } = await sb.from("nb_meal_items").select("*").in("meal_id", mids).order("position");
+    mealItems = mi || [];
+  }
+}
+
+async function switchWeek(dir){
+  const ni = planIdx + dir;
+  if (ni < 0 || ni >= plans.length) return;
+  planIdx = ni; plan = plans[ni];
+  selWeekDay = null; selTrainDay = null;
+  await loadPlanData(plan.id);
+  renderWeek(); renderTraining(); renderMenu();
+}
+
+function isCurrentWeek(){
+  if (!plan) return false;
+  const s = new Date(plan.week_start + "T00:00:00");
+  const e = new Date(s); e.setDate(s.getDate() + 7);
+  const n = new Date();
+  return n >= s && n < e;
+}
+
+function renderWeek(){
+  const lbl = document.getElementById("wn-label");
+  const bOld = document.getElementById("wn-old"), bNew = document.getElementById("wn-new");
+  if (!plan) {
+    lbl.textContent = ""; bOld.disabled = bNew.disabled = true;
+    document.getElementById("week-sub").textContent = "";
+    document.getElementById("weekstrip").innerHTML = "";
+    document.getElementById("summary").innerHTML =
+      `<div class="card empty">Треньорът още не е публикувал седмица — ще я видиш тук веднага щом е готова.</div>`;
+    return;
+  }
+  bOld.disabled = planIdx >= plans.length - 1;
+  bNew.disabled = planIdx <= 0;
+  const start = new Date(plan.week_start + "T00:00:00");
+  lbl.textContent = `Седмица ${plan.week_number} · от ${start.toLocaleDateString("bg-BG",{day:"numeric",month:"long"})}`;
+
+  const doneCount = workouts.filter(w => w.completed_at).length;
+  const trainCount = workouts.filter(w => w.workout_type !== "rest").length;
+  document.getElementById("week-sub").textContent =
+    `${doneCount} от ${trainCount} тренировки изпълнени` +
+    (plan.coach_notes ? ` · 📝 ${plan.coach_notes}` : "");
+
+  const cw = isCurrentWeek();
+  const sel = selWeekDay ?? (cw ? todayDow() : 1);
+  document.getElementById("weekstrip").innerHTML = DAYS.map((d, i) => {
+    const date = new Date(start); date.setDate(start.getDate() + i);
+    const dow = i + 1;
+    const w = workouts.find(x => x.day_of_week === dow);
+    const mark = w ? (w.completed_at ? "✓" : w.workout_type === "rest" ? "—" : "•") : "—";
+    const cls = (cw && dow === todayDow() ? " today" : "") + (dow === sel ? " sel" : "");
+    return `<div class="daycell${cls}" onclick="openDay(${dow})">
+      <small>${d}</small><b class="disp">${date.getDate()}</b><span>${mark}</span></div>`;
+  }).join("");
+
+  const dayName = (cw && sel === todayDow()) ? "Днес" : DAYS[sel - 1];
+  const tw = workouts.find(x => x.day_of_week === sel);
+  const dayMeals = meals.filter(m => m.day_of_week === sel);
+  const kcal = Math.round(dayMeals.reduce((s, m) => {
+    const its = itemsOf(m.id);
+    return s + (its.length ? sumItems(its).kcal : (+m.kcal || 0));
+  }, 0));
+  const next = calls.find(c => c.status === "scheduled" && new Date(c.scheduled_at) > new Date());
+
+  document.getElementById("summary").innerHTML = `
+    <div class="card scard" style="border-left:4px solid var(--petrol)">
+      <span class="pill" style="background:var(--petrol-soft);color:var(--petrol)">Тренировка</span>
+      <h2 class="disp">${dayName}: ${tw ? esc(tw.title) : "Няма планирана"}</h2>
+      <p>${tw && tw.workout_type !== "rest" ? "Отвори я, отметни упражненията и я приключи." : "Почивен ден — движение с леко темпо е добра идея."}</p>
+      ${tw && tw.workout_type !== "rest" ? `<button class="btn" onclick="openTraining(${sel})" style="margin-top:12px;background:var(--ink);color:#fff;padding:10px 18px;font-size:13px">Отвори тренировката →</button>` : ""}
+    </div>
+    <div class="card scard" style="border-left:4px solid var(--olive)">
+      <span class="pill" style="background:var(--olive-soft);color:var(--olive)">Хранене</span>
+      <h2 class="disp">${dayMeals.length ? `Меню · ${kcal} ккал` : "Няма меню"}</h2>
+      <p>${dayMeals.length ? dayMeals.length + " хранения за " + dayName.toLowerCase() + "." : "Провери другите дни."}</p>
+      ${dayMeals.length ? `<button class="btn" onclick="selDay=${sel};renderMenu();go('menu')" style="margin-top:12px;background:var(--ink);color:#fff;padding:10px 18px;font-size:13px">Виж менюто →</button>` : ""}
+    </div>
+    <div class="card scard" style="border-left:4px solid var(--amber)">
+      <span class="pill" style="background:var(--amber-soft);color:var(--amber)">Видео разговор</span>
+      <h2 class="disp">${next ? fmtDT(next.scheduled_at) : "Няма насрочен"}</h2>
+      <p>${next ? esc(next.topic || "Седмичен преглед") : "Треньорът ще насрочи следващия разговор."}</p>
+    </div>`;
+}
+function openDay(dow){ selWeekDay = dow; renderWeek(); }
+function openTraining(dow){ selTrainDay = dow; renderTraining(); go("training"); }
+function fmtDT(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString("bg-BG",{day:"numeric",month:"long"}) + " · " +
+         d.toLocaleTimeString("bg-BG",{hour:"2-digit",minute:"2-digit"});
+}
+
+/* ---------------- ТРЕНИРОВКА ---------------- */
+function currentWorkout(){
+  const dow = selTrainDay ?? todayDow();
+  return workouts.find(w => w.day_of_week === dow && w.workout_type !== "rest")
+      || workouts.find(w => w.workout_type !== "rest");
+}
+function renderTraining(){
+  const w = currentWorkout();
+  const list = document.getElementById("exlist");
+  const btn = document.getElementById("finishbtn");
+  if (!w) {
+    document.getElementById("tr-title").textContent = "Тренировка";
+    document.getElementById("tr-sub").textContent = "";
+    list.innerHTML = `<div class="card empty">Няма тренировка за този ден.</div>`;
+    btn.hidden = true; return;
+  }
+  const ex = exercises.filter(e => e.workout_id === w.id);
+  const done = ex.filter(e => e.done).length;
+  document.getElementById("tr-title").textContent = "Тренировка · " + DAYS[w.day_of_week - 1];
+  document.getElementById("tr-sub").textContent =
+    `${w.title}${w.est_minutes ? " · ~" + w.est_minutes + " мин" : ""} · ${done}/${ex.length} упражнения`;
+  list.innerHTML = ex.length ? ex.map(e => `
+    <div class="card ex${e.done?" done":""}">
+      <button class="chk" aria-label="Отбележи упражнението" onclick="toggleEx('${e.id}')">${e.done?"✓":""}</button>
+      <div style="flex:1;min-width:0">
+        <div class="exhead"><strong>${esc(e.name)}</strong><span class="sets disp">${esc(e.sets_reps)}</span></div>
+        <p class="exnote">${esc(e.coach_note || "")}${e.rest_seconds ? " · Почивка " + e.rest_seconds + " сек" : ""}</p>
+        ${e.why_note ? `<p class="exnote" style="color:#FFA65C">💡 ${esc(e.why_note)}</p>` : ""}
+        ${e.demo_video_url ? `<button class="btn demo-btn" data-u="${esc(e.demo_video_url)}" onclick="playDemo(this.dataset.u)">▶ Видео демонстрация</button>` : ""}
+      </div>
+    </div>`).join("") : `<div class="card empty">Няма добавени упражнения.</div>`;
+  btn.hidden = !ex.length;
+  btn.disabled = !!w.completed_at;
+  btn.textContent = w.completed_at ? "✓ Тренировката е отчетена" : "Приключи тренировката и изпрати отчет";
+}
+async function toggleEx(id){
+  const e = exercises.find(x => x.id === id);
+  e.done = !e.done; renderTraining();
+  await sb.from("nb_workout_exercises").update({ done: e.done }).eq("id", id);
+}
+async function finishWorkout(){
+  const w = currentWorkout(); if (!w || w.completed_at) return;
+  w.completed_at = new Date().toISOString(); renderTraining(); renderWeek();
+  await sb.from("nb_workouts").update({ completed_at: w.completed_at }).eq("id", w.id);
+  await sb.from("nb_messages").insert({
+    program_id: program.id, sender_id: me.id,
+    body: `✅ Приключих тренировката: ${w.title}`,
+  });
+}
+
+/* ---------------- ХРАНЕНЕ ---------------- */
+const SLOT_ORDER = ["закуска","втора закуска","обяд","втори обяд","след трен","междинно","вечеря"];
+function slotIdx(s){ const i = SLOT_ORDER.indexOf((s || "").toLowerCase()); return i === -1 ? 99 : i; }
+function cap(s){ s = String(s || ""); return s.charAt(0).toUpperCase() + s.slice(1); }
+function itemsOf(mealId){ return mealItems.filter(i => i.meal_id === mealId); }
+function sumItems(list){
+  const s = { kcal:0, carbs:0, fiber:0, fat:0, prot:0 };
+  list.forEach(i => { s.kcal += +i.kcal || 0; s.carbs += +i.carbs_g || 0; s.fiber += +i.fiber_g || 0; s.fat += +i.fat_g || 0; s.prot += +i.protein_g || 0; });
+  return s;
+}
+const r1 = v => Math.round(v * 1000) / 1000;
+
+function renderMenu(){
+  document.getElementById("daytabs").innerHTML = DAYS.map((d,i) =>
+    `<button class="btn${i+1===selDay?" on":""}" onclick="pickDay(${i+1})">${d}</button>`).join("");
+  const dm = meals.filter(m => m.day_of_week === selDay)
+    .sort((a,b) => slotIdx(a.meal_slot) - slotIdx(b.meal_slot));
+
+  if (!dm.length) {
+    document.getElementById("nb_meals").innerHTML = `<div class="card empty">Няма меню за този ден.</div>`;
+    return;
+  }
+
+  // дневни суми (от съставките; ако хранене няма съставки — от неговите kcal/protein)
+  const day = { kcal:0, carbs:0, fiber:0, fat:0, prot:0 };
+  dm.forEach(m => {
+    const its = itemsOf(m.id);
+    if (its.length) { const s = sumItems(its);
+      day.kcal += s.kcal; day.carbs += s.carbs; day.fiber += s.fiber; day.fat += s.fat; day.prot += s.prot;
+    } else { day.kcal += +m.kcal || 0; day.prot += +m.protein_g || 0; }
+  });
+
+  const totalsBar = `
+    <div class="card daytotals">
+      <span><b>${Math.round(day.kcal)}</b> ккал</span>
+      <span>Въгл. <b>${r1(day.carbs)}</b> г</span>
+      <span>Фибри <b>${r1(day.fiber)}</b> г</span>
+      <span>Мазн. <b>${r1(day.fat)}</b> г</span>
+      <span>Прот. <b>${r1(day.prot)}</b> г</span>
+    </div>`;
+
+  document.getElementById("nb_meals").innerHTML = totalsBar + dm.map(m => {
+    const its = itemsOf(m.id);
+    const s = its.length ? sumItems(its) : { kcal:+m.kcal||0, prot:+m.protein_g||0 };
+    return `
+    <div class="card meal">
+      <div class="mealhead">
+        <strong class="disp">${cap(esc(m.meal_slot))}${m.meal_time ? " · " + esc(m.meal_time) : ""}</strong>
+        <span class="macros">${Math.round(s.kcal)} ккал · ${r1(s.prot)} г протеин</span>
+      </div>
+      ${its.length ? `
+        <div class="ingtbl">
+          <div class="ingrow inghead"><span>Съставка</span><span>гр/бр</span><span>ккал</span><span>В</span><span>Ф</span><span>М</span><span>П</span></div>
+          ${its.map(i => `
+            <div class="ingrow">
+              <span class="nm">${esc(i.name)}</span>
+              <span>${i.grams ?? "—"}</span>
+              <span>${i.kcal != null ? Math.round(i.kcal) : "—"}</span>
+              <span>${i.carbs_g != null ? r1(i.carbs_g) : "—"}</span>
+              <span>${i.fiber_g != null ? r1(i.fiber_g) : "—"}</span>
+              <span>${i.fat_g != null ? r1(i.fat_g) : "—"}</span>
+              <span>${i.protein_g != null ? r1(i.protein_g) : "—"}</span>
+            </div>`).join("")}
+        </div>` : (m.description ? `<p>${esc(m.description)}</p>` : "")}
+      ${m.link_url ? `<button class="btn demo-btn" style="margin-top:10px" data-u="${esc(m.link_url)}" onclick="playDemo(this.dataset.u)">▶ Рецепта / видео</button>` : ""}
+    </div>`;
+  }).join("");
+}
+function pickDay(d){ selDay = d; renderMenu(); }
+
+/* ---------------- ЧАТ ---------------- */
+async function loadChat(){
+  const { data } = await sb.from("nb_messages")
+    .select("*").eq("program_id", program.id)
+    .order("created_at", { ascending: true }).limit(200);
+  msgs = data || []; renderChat();
+}
+function renderChat(){
+  const box = document.getElementById("chatbox");
+  box.innerHTML = msgs.length ? msgs.map(m => {
+    const mine = m.sender_id === me.id;
+    const t = new Date(m.created_at).toLocaleString("bg-BG",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+    return `<div class="msg ${mine?"me":"coach"}">
+      <div class="bubble">${esc(m.body)}</div>
+      <div class="meta">${mine ? "" : (program.coach?.full_name?.split(" ")[0] || "Треньор") + " · "}${t}</div></div>`;
+  }).join("") : `<div class="empty">Напиши първото си съобщение до треньора 👋</div>`;
+  box.scrollTop = box.scrollHeight;
+}
+
+/* ---------------- РЕЗУЛТАТИ В НОВ ЕКРАН ---------------- */
+const BODY_FEMALE = `<g transform="translate(30,0)" fill="#1C3B47">
+  <circle cx="100" cy="32" r="20"/>
+  <path d="M93,51 h14 v11 h-14 z"/>
+  <path d="M70,66 h60 c7,0 9,7 8,14 c-2,18 -6,30 -8,44 c4,10 7,22 8,36 c1,10 -2,16 -8,18 h-60 c-6,-2 -9,-8 -8,-18 c1,-14 4,-26 8,-36 c-2,-14 -6,-26 -8,-44 c-1,-7 1,-14 8,-14 z"/>
+  <path d="M68,70 c-11,9 -14,38 -15,68 l11,3 c2,-28 5,-48 12,-61 z"/>
+  <path d="M132,70 c11,9 14,38 15,68 l-11,3 c-2,-28 -5,-48 -12,-61 z"/>
+  <path d="M66,182 c-4,36 -1,76 5,126 h20 c1,-46 3,-84 6,-110 z"/>
+  <path d="M134,182 c4,36 1,76 -5,126 h-20 c-1,-46 -3,-84 -6,-110 z"/></g>`;
+const BODY_MALE = `<g transform="translate(30,0)" fill="#1C3B47">
+  <circle cx="100" cy="32" r="21"/>
+  <path d="M92,52 h16 v10 h-16 z"/>
+  <path d="M58,66 h84 c9,0 11,8 10,16 c-3,30 -7,48 -11,68 c-2,13 -3,24 -3,36 h-76 c0,-12 -1,-23 -3,-36 c-4,-20 -8,-38 -11,-68 c-1,-8 1,-16 10,-16 z"/>
+  <path d="M56,70 c-13,10 -17,44 -18,76 l13,3 c2,-30 6,-54 15,-68 z"/>
+  <path d="M144,70 c13,10 17,44 18,76 l-13,3 c-2,-30 -6,-54 -15,-68 z"/>
+  <path d="M64,190 c-2,36 0,74 5,120 h24 c2,-44 3,-82 5,-106 z"/>
+  <path d="M136,190 c2,36 0,74 -5,120 h-24 c-2,-44 -3,-82 -5,-106 z"/></g>`;
+const BODY_SHAPE = "female";   // "female" или "male" — виж бележката
+
+/* ---------------- ТЯЛО ПО МЕРКИТЕ ---------------- */
+function bodyFromMeasures(logs, which){
+  const pick = key => {
+    const src = which === "first" ? logs : [...logs].reverse();
+    const row = src.find(l => l[key] != null);
+    return row ? +row[key] : null;
+  };
+  // мерки в см → полуширини в SVG единици (обиколка/π ≈ диаметър, после мащаб)
+  const scale = 0.62;
+  const half = (cm, fallback) => cm ? (cm / Math.PI) * scale : fallback;
+  const chest = half(pick("chest_cm"), 34);
+  const waist = half(pick("waist_cm"), 27);
+  const hips  = half(pick("hips_cm"),  33);
+  const thigh = half(pick("thigh_cm"), 17) * 1.15;
+  const arm   = half(pick("arm_cm"), 9) * 0.9;
+  const cx = 130;
+  const legGap = 4;
+
+  // торс: рамене → гърди(112) → талия(152) → ханш(186)
+  const torso =
+    `M${cx - chest},96` +
+    ` C${cx - chest - 3},112 ${cx - waist - 6},136 ${cx - waist},152` +
+    ` C${cx - waist + 1},166 ${cx - hips - 2},176 ${cx - hips},186` +
+    ` L${cx + hips},186` +
+    ` C${cx + hips + 2},176 ${cx + waist - 1},166 ${cx + waist},152` +
+    ` C${cx + waist + 6},136 ${cx + chest + 3},112 ${cx + chest},96 Z`;
+  // крака: от ханша надолу, ширина от бедрото
+  const legL = `M${cx - hips + 2},186 C${cx - thigh - legGap - 6},230 ${cx - thigh - legGap},270 ${cx - legGap - 7},312 L${cx - legGap},312 C${cx - legGap + 2},268 ${cx - legGap + 1},226 ${cx - 2},190 Z`;
+  const legR = `M${cx + hips - 2},186 C${cx + thigh + legGap + 6},230 ${cx + thigh + legGap},270 ${cx + legGap + 7},312 L${cx + legGap},312 C${cx + legGap - 2},268 ${cx + legGap - 1},226 ${cx + 2},190 Z`;
+  // ръце: покрай торса, ширина от мярката на ръката
+  const armL = `M${cx - chest - 2},100 C${cx - chest - arm - 8},130 ${cx - chest - arm - 6},158 ${cx - chest - arm + 1},182 L${cx - chest - arm + arm * 1.4},180 C${cx - chest - 4},150 ${cx - chest - 2},124 ${cx - chest + 2},104 Z`;
+  const armR = `M${cx + chest + 2},100 C${cx + chest + arm + 8},130 ${cx + chest + arm + 6},158 ${cx + chest + arm - 1},182 L${cx + chest + arm - arm * 1.4},180 C${cx + chest + 4},150 ${cx + chest + 2},124 ${cx + chest - 2},104 Z`;
+  const head = `<circle cx="${cx}" cy="34" r="20"/><path d="M${cx - 7},53 h14 v10 h-14 z"/>` +
+    `<path d="M${cx - chest},96 C${cx - chest + 6},84 ${cx + chest - 6},84 ${cx + chest},96 Z"/>`;
+
+  const style = which === "first"
+    ? `fill="none" stroke="#5A6B72" stroke-width="2" stroke-dasharray="5 4"`
+    : `fill="#1C3B47" stroke="#F97316" stroke-width="1.5"`;
+  const headStyle = which === "first" ? `fill="none" stroke="#5A6B72" stroke-width="2"` : `fill="#1C3B47"`;
+
+  return `<g ${which === "first" ? 'opacity="0.8"' : ''}>
+    <g ${headStyle}>${which === "last" ? head : ""}</g>
+    <path d="${torso}" ${style}/>
+    <path d="${legL}" ${style}/><path d="${legR}" ${style}/>
+    <path d="${armL}" ${style}/><path d="${armR}" ${style}/>
+  </g>`;
+}
+
+/* ---------------- РЕЗУЛТАТИ (нов екран) ---------------- */
+function openResultsWindow(){
+  const logs = progress.slice().sort((a,b) => a.week_start < b.week_start ? -1 : 1);
+  if (logs.length < 2) { alert("Резултатите се появяват от втората седмица с мерки. 📏"); return; }
+
+  const delta = key => {
+    const first = logs.find(l => l[key] != null), last = [...logs].reverse().find(l => l[key] != null);
+    if (!first || !last || first === last) return null;
+    return Math.round((last[key] - first[key]) * 10) / 10;
+  };
+  const fmt = d => d == null ? null : {
+    text: (d > 0 ? "+" : "−") + Math.abs(d),
+    col: d < 0 ? "#B9D48A" : d > 0 ? "#FFA65C" : "#9FB0B5",
+  };
+  const wD = fmt(delta("weight_kg"));
+  const lastW = [...logs].reverse().find(l => l.weight_kg != null);
+  const startDate = new Date(logs[0].week_start).toLocaleDateString("bg-BG",{day:"numeric",month:"short"});
+
+  // зони с числата на промяната (проценти по височината на тялото)
+  const marks = [
+    { label: "Гърди", d: fmt(delta("chest_cm")), yp: 33, side: "r" },
+    { label: "Ръка",  d: fmt(delta("arm_cm")),   yp: 50, side: "l" },
+    { label: "Талия", d: fmt(delta("waist_cm")), yp: 47, side: "r" },
+    { label: "Ханш",  d: fmt(delta("hips_cm")),  yp: 53, side: "l" },
+    { label: "Бедро", d: fmt(delta("thigh_cm")), yp: 68, side: "r" },
+  ].filter(m => m.d);
+
+  const marksHtml = marks.map(m => {
+    const isR = m.side === "r";
+    return '<div style="position:absolute;top:' + m.yp + '%;' + (isR ? 'right:2%' : 'left:2%') +
+      ';text-align:' + (isR ? 'left' : 'right') + ';transform:translateY(-50%)">' +
+      '<div style="font-size:11px;color:#9FB0B5;line-height:1.2">' + m.label + '</div>' +
+      '<div style="font-size:15px;font-weight:700;color:' + m.d.col + '">' + m.d.text + ' см</div>' +
+      '</div>' +
+      '<div style="position:absolute;top:' + m.yp + '%;' + (isR ? 'right:22%' : 'left:22%') +
+      ';width:24%;height:1px;border-top:1.5px dashed #F97316"></div>' +
+      '<div style="position:absolute;top:' + m.yp + '%;' + (isR ? 'right:48%' : 'left:48%') +
+      ';width:7px;height:7px;background:#F97316;border-radius:50%;transform:translateY(-50%)"></div>';
+  }).join("");
+
+  const bodyDir = location.href.split("/").slice(0, -1).join("/");
+  const bodyImg = bodyDir + "/body-" + ((me.gender === "male" || me.gender === "other") ? me.gender : "female") + ".png";
+  
+
+  const pts = logs.filter(p => p.weight_kg != null);
+  let chart = "";
+  if (pts.length >= 2) {
+    const W = 520, H = 130, P = 26;
+    const ws = pts.map(p => +p.weight_kg);
+    const min = Math.min(...ws), max = Math.max(...ws), span = (max - min) || 1;
+    const x = i => P + i * (W - 2 * P) / (pts.length - 1);
+    const y = v => H - P - (v - min) * (H - 2 * P) / span;
+    chart = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">
+      <polyline points="${pts.map((p,i)=>x(i)+","+y(+p.weight_kg)).join(" ")}" fill="none" stroke="#F97316" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+      ${pts.map((p,i)=>`<circle cx="${x(i)}" cy="${y(+p.weight_kg)}" r="4" fill="#F97316"/>
+        <text x="${x(i)}" y="${y(+p.weight_kg)-9}" text-anchor="middle" font-size="11" fill="#F0EDE4">${p.weight_kg}</text>`).join("")}
+    </svg>`;
+  }
+
+  const html = '<!DOCTYPE html><html lang="bg"><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">' +
+    '<title>Резултати · NB Method</title><style>' +
+    '*{box-sizing:border-box}html,body{width:100%;min-height:100%}' +
+    'body{font-family:Inter,"Segoe UI",sans-serif;background:#0D1B21;color:#F0EDE4;margin:0;' +
+      'padding:18px 14px calc(84px + env(safe-area-inset-bottom))}' +
+    '.wrap{width:100%;max-width:560px;margin:0 auto}' +
+    'h1{font-size:20px;margin:0 0 14px;text-transform:uppercase;letter-spacing:.05em}' +
+    '.card{background:#112B34;border:1px solid #24424D;border-radius:14px;padding:16px;margin-bottom:12px}' +
+    '.big{font-size:34px;font-weight:800;line-height:1.1}' +
+    '.sub{color:#9FB0B5;font-size:13px}' +
+    '.bodybox{position:relative;max-width:300px;margin:0 auto}' +
+    '.bodybox img{width:52%;display:block;margin:0 auto}' +
+    '.bar{position:fixed;left:0;right:0;bottom:0;background:#0A1A20;border-top:1px solid #24424D;' +
+      'padding:12px 14px calc(12px + env(safe-area-inset-bottom));display:flex;justify-content:center}' +
+    '.bar button{flex:1;max-width:340px;background:#112B34;border:1px solid #24424D;color:#F0EDE4;' +
+      'border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}' +
+    '</style></head><body><div class="wrap">' +
+    '<h1>📊 Резултати</h1>' +
+    '<div class="card">' +
+      (wD ? '<div class="big" style="color:' + wD.col + '">' + wD.text + ' кг</div>' : '') +
+      '<div class="sub">от началото (' + startDate + ') · сега: ' + (lastW ? lastW.weight_kg + ' кг' : '—') +
+      ' · ' + logs.length + ' седмици</div>' +
+    '</div>' +
+    '<div class="card"><div class="bodybox"><img src="' + bodyImg + '" alt="Тяло">' + marksHtml + '</div></div>' +
+    (chart ? '<div class="card"><div class="sub" style="margin-bottom:6px">Тегло по седмици</div>' + chart + '</div>' : '') +
+    '</div>' +
+    '<div class="bar"><button onclick="window.close()">← Назад</button></div>' +
+    '</body></html>';
+
+  const url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+  const w = window.open(url, "_blank");
+  if (!w) { alert("Браузърът блокира прозореца — разреши изскачащи прозорци за този сайт."); return; }
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+async function sendMsg(){
+  if (!chatOpen()) { updateChatAvailability(); return; }
+  const inp = document.getElementById("chatin");
+  const t = inp.value.trim(); if (!t) return;
+  inp.value = "";
+  await sb.from("nb_messages").insert({ program_id: program.id, sender_id: me.id, body: t });
+}
+function subscribeChat(){
+  chatChannel = sb.channel("chat-" + program.id)
+    .on("postgres_changes",
+      { event: "INSERT", schema: "public", table: "nb_messages", filter: "program_id=eq." + program.id },
+      payload => { msgs.push(payload.new); renderChat(); })
+    .subscribe();
+}
+async function markRead(){
+  await sb.from("nb_messages").update({ read_at: new Date().toISOString() })
+    .eq("program_id", program.id).neq("sender_id", me.id).is("read_at", null);
+}
+document.getElementById("chatin").addEventListener("keydown", e => { if (e.key === "Enter") sendMsg(); });
+
+/* ---------------- ВИДЕО ---------------- */
+function renderCalls(){
+  const next = calls.find(c => c.status === "scheduled" && new Date(c.scheduled_at) > new Date());
+  document.getElementById("nextcall").innerHTML = next ? `
+    <div class="card callcard">
+      <span class="pill" style="background:var(--amber-soft);color:var(--amber)">Следващ разговор</span>
+      <h2 class="disp">${fmtDT(next.scheduled_at)}</h2>
+      <p>${next.duration_min || 30} мин${next.topic ? " · " + esc(next.topic) : ""}</p>
+      ${next.join_url ? `<a class="btn disp join" href="${esc(next.join_url)}" target="_blank" rel="noopener">▶ Влез в разговора</a>` : `<button class="btn disp join" onclick="startCall()">▶ Влез във видео стаята</button>`}
+    </div>` : `<div class="card callcard">
+      <span class="pill" style="background:var(--amber-soft);color:var(--amber)">Видео стая</span>
+      <p style="margin-top:10px">Няма насрочен разговор, но видео стаята с треньора е винаги отворена.</p>
+      <button class="btn disp join" onclick="startCall()">▶ Влез във видео стаята</button>
+    </div>`;
+
+  const past = calls.filter(c => c.status === "done");
+  document.getElementById("pastcalls").innerHTML = past.length ? past.map(c => `
+    <div class="card past">
+      <span><strong>${new Date(c.scheduled_at).toLocaleDateString("bg-BG",{day:"numeric",month:"long"})}</strong>${c.topic ? " · " + esc(c.topic) : ""}</span>
+      <span>${c.duration_min || ""} мин${c.recording_url ? ` · <a href="${esc(c.recording_url)}" target="_blank" rel="noopener">запис ▶</a>` : ""}</span>
+    </div>`).join("") : `<div class="card empty">Още няма минали разговори.</div>`;
+}
+
+/* ---------------- ВГРАДЕНО ВИДЕО (Jitsi) ---------------- */
+let jitsiApi = null;
+async function ensureJitsi(){
+  if (window.JitsiMeetExternalAPI) return;
+  await new Promise((res, rej) => {
+    const s = document.createElement("script");
+    s.src = "https://meet.jit.si/external_api.js";
+    s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+async function startCall(){
+  if (!program) return;
+  if (jitsiApi) { endCall(); }
+  await ensureJitsi();
+  document.getElementById("vframe").hidden = false;
+  jitsiApi = new JitsiMeetExternalAPI("meet.jit.si", {
+    roomName: "NBMethod-" + program.id,
+    parentNode: document.getElementById("vframe-inner"),
+    userInfo: { displayName: me.full_name },
+    configOverwrite: { prejoinConfig: { enabled: false }, defaultLanguage: "bg" },
+  });
+  window.scrollTo({ top: 0 });
+}
+function endCall(){
+  if (jitsiApi) { jitsiApi.dispose(); jitsiApi = null; }
+  document.getElementById("vframe").hidden = true;
+  document.getElementById("vframe-inner").innerHTML = "";
+}
+
+
+/* ---------------- ВИДЕО ПЛЕЙЪР ---------------- */
+function playDemo(u){
+  const isVideo = /\.(mp4|webm|mov|m4v)(\?|$)/i.test(u) || u.includes("/storage/v1/object/public/videos/");
+  if (!isVideo) { window.open(u, "_blank"); return; }
+  const m = document.createElement("div");
+  m.className = "vmodal";
+  m.innerHTML = `<button class="vx" onclick="this.parentNode.remove()">Затвори ✕</button>
+                 <video controls autoplay playsinline src="${u}"></video>`;
+  m.addEventListener("click", ev => { if (ev.target === m) m.remove(); });
+  document.body.appendChild(m);
+}
+
+/* ---------------- СЕДМИЧНИ МЕРКИ ---------------- */
+let progress = [];
+function weekMonday(){
+  const d = new Date(); const off = (d.getDay() + 6) % 7;
+  d.setDate(d.getDate() - off);
+  const p = n => String(n).padStart(2, "0");
+  return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+}
+async function loadProgress(){
+  const { data } = await sb.from("nb_progress_logs").select("*")
+    .eq("program_id", program.id).order("week_start", { ascending: false });
+  progress = data || []; renderProgress();
+}
+function renderProgress(){
+  const cur = progress.find(p => p.week_start === weekMonday());
+  const set = (id, v) => document.getElementById(id).value = v ?? "";
+  set("pw", cur?.weight_kg); set("pwa", cur?.waist_cm); set("pch", cur?.chest_cm);
+  set("phi", cur?.hips_cm); set("pth", cur?.thigh_cm); set("par", cur?.arm_cm);
+  const f = v => v == null ? "—" : v;
+  document.getElementById("prg-history").innerHTML = progress.length ?
+    `<div class="prgrow prghead"><span>Ден</span><span>кг</span><span>Талия</span><span>Гърди</span><span>Ханш</span><span>Бедро</span><span>Ръка</span></div>` +
+    progress.map(p => `<div class="prgrow">
+      <span>${new Date(p.logged_at).toLocaleDateString("bg-BG",{day:"numeric",month:"short"})}</span>
+      <span>${f(p.weight_kg)}</span><span>${f(p.waist_cm)}</span><span>${f(p.chest_cm)}</span>
+      <span>${f(p.hips_cm)}</span><span>${f(p.thigh_cm)}</span><span>${f(p.arm_cm)}</span>
+    </div>`).join("")
+    : `<div class="empty" style="padding:8px">Още няма записани мерки — първият запис е тази седмица! 💪</div>`;
+  renderChart();
+  renderPhotos();
+  //renderBody();
+}
+
+function renderChart(){
+  const el = document.getElementById("prg-chart");
+  const pts = progress.slice().reverse().filter(p => p.weight_kg != null);
+  if (pts.length < 2) {
+    el.innerHTML = `<div class="empty" style="padding:6px">Графиката се появява, щом има тегло за поне 2 седмици.</div>`;
+    return;
+  }
+  const W = 640, H = 190, P = 30;
+  const ws = pts.map(p => +p.weight_kg);
+  const min = Math.min(...ws), max = Math.max(...ws), span = (max - min) || 1;
+  const x = i => P + i * (W - 2 * P) / (pts.length - 1);
+  const y = v => H - P - (v - min) * (H - 2 * P) / span;
+  const line = pts.map((p, i) => `${x(i)},${y(+p.weight_kg)}`).join(" ");
+  el.innerHTML = `<div class="disp" style="font-size:13px;color:#9FB0B5;margin-bottom:6px">Тегло по седмици</div>
+  <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">
+    <polyline points="${line}" fill="none" stroke="#F97316" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+    ${pts.map((p, i) => `
+      <circle cx="${x(i)}" cy="${y(+p.weight_kg)}" r="4" fill="#F97316"/>
+      <text x="${x(i)}" y="${y(+p.weight_kg) - 10}" text-anchor="middle" font-size="11" fill="#F0EDE4">${p.weight_kg}</text>
+      <text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="10" fill="#7E939A">${new Date(p.logged_at).toLocaleDateString("bg-BG",{day:"numeric",month:"numeric"})}</text>`).join("")}
+  </svg>`;
+}
+async function saveProgress(){
+  const num = id => { const v = document.getElementById(id).value; return v === "" ? null : parseFloat(v); };
+  const msg = document.getElementById("prg-msg");
+  let photoPath;
+  const ph = document.getElementById("pphoto");
+  if (ph.files.length) {
+    const f = ph.files[0];
+    if (f.size > 15 * 1024 * 1024) { msg.style.color = "#FFB4A0"; msg.textContent = "Снимката е над 15 MB."; return; }
+    const ext = (f.name.split(".").pop() || "jpg").toLowerCase();
+    photoPath = me.id + "/" + weekMonday() + "." + ext;
+    const { error: upErr } = await sb.storage.from("progress").upload(photoPath, f, { upsert: true });
+    if (upErr) { msg.style.color = "#FFB4A0"; msg.textContent = "Снимката не се качи: " + upErr.message; return; }
+  }
+  const { error } = await sb.from("nb_progress_logs").upsert({
+    program_id: program.id, week_start: weekMonday(), logged_at: new Date().toISOString().slice(0,10),
+    weight_kg: num("pw"), waist_cm: num("pwa"), chest_cm: num("pch"),
+    hips_cm: num("phi"), thigh_cm: num("pth"), arm_cm: num("par"),
+    ...(photoPath ? { photo_url: photoPath } : {}),
+  }, { onConflict: "program_id,week_start" });
+  msg.style.color = error ? "#FFB4A0" : "#B9D48A";
+  msg.textContent = error ? "Грешка: " + error.message : "Записано ✓";
+  if (!error) { ph.value = ""; loadProgress(); }
+}
+
+
+/* ---------------- КАК СЕ ЧУВСТВАШ ДНЕС ---------------- */
+const MOODS = [["energy","😊 Имам енергия"],["good","🙂 Добре съм"],["normal","😐 Нормално"],["tired","😴 Уморен"],["pain","😣 Имам болки"]];
+async function loadMood(){
+  const today = new Date(); const p = n => String(n).padStart(2,"0");
+  const d = today.getFullYear()+"-"+p(today.getMonth()+1)+"-"+p(today.getDate());
+  const { data } = await sb.from("nb_checkins").select("mood").eq("program_id", program.id).eq("day", d).maybeSingle();
+  renderMood(data?.mood || null, d);
+}
+function renderMood(cur, d){
+  document.getElementById("mood-btns").innerHTML = MOODS.map(([k, label]) =>
+    `<button class="btn" onclick="setMood('${k}','${d}')" style="padding:9px 13px;font-size:13px;
+      background:${cur===k ? "var(--orange)" : "#112B34"};color:${cur===k ? "#FFFFFF" : "#F0EDE4"};
+      border:1px solid ${cur===k ? "var(--orange)" : "#24424D"}">${label}</button>`).join("");
+}
+async function setMood(k, d){
+  await sb.from("nb_checkins").upsert({ program_id: program.id, day: d, mood: k }, { onConflict: "program_id,day" });
+  if (k === "pain" || k === "tired") {
+    await sb.from("nb_messages").insert({ program_id: program.id, sender_id: me.id,
+      body: k === "pain" ? "😣 Днес имам болки." : "😴 Днес съм уморен." });
+  }
+  renderMood(k, d);
+}
+
+/* ---------------- НАВИЦИ ---------------- */
+let habits = [], habitLogs = [];
+const dstr = d => { const p = n => String(n).padStart(2,"0");
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); };
+async function loadHabits(){
+  const { data: h } = await sb.from("nb_habits").select("*")
+    .eq("program_id", program.id).eq("active", true).order("created_at");
+  habits = h || [];
+  document.getElementById("habits-card").hidden = !habits.length;
+  if (!habits.length) return;
+  const since = new Date(); since.setDate(since.getDate() - 60);
+  const { data: l } = await sb.from("nb_habit_logs").select("*")
+    .in("habit_id", habits.map(x => x.id)).gte("day", dstr(since));
+  habitLogs = l || [];
+  renderHabits();
+}
+function renderHabits(){
+  const today = dstr(new Date());
+  document.getElementById("habit-list").innerHTML = habits.map(h => {
+    const done = habitLogs.some(l => l.habit_id === h.id && l.day === today && l.done);
+    return `<div class="shoprow${done ? " done" : ""}">
+      <input type="checkbox" id="hb-${h.id}"${done ? " checked" : ""} onchange="tickHabit('${h.id}', this.checked)">
+      <label for="hb-${h.id}">${h.icon || "✅"} ${esc(h.title)}</label>
+    </div>`;
+  }).join("");
+  let streak = 0;
+  for (let i = 0; i < 60; i++) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const ds = dstr(d);
+    const all = habits.every(h => habitLogs.some(l => l.habit_id === h.id && l.day === ds && l.done));
+    if (all) streak++;
+    else if (i === 0) continue;
+    else break;
+  }
+  document.getElementById("habit-streak").textContent = streak > 0 ? `🔥 Серия: ${streak} ${streak === 1 ? "ден" : "дни"}` : "";
+}
+async function tickHabit(id, done){
+  const today = dstr(new Date());
+  habitLogs = habitLogs.filter(l => !(l.habit_id === id && l.day === today));
+  habitLogs.push({ habit_id: id, day: today, done });
+  renderHabits();
+  await sb.from("nb_habit_logs").upsert({ habit_id: id, day: today, done }, { onConflict: "habit_id,day" });
+}
+
+/* ---------------- СПИСЪК ЗА ПАЗАРУВАНЕ ---------------- */
+let shopChecked = {};
+function toggleShop(){
+  const el = document.getElementById("shoplist");
+  el.hidden = !el.hidden;
+  if (!el.hidden) renderShop();
+}
+function shopAgg(){
+  const agg = {};
+  mealItems.forEach(i => {
+    const key = i.name.trim().toLowerCase();
+    if (!agg[key]) agg[key] = { name: i.name.trim(), grams: 0, count: 0 };
+    if (i.grams != null) agg[key].grams += +i.grams; else agg[key].count += 1;
+  });
+  return Object.values(agg).sort((a, b) => a.name.localeCompare(b.name, "bg"));
+}
+const shopQty = r => r.grams > 0
+  ? (r.grams >= 1000 ? (Math.round(r.grams / 100) / 10) + " кг" : Math.round(r.grams) + " г")
+  : r.count + " бр/дози";
+function renderShop(){
+  const el = document.getElementById("shoplist");
+  const rows = shopAgg();
+  if (!rows.length) {
+    el.innerHTML = `<div class="empty" style="padding:8px">Няма съставки в менюто за тази седмица.</div>`;
+    return;
+  }
+  el.innerHTML = `<div class="disp" style="font-size:13px;color:#9FB0B5;margin-bottom:8px">
+      Седмица ${plan ? plan.week_number : ""} · ${rows.length} продукта</div>` +
+    rows.map((r, i) => `<div class="shoprow${shopChecked[r.name] ? " done" : ""}">
+        <input type="checkbox" id="shop-${i}"${shopChecked[r.name] ? " checked" : ""} onchange="shopChecked['${r.name.replace(/'/g, "\\'")}']=this.checked;renderShop()">
+        <label for="shop-${i}">${esc(r.name)}</label>
+        <span class="qty">${shopQty(r)}</span>
+      </div>`).join("") +
+    `<button class="btn" style="margin-top:12px;background:#112B34;border:1px solid #24424D;color:#F0EDE4;padding:9px 14px;font-size:13px" onclick="copyShop()">📋 Копирай списъка</button>`;
+}
+function copyShop(){
+  const text = shopAgg().map(r => "• " + r.name + " — " + shopQty(r)).join("\n");
+  navigator.clipboard.writeText("Списък за пазаруване · NB Method\n" + text)
+    .then(() => alert("Списъкът е копиран — пейстни го в Бележки или го прати на когото пазарува 🙂"))
+    .catch(() => alert("Копирането не сработи — маркирай и копирай ръчно."));
+}
+
+/* ---------------- СНИМКИ ПО СЕДМИЦИ ---------------- */
+async function renderPhotos(){
+  const el = document.getElementById("prg-photos");
+  const withPh = progress.filter(p => p.photo_url).sort((a,b) => a.week_start < b.week_start ? -1 : 1);
+  if (!withPh.length) {
+    el.innerHTML = `<div class="empty" style="padding:8px">Качи първата си снимка при мерките — след месец сравнението ще те мотивира повече от всичко. 📈</div>`;
+    return;
+  }
+  const { data: signed } = await sb.storage.from("progress")
+    .createSignedUrls(withPh.map(p => p.photo_url), 3600);
+  const urls = {}; (signed || []).forEach(s => { if (s.signedUrl) urls[s.path] = s.signedUrl; });
+  el.innerHTML = `<div class="phrow">` + withPh.map(p => `
+    <div class="phcell">
+      <img src="${urls[p.photo_url] || ""}" loading="lazy" alt="Снимка" onclick="openPhoto(this.src)">
+      <small>${new Date(p.week_start).toLocaleDateString("bg-BG",{day:"numeric",month:"short"})}${p.weight_kg ? " · " + p.weight_kg + " кг" : ""}</small>
+    </div>`).join("") + `</div>`;
+}
+function openPhoto(src){
+  const m = document.createElement("div");
+  m.className = "vmodal";
+  m.innerHTML = `<button class="vx" onclick="this.parentNode.remove()">Затвори ✕</button>
+                 <img src="${src}" style="max-width:100%;max-height:85vh;border-radius:12px">`;
+  m.addEventListener("click", ev => { if (ev.target === m) m.remove(); });
+  document.body.appendChild(m);
+}
+
+/* ---------------- СМЯНА НА ПАРОЛА ---------------- */
+async function changePass(){
+  const p1 = prompt("Нова парола (минимум 8 знака):");
+  if (p1 === null) return;
+  if (p1.length < 8) { alert("Паролата трябва да е поне 8 знака."); return; }
+  const p2 = prompt("Повтори новата парола:");
+  if (p1 !== p2) { alert("Паролите не съвпадат."); return; }
+  const { error } = await sb.auth.updateUser({ password: p1 });
+  alert(error ? "Грешка: " + error.message : "Паролата е сменена успешно ✓");
+}
+
+/* ---------------- ЧАСОВЕ НА ЧАТА ---------------- */
+function sofiaNow(){
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Sofia", hour: "2-digit", minute: "2-digit", hour12: false
+  }).format(new Date());
+  const [h, m] = parts.split(":").map(Number);
+  return { h, m, text: parts };
+}
+function chatOpen(){
+  if (!CHAT_HOURS) return true;
+  const h = sofiaNow().h;
+  return CHAT_HOURS.from < CHAT_HOURS.to
+    ? (h >= CHAT_HOURS.from && h < CHAT_HOURS.to)
+    : (h >= CHAT_HOURS.from || h < CHAT_HOURS.to);
+}
+function updateChatAvailability(){
+  const open = chatOpen();
+  const inp = document.getElementById("chatin");
+  const btn = document.querySelector(".send");
+  const note = document.getElementById("chat-hours");
+  inp.disabled = !open; btn.disabled = !open;
+  inp.placeholder = open ? "Напиши съобщение…" : "Чатът е затворен в момента";
+  note.hidden = open;
+  if (!open) {
+    note.innerHTML = `💤 Недко приема съобщения от <b>${CHAT_HOURS.from}:00 до ${CHAT_HOURS.to}:00 българско време</b> (в момента там е ${sofiaNow().text}). Можеш спокойно да четеш плана и да отчиташ тренировки — пиши му, щом чатът отвори.`;
+  }
+}
+
+if ("serviceWorker" in navigator) { navigator.serviceWorker.register("sw.js"); }
+
+/* ---------------- ПАЗАРУВАНЕ В НОВ ПРОЗОРЕЦ ---------------- */
+function openShopWindow(){
+  const rows = shopAgg();
+  if (!rows.length) { alert("Няма съставки в менюто за тази седмица."); return; }
+
+  const items = rows.map(r =>
+    '<li><label><input type="checkbox" onchange="this.closest(\'li\').classList.toggle(\'done\',this.checked)">' +
+    '<span>' + esc(r.name) + '</span></label><b>' + shopQty(r) + '</b></li>').join("");
+  const plain = rows.map(r => "• " + r.name + " — " + shopQty(r)).join("\n");
+
+  const html = '<!DOCTYPE html><html lang="bg"><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">' +
+    '<title>Списък за пазаруване · NB Method</title><style>' +
+    '*{box-sizing:border-box}' +
+    'body{font-family:Inter,"Segoe UI",sans-serif;background:#0D1B21;color:#F0EDE4;margin:0;' +
+      'padding:18px 14px calc(88px + env(safe-area-inset-bottom))}' +
+    '.wrap{width:100%;max-width:560px;margin:0 auto}' +
+    'h1{font-size:20px;margin:0 0 2px;text-transform:uppercase;letter-spacing:.05em}' +
+    '.sub{color:#9FB0B5;font-size:13px;margin-bottom:14px}' +
+    'ul{list-style:none;margin:0;padding:0;background:#112B34;border:1px solid #24424D;border-radius:14px;overflow:hidden}' +
+    'li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px;border-bottom:1px dashed #24424D;font-size:16px}' +
+    'li:last-child{border-bottom:none}' +
+    'li label{display:flex;align-items:center;gap:12px;flex:1;cursor:pointer;min-width:0}' +
+    'li span{word-break:break-word}' +
+    'li input{width:22px;height:22px;accent-color:#F97316;flex-shrink:0}' +
+    'li.done span{opacity:.45;text-decoration:line-through}' +
+    'li b{color:#9FB0B5;font-weight:600;font-size:14px;white-space:nowrap}' +
+    '.bar{position:fixed;left:0;right:0;bottom:0;background:#0A1A20;border-top:1px solid #24424D;' +
+      'padding:12px 14px calc(12px + env(safe-area-inset-bottom));display:flex;gap:8px;justify-content:center}' +
+    '.bar button{flex:1;max-width:270px;background:#F97316;color:#fff;border:none;border-radius:12px;' +
+      'padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}' +
+    '.bar button.alt{background:#112B34;border:1px solid #24424D;color:#F0EDE4}' +
+    '@media print{body{background:#fff;color:#000;padding:20px}ul{border-color:#ccc;background:#fff}' +
+      'li{border-color:#ddd}li b{color:#555}.bar{display:none}}' +
+    '</style></head><body><div class="wrap">' +
+    '<h1>🛒 Списък за пазаруване</h1>' +
+    '<div class="sub">Седмица ' + (plan ? plan.week_number : "") + ' · ' + rows.length + ' продукта</div>' +
+    '<ul>' + items + '</ul>' +
+    '</div>' +
+    '<div class="bar">' +
+    '<button onclick="navigator.clipboard.writeText(document.getElementById(\'pl\').textContent).then(()=>alert(\'Копирано ✓\'))">📋 Копирай</button>' +
+    '<button class="alt" onclick="window.close()">← Назад</button>' +
+    '</div>' +
+    '<pre id="pl" style="display:none">Списък за пазаруване · NB Method\n' + plain.replace(/</g, "&lt;") + '</pre>' +
+    '</body></html>';
+
+  const url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+  const w = window.open(url, "_blank");
+  if (!w) { alert("Браузърът блокира прозореца — разреши изскачащи прозорци за този сайт."); return; }
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+/* auto-login ако има активна сесия */
+boot();
+</script>
 </body>
 </html>
