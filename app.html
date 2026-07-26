@@ -1175,20 +1175,12 @@ if ("serviceWorker" in navigator) { navigator.serviceWorker.register("sw.js"); }
 
 /* ---------------- ПАЗАРУВАНЕ В НОВ ПРОЗОРЕЦ ---------------- */
 function openShopWindow(){
-  let rows = shopAgg();
-  // ако няма разбити съставки, вземи имената на самите хранения като продукти
-  if (!rows.length && meals.length) {
-    const seen = {};
-    meals.forEach(m => {
-      const nm = (m.description || m.meal_slot || "").trim();
-      if (nm && !seen[nm.toLowerCase()]) { seen[nm.toLowerCase()] = 1; rows.push({ name: nm, grams: 0, count: 0 }); }
-    });
-    rows.sort((a, b) => a.name.localeCompare(b.name, "bg"));
-  }
+  const rows = shopAgg();
+  if (!rows.length) { alert("Няма съставки в менюто за тази седмица."); return; }
 
   const items = rows.map(r =>
     '<li><label><input type="checkbox" onchange="this.closest(\'li\').classList.toggle(\'done\',this.checked)">' +
-    '<span>' + esc(r.name) + '</span></label>' + (r.grams > 0 ? '<b>' + shopQty(r) + '</b>' : '') + '</li>').join("");
+    '<span>' + esc(r.name) + '</span></label><b>' + shopQty(r) + '</b></li>').join("");
 
   const html = '<!DOCTYPE html><html lang="bg"><head><meta charset="utf-8">' +
     '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">' +
