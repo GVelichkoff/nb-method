@@ -131,6 +131,8 @@
   .back{color:#FFA65C}
   .callrow a{color:#FFA65C}
   .btn.primary,.tabs .btn.on{color:#FFFFFF !important}
+  .coach-note{margin:10px 0 14px;padding:12px 14px;border:1px solid #2A4652;border-left:4px solid var(--orange);border-radius:10px;background:#0E222A;color:#B9C6CA;font-size:12.5px;line-height:1.55}
+  .coach-note strong{color:#fff}
 </style>
 </head>
 <body>
@@ -175,7 +177,7 @@
     <div class="card addform" id="addclient" hidden>
       <div class="row">
         <input type="text" id="ac-email" placeholder="Имейл на клиента (акаунтът трябва да съществува)">
-        <input type="text" id="ac-program" placeholder="Име на програмата, напр. Отслабване">
+        <input type="text" id="ac-program" placeholder="Основна цел / програма, напр. сила, редукция, връщане към движение">
       </div>
       <div class="row">
         <input type="number" id="ac-kcal" placeholder="Цел ккал/ден (по избор)">
@@ -200,11 +202,12 @@
     <button class="back" onclick="backToList()">← Всички клиенти</button>
     <h1 class="disp" id="cl-name"></h1>
     <p class="sub" id="cl-sub"></p>
+    <div class="coach-note"><strong>NB Adapt:</strong> При нова болка, ограничение или промяна в здравословното състояние първо актуализирай тренировъчния контекст и работи в рамките на предоставените професионални препоръки.</div>
     <div class="tabs">
       <button class="btn on" data-tab="weeks" onclick="ctab('weeks')">Седмици</button>
       <button class="btn" data-tab="chat" onclick="ctab('chat')">Чат</button>
       <button class="btn" data-tab="calls" onclick="ctab('calls')">Разговори</button>
-      <button class="btn" data-tab="progress" onclick="ctab('progress')">Прогрес</button>
+      <button class="btn" data-tab="progress" onclick="ctab('progress')">Прогрес & check-in</button>
     </div>
 
     <!-- Седмици -->
@@ -238,7 +241,7 @@
       <datalist id="foodlist"></datalist>
       <div class="card addform" style="margin-bottom:14px">
         <div class="row">
-          <input type="text" id="wknotes" placeholder="Бележки към седмицата (клиентът ги вижда)">
+          <input type="text" id="wknotes" placeholder="Фокус / адаптации за седмицата (клиентът ги вижда)">
           <button class="btn olive" onclick="saveNotes()">Запази бележките</button>
         </div>
       </div>

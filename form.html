@@ -50,7 +50,8 @@
 <form name="nb-inquiry" netlify netlify-honeypot="bot-field" hidden>
   <input type="text" name="Имена"><input type="text" name="Телефон">
   <input type="text" name="Имейл"><input type="text" name="Тегло сега">
-  <input type="text" name="Желано тегло"><input type="text" name="Здравословни бележки">
+  <input type="text" name="Желано тегло"><input type="text" name="Основна цел">
+  <input type="text" name="Нужда от адаптация"><input type="text" name="Здравословни бележки">
   <input type="text" name="Избран план">
 </form>
 
@@ -59,13 +60,13 @@
 </a>
 
 <div class="panel" id="formpanel">
-  <h1 class="disp">Запиши се за NB Method</h1>
-  <p class="sub">Попълни формата и Недко ще се свърже с теб до 24 часа за безплатен въвеждащ разговор.</p>
+  <h1 class="disp">Намери своя Method</h1>
+  <p class="sub">Разкажи откъде започваш. Недко ще се свърже с теб до 24 часа за кратък въвеждащ разговор и ще прецените кой подход е най-подходящ.</p>
 
   <label for="fname">Три имена *</label>
   <input id="fname" type="text" placeholder="Иван Петров Иванов" autocomplete="name">
 
-  <label for="fplan">Избери план *</label>
+  <label for="fplan">Кой план разглеждаш? *</label>
   <select id="fplan">
     <option value="">— Избери план —</option>
     <option value="Старт">Старт · 45 € / месец</option>
@@ -85,6 +86,9 @@
     </div>
   </div>
 
+  <label for="fgoal">Каква е основната ти цел? *</label>
+  <textarea id="fgoal" placeholder="Напр. повече сила и енергия, редукция на тегло, връщане към движение след пауза, по-добра кондиция…"></textarea>
+
   <div class="two">
     <div>
       <label for="fw">Тегло сега (кг)</label>
@@ -96,19 +100,26 @@
     </div>
   </div>
 
-  <label for="fhealth">Здравословни проблеми / контузии</label>
-  <textarea id="fhealth" placeholder="Опиши накратко травми, заболявания, приемани лекарства — или напиши „нямам“. Това помага програмата да е безопасна за теб."></textarea>
+  <label for="fadapt">Трябва ли планът да бъде адаптиран по здравословни причини?</label>
+  <select id="fadapt">
+    <option value="Не">Не</option>
+    <option value="Да">Да — имам заболяване, травма или двигателно ограничение</option>
+    <option value="Не съм сигурен">Не съм сигурен — искам да го обсъдя с Недко</option>
+  </select>
+
+  <label for="fhealth">Здравословен контекст / ограничения (по избор)</label>
+  <textarea id="fhealth" placeholder="Сподели само релевантното: стари травми, операции, болка при определени движения, хронично състояние или конкретни лекарски ограничения. Можеш и да оставиш полето празно."></textarea>
 
   <button class="send disp" id="sendbtn" onclick="sendInquiry()">Изпрати заявката</button>
   <div class="msg" id="fmsg"></div>
 
-  <p class="fine">С изпращането се съгласяваш Недко Богданов да използва данните ти само за връзка с теб относно NB Method. Здравословната информация се споделя доброволно и остава поверителна.</p>
+  <p class="fine">С изпращането се съгласяваш Недко Богданов да използва данните ти за връзка относно NB Method. Здравословната информация е по избор и служи само като контекст за разговор и адаптация на тренировъчния подход. NB Method не поставя диагнози и не замества медицински специалист.</p>
 </div>
 
 <div class="panel done" id="donepanel" hidden>
   <div class="big">✅</div>
   <h1 class="disp">Заявката е изпратена!</h1>
-  <p class="sub" style="margin-top:10px">Недко ще се свърже с теб до 24 часа на посочения телефон или имейл, за да уговорите безплатния въвеждащ разговор.</p>
+  <p class="sub" style="margin-top:10px">Недко ще се свърже с теб до 24 часа, за да обсъдите целта, стартовата ти точка и как NB Method може да бъде адаптиран към теб.</p>
 </div>
 
 <a class="back" href="index.html">← Обратно към сайта</a>
@@ -137,19 +148,28 @@ async function sendInquiry(){
 
   msg.style.color = "var(--danger)";
   const name = v("fname"), phone = v("fphone"), email = v("femail");
+  const goal = v("fgoal");
+  const adapt = document.getElementById("fadapt").value;
   const chosenPlan = document.getElementById("fplan").value;
   if (name.split(/\s+/).length < 2) { msg.textContent = "Моля, въведи поне две от имената си."; return; }
   if (!chosenPlan) { msg.textContent = "Моля, избери план."; return; }
+  if (goal.length < 5) { msg.textContent = "Разкажи накратко каква е основната ти цел."; return; }
   if (phone.length < 6) { msg.textContent = "Моля, въведи валиден телефон."; return; }
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { msg.textContent = "Моля, въведи валиден имейл."; return; }
 
   btn.disabled = true; btn.textContent = "Изпраща се…";
   msg.style.color = "var(--oat)";
   msg.textContent = "Момент… понякога отнема няколко секунди.";
+  const healthContext = [
+    "Основна цел: " + goal,
+    "Нужда от адаптация: " + adapt,
+    v("fhealth") ? "Здравословен контекст: " + v("fhealth") : null
+  ].filter(Boolean).join("\n");
+
   const { error } = await sb.from("nb_inquiries").insert({
     full_name: name, phone, email,
     weight_kg: num("fw"), target_weight_kg: num("ftw"),
-    health_notes: v("fhealth") || null,
+    health_notes: healthContext,
     chosen_plan: chosenPlan,
   });
   if (error) {
@@ -173,6 +193,7 @@ async function sendInquiry(){
         "form-name": "nb-inquiry",
         "Имена": name, "Телефон": phone, "Имейл": email,
         "Тегло сега": num("fw") ?? "—", "Желано тегло": num("ftw") ?? "—",
+        "Основна цел": goal, "Нужда от адаптация": adapt,
         "Здравословни бележки": v("fhealth") || "няма",
         "Избран план": chosenPlan,
       }).toString(),

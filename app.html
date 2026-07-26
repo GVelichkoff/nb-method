@@ -188,6 +188,8 @@
   .phcell{flex-shrink:0;text-align:center}
   .phcell img{width:110px;height:150px;object-fit:cover;border-radius:10px;border:1px solid #24424D;cursor:pointer;background:#0E222A}
   .phcell small{display:block;margin-top:4px;font-size:11px;color:#9FB0B5}
+  .adapt-strip{margin-bottom:14px;padding:13px 15px;border-left:4px solid var(--orange);font-size:13px;line-height:1.55;color:#D8E1E4}
+  .adapt-strip strong{color:#fff}
 </style>
 </head>
 <body>
@@ -197,7 +199,7 @@
   <div class="card login">
     <div class="logo disp" style="display:inline-block;margin-bottom:14px">NB</div>
     <h1 class="disp">NB Method</h1>
-    <p>Персонален онлайн коучинг с Недко Богданов</p>
+    <p>Твоята система за тренировки, хранене и реален коучинг.</p>
     <label for="email">Имейл</label>
     <input id="email" type="email" autocomplete="email">
     <label for="pass">Парола</label>
@@ -232,9 +234,10 @@
     <h1 class="disp">Твоята седмица</h1>
     <p class="sub" id="week-sub"></p>
     <div class="card" style="padding:14px 16px;margin-bottom:14px" id="mood-card">
-      <div class="disp" style="font-size:14px;margin-bottom:10px">Как се чувстваш днес?</div>
+      <div class="disp" style="font-size:14px;margin-bottom:10px">Как си днес?</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap" id="mood-btns"></div>
     </div>
+    <div class="card adapt-strip"><strong>Нещо се е променило?</strong> Нова болка, ограничение или промяна в състоянието ти не е причина да „натискаш на инат“. Пиши на Недко, за да адаптирате плана.</div>
     <div class="card" style="padding:14px 16px;margin-bottom:14px" id="habits-card" hidden>
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
         <span class="disp" style="font-size:14px">Навици за днес</span>
@@ -249,7 +252,7 @@
     </div>
     <div class="week" id="weekstrip"></div>
     <div class="summary" id="summary"></div>
-    <h3 class="disp" style="font-size:15px;color:#9FB0B5;margin:24px 0 10px">Мерки за тази седмица</h3>
+    <h3 class="disp" style="font-size:15px;color:#9FB0B5;margin:24px 0 10px">Седмичен check-in</h3>
     <div class="card" style="padding:16px">
       <div class="mrow">
         <input type="number" step="0.1" id="pw" placeholder="Тегло кг">
@@ -261,10 +264,10 @@
       </div>
       <label style="display:block;font-size:12px;color:#9FB0B5;margin:4px 0 6px">📷 Снимка за тази седмица (по избор)</label>
       <input type="file" id="pphoto" accept="image/*" style="width:100%;color:#9FB0B5;font-size:13px">
-      <button class="btn prg-save disp" onclick="saveProgress()">Запази мерките</button>
+      <button class="btn prg-save disp" onclick="saveProgress()">Запази check-in</button>
       <div class="err" id="prg-msg" style="text-align:center"></div>
     </div>
-    <button class="btn shopbtn disp" style="margin-top:24px" onclick="openResultsWindow()">📊 Резултати — виж промяната</button>
+    <button class="btn shopbtn disp" style="margin-top:24px" onclick="openResultsWindow()">📊 Прогрес — виж промяната</button>
     <div class="card" style="padding:16px;margin-bottom:4px" id="prg-chart"></div>
     <h3 class="disp" style="font-size:15px;color:#9FB0B5;margin:24px 0 10px">История</h3>
     <div class="card" style="padding:14px 16px" id="prg-history"></div>
@@ -276,11 +279,11 @@
     <h1 class="disp" id="tr-title">Тренировка</h1>
     <p class="sub" id="tr-sub"></p>
     <div id="exlist"></div>
-    <button class="btn disp finish" id="finishbtn" onclick="finishWorkout()">Приключи тренировката и изпрати отчет</button>
+    <button class="btn disp finish" id="finishbtn" onclick="finishWorkout()">Готово за днес — изпрати отчет</button>
   </section>
 
   <section id="tab-menu" hidden>
-    <h1 class="disp">Седмично меню</h1>
+    <h1 class="disp">Твоето хранене</h1>
     <p class="sub" id="menu-sub"></p>
     <button class="btn shopbtn disp" onclick="openShopWindow()">🛒 Списък за пазаруване за седмицата</button>
     <div class="card" style="padding:16px;margin-bottom:14px" id="shoplist" hidden></div>
@@ -305,7 +308,7 @@
       <button class="btn vclose" onclick="endCall()">Затвори видео разговора</button>
     </div>
     <div id="nextcall"></div>
-    <h3 class="disp past-h">Минали разговори</h3>
+    <h3 class="disp past-h">Предишни разговори</h3>
     <div id="pastcalls"></div>
   </section>
 </main>
@@ -554,7 +557,7 @@ function renderTraining(){
     </div>`).join("") : `<div class="card empty">Няма добавени упражнения.</div>`;
   btn.hidden = !ex.length;
   btn.disabled = !!w.completed_at;
-  btn.textContent = w.completed_at ? "✓ Тренировката е отчетена" : "Приключи тренировката и изпрати отчет";
+  btn.textContent = w.completed_at ? "✓ Тренировката е отчетена" : "Готово за днес — изпрати отчет";
 }
 async function toggleEx(id){
   const e = exercises.find(x => x.id === id);

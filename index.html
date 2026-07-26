@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NB Method — Онлайн коучинг с Недко Богданов</title>
-<meta name="description" content="Персонални тренировъчни програми, хранителни планове и постоянна връзка с твоя треньор. Тренирай умно, не просто трудно.">
+<meta name="description" content="NB Method — персонален онлайн коучинг с тренировки, хранене и адаптации според твоето тяло, график, цели и реални възможности. Train smart, not hard.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -76,6 +76,23 @@
   .step h3{font-size:16px;margin-bottom:8px}
   .step p{font-size:14px;color:var(--oat);opacity:.85;line-height:1.6}
 
+
+  /* ================= NB ADAPT ================= */
+  .adapt{background:#EAF0EE}
+  .adapt-head{display:grid;grid-template-columns:1.15fr .85fr;gap:30px;align-items:end;margin-bottom:28px}
+  .adapt-quote{border-left:4px solid var(--orange);padding:6px 0 6px 18px;font-size:18px;font-weight:700;line-height:1.45}
+  .adapt-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  .adapt-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 24px}
+  .adapt-card h3{font-size:18px;margin-bottom:10px}
+  .adapt-card p{font-size:14px;color:var(--gray);line-height:1.65}
+  .adapt-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .adapt-tag{background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:8px 11px;font-size:12px;font-weight:600;color:#304148}
+  .adapt-note{margin-top:18px;background:var(--ink);color:var(--oat);border-radius:14px;padding:20px 22px;font-size:13px;line-height:1.65}
+  .adapt-note strong{color:#fff}
+  @media (max-width:860px){
+    .adapt-head,.adapt-grid{grid-template-columns:1fr}
+  }
+
   /* ================= ЦЕНИ ================= */
   .price{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:30px 26px;display:flex;flex-direction:column;position:relative}
   .price.featured{border:2px solid var(--orange);box-shadow:0 12px 40px rgba(237,106,47,.14)}
@@ -108,6 +125,7 @@
     <div class="menu">
       <a href="#uslugi">Услуги</a>
       <a href="#kak">Как работи</a>
+      <a href="#adapt">NB Adapt</a>
       <a href="#ceni">Цени</a>
       <a href="#kontakt">Контакт</a>
       <a class="btn orange disp" href="login.html">Вход</a>
@@ -118,33 +136,35 @@
 <!-- ================= HERO ================= -->
 <header class="hero" id="top">
   <div class="wrap">
-    <h1 class="disp">Тренирай умно,<br>не просто трудно<span class="dot">.</span></h1>
-    <p>Оптимизирай тялото си с модерната система на <span class="tag">#NBMethod</span> — персонална програма, хранителен план със сметнати макроси и постоянна връзка с твоя треньор.</p>
-    <a class="btn orange disp" href="#ceni">Стартирай #SmartGainz</a>
+    <div class="kicker disp" style="margin-bottom:12px">NB METHOD · TRAIN SMART. NOT HARD.</div>
+    <h1 class="disp">Спри да започваш<br>отначало<span class="dot">.</span></h1>
+    <p>Не ти трябва поредната доза мотивация. Трябва ти система, изградена около <strong>твоето тяло, твоя график, твоята цел и твоите реални възможности.</strong></p>
+    <p style="margin-top:-18px;font-size:14px;opacity:.9">Персонални тренировки · реалистично хранене · истински коучинг</p>
+    <a class="btn orange disp" href="#ceni">Намери своя Method</a>
   </div>
 </header>
 
 <!-- ================= УСЛУГИ ================= -->
 <section id="uslugi">
   <div class="wrap">
-    <div class="kicker disp">Какво предлагаме</div>
-    <h2 class="sec disp">Всичко за твоята трансформация — на едно място</h2>
-    <p class="lead">Получаваш собствен профил в платформата NB Method: там те чакат тренировките ти, менюто ти и директна линия към Недко. Без Excel файлове, без разпилени чатове.</p>
+    <div class="kicker disp">Не още една фитнес програма</div>
+    <h2 class="sec disp">Твоята система. На едно място.</h2>
+    <p class="lead">Тренировки, хранене, прогрес и връзка с Недко — в един профил. Без copy-paste програми, без разпилени чатове и без да се чудиш какво следва.</p>
     <div class="grid3">
       <div class="svc">
         <div class="ico">◆</div>
         <h3 class="disp">Smart Training</h3>
-        <p>Седмична тренировъчна програма, изградена за твоята цел и ниво — с точни серии, тежести, почивки и видео демонстрации за всяко упражнение. Отчиташ изпълнението с едно докосване.</p>
+        <p>Програма според твоето ниво, цел, график, оборудване и двигателни възможности — с ясни серии, повторения, почивки и видео демонстрации. Никакви random workouts.</p>
       </div>
       <div class="svc">
         <div class="ico">◈</div>
-        <h3 class="disp">Адаптивно хранене</h3>
-        <p>Хранителен план по дни и хранения, със сметнати калории, протеин, въглехидрати, фибри и мазнини за всяка съставка. Менюто се адаптира всяка седмица според прогреса ти.</p>
+        <h3 class="disp">Smart Nutrition</h3>
+        <p>Всеки план включва хранене със сметнати калории и макроси. Структурата е направена за реалния живот и се адаптира според избраното ниво на коучинг. По-малко забрани. Повече стратегия.</p>
       </div>
       <div class="svc">
         <div class="ico">◉</div>
-        <h3 class="disp">Тясна комуникация</h3>
-        <p>Личен чат с Недко за всеки въпрос — замяна на храна, техника, мотивация. Плюс седмичен видео разговор за преглед на резултатите, директно в платформата.</p>
+        <h3 class="disp">Real Coaching</h3>
+        <p>Не просто приложение. Истински треньор. Недко следи прогреса, отговаря на въпроси и променя стратегията, когато тялото, графикът или обстоятелствата ти го изискват.</p>
       </div>
     </div>
   </div>
@@ -153,25 +173,68 @@
 <!-- ================= КАК РАБОТИ ================= -->
 <section class="dark" id="kak">
   <div class="wrap">
-    <div class="kicker disp">Твоята еволюция</div>
-    <h2 class="sec disp">Как работи NB Method</h2>
-    <p class="lead">Системата е проста — ти влагаш усилието, всичко останало е организирано за теб.</p>
+    <div class="kicker disp">Less guessing. More progress.</div>
+    <h2 class="sec disp">Прост процес. Умна система.</h2>
+    <p class="lead">Не е нужно фитнесът да бъде вторият ти full-time job. Започваме от реалността ти и адаптираме по пътя.</p>
     <div class="grid3">
       <div class="step">
         <div class="num disp">01</div>
-        <h3 class="disp">Въвеждащ разговор</h3>
-        <p>Видео среща с Недко: цели, история, навици, оборудване. На тази база се изгражда първата ти програма и хранителен план.</p>
+        <h3 class="disp">Първо разбираме теб</h3>
+        <p>Цели, тренировъчна история, ежедневие, оборудване, стари травми, ограничения и важни здравословни фактори. Не започваме с готов шаблон. Започваме с теб.</p>
       </div>
       <div class="step">
         <div class="num disp">02</div>
-        <h3 class="disp">Твоят команден център</h3>
-        <p>Получаваш профил в платформата. Всяка седмица там те чака нов план — тренировки, меню, бележки от треньора.</p>
+        <h3 class="disp">Получаваш своя Method</h3>
+        <p>В личния ти профил са тренировките, храненето, видео демонстрациите, бележките и комуникацията с Недко. Един профил. Един план. Нула хаос.</p>
       </div>
       <div class="step">
         <div class="num disp">03</div>
-        <h3 class="disp">Прогрес и корекции</h3>
-        <p>Отчиташ тренировки и тегло, а Недко следи всичко в реално време и коригира курса всяка седмица. #SmartGainz.</p>
+        <h3 class="disp">Не рестартираш. Адаптираш.</h3>
+        <p>Отчиташ тренировките и прогреса си, а стратегията се променя при нужда. Програмата не очаква животът ти да е перфектен — тя трябва да работи в него.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ================= NB ADAPT ================= -->
+<section class="adapt" id="adapt">
+  <div class="wrap">
+    <div class="adapt-head">
+      <div>
+        <div class="kicker disp">NB METHOD ADAPT</div>
+        <h2 class="sec disp">Тренирай според тялото си. Не срещу него.</h2>
+        <p class="lead" style="margin-bottom:0">Не всеки започва от една и съща позиция. Затова NB Method може да бъде адаптиран и за хора със здравословни състояния, стари травми, хроничен дискомфорт или двигателни ограничения, когато тренировките са подходящи за тях.</p>
+      </div>
+      <div class="adapt-quote">Different body. Different starting point. Same right to progress.</div>
+    </div>
+
+    <div class="adapt-grid">
+      <div class="adapt-card">
+        <h3 class="disp">Диагнозата не е тренировъчен план</h3>
+        <p>Преди да започнем, гледаме цялата картина: как се движиш, какво те ограничава, какво вече знаеш за състоянието си и какви препоръки трябва да бъдат спазени. После подбираме упражненията, обема и темпото според теб.</p>
+        <div class="adapt-tags">
+          <span class="adapt-tag">стари травми</span>
+          <span class="adapt-tag">двигателни ограничения</span>
+          <span class="adapt-tag">хронични състояния</span>
+          <span class="adapt-tag">намалена кондиция</span>
+        </div>
+      </div>
+
+      <div class="adapt-card">
+        <h3 class="disp">Start where you are</h3>
+        <p>Не можеш да изпълниш дадено движение? Намираме подходящ вариант. Не разполагаш с 60 минути? Не е нужно. Имаш дни с повече и по-малко енергия? Системата трябва да го отчита.</p>
+        <div class="adapt-tags">
+          <span class="adapt-tag">адаптирани упражнения</span>
+          <span class="adapt-tag">реалистичен обем</span>
+          <span class="adapt-tag">индивидуално темпо</span>
+          <span class="adapt-tag">проследим прогрес</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="adapt-note">
+      <strong>Важно:</strong> NB Method е тренировъчен и коучинг подход и не поставя диагнози, не лекува заболявания и не замества лекар, физиотерапевт или друг медицински специалист. При състояние, за което е необходима медицинска преценка, тренировъчният план се съобразява с дадените професионални препоръки и ограничения.
     </div>
   </div>
 </section>
@@ -179,9 +242,9 @@
 <!-- ================= ЦЕНИ ================= -->
 <section id="ceni">
   <div class="wrap">
-    <div class="kicker disp">Цени</div>
-    <h2 class="sec disp">Избери своя план</h2>
-    <p class="lead">Без дълги договори — месец за месец. Започваш с въвеждащ разговор, за да сме сигурни, че сме един за друг.</p>
+    <div class="kicker disp">Избери нивото на подкрепа</div>
+    <h2 class="sec disp">Твоят Method. Твоето темпо.</h2>
+    <p class="lead">Без дълги договори — месец за месец. Започваме с разговор, за да видим целта, стартовата точка и какъв тип подкрепа има смисъл за теб.</p>
     <div class="grid3">
 
       <div class="price">
@@ -191,9 +254,9 @@
         <ul>
           <li>Персонална тренировъчна програма</li>
           <li>Достъп до платформата NB Method</li>
-          <li>Месечна корекция на програмата</li>
+          <li>Месечна адаптация на тренировки и хранене</li>
           <li>Чат поддръжка (отговор до 48 ч.)</li>
-          <li class="no">Хранителен план с макроси</li>
+          <li>Хранителен план със сметнати макроси</li>
           <li class="no">Седмичен видео разговор</li>
         </ul>
         <a class="btn orange disp" href="form.html?plan=Старт">Запиши се</a>
@@ -206,7 +269,6 @@
         <div class="per">на месец</div>
         <ul>
           <li>Всичко от „Старт“</li>
-          <li>Хранителен план със сметнати макроси</li>
           <li>Седмична адаптация на тренировки и меню</li>
           <li>Личен чат с Недко (отговор до 24 ч.)</li>
           <li>Месечен видео разговор</li>
@@ -235,9 +297,9 @@
 <!-- ================= CTA / КОНТАКТ ================= -->
 <section class="cta" id="kontakt">
   <div class="wrap">
-    <h2 class="disp">Готов ли си за еволюцията?</h2>
-    <p>Пиши на Недко за безплатен въвеждащ разговор — 15 минути, без ангажимент.</p>
-    <a class="btn orange disp" href="form.html">Свържи се с Недко</a>
+    <h2 class="disp">След 3 месеца пак ще си някъде. Въпросът е — къде?</h2>
+    <p>Не чакай перфектния момент. Започни с кратък разговор с Недко и разкажи откъде тръгваш — цел, график, опит и ограничения.</p>
+    <a class="btn orange disp" href="form.html">Започни своя Method</a>
   </div>
 </section>
 
