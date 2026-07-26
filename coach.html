@@ -176,8 +176,11 @@
     </div>
     <div class="card addform" id="addclient" hidden>
       <div class="row">
-        <input type="text" id="ac-email" placeholder="Имейл на клиента (акаунтът трябва да съществува)">
-        <input type="text" id="ac-program" placeholder="Основна цел / програма, напр. сила, редукция, връщане към движение">
+        <input type="text" id="ac-name" placeholder="Име и фамилия на клиента">
+        <input type="email" id="ac-email" placeholder="Имейл на клиента (акаунтът трябва да съществува)">
+      </div>
+      <div class="row">
+        <input type="text" id="ac-program" placeholder="Основна цел / програма, напр. сила, редукция, връщане към движение" style="flex:1">
       </div>
       <div class="row">
         <input type="number" id="ac-kcal" placeholder="Цел ккал/ден (по избор)">
@@ -209,7 +212,10 @@
   <!-- ДЕТАЙЛ КЛИЕНТ -->
   <div id="view-client" hidden>
     <button class="back" onclick="backToList()">← Всички клиенти</button>
-    <h1 class="disp" id="cl-name"></h1>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <h1 class="disp" id="cl-name" style="margin-bottom:0"></h1>
+      <button class="btn ghost" type="button" onclick="editClientName()" title="Промени името на клиента">✎ Промени име</button>
+    </div>
     <p class="sub" id="cl-sub"></p>
     <div class="coach-note"><strong>NB Adapt:</strong> При нова болка, ограничение или промяна в здравословното състояние първо актуализирай тренировъчния контекст и работи в рамките на предоставените професионални препоръки.</div>
     <div class="tabs">
@@ -387,11 +393,47 @@ async function loadClients(){
 
 function toggle(id){ const el = document.getElementById(id); el.hidden = !el.hidden; }
 
+async function setClientName(clientId, fullName){
+  const cleanName = (fullName || "").trim();
+  if (!clientId || cleanName.length < 2) {
+    return { ok:false, error:"Въведи валидно име на клиента." };
+  }
+
+  // Първо опитваме директно обновяване. Ако RLS не позволява на треньора
+  // да редактира nb_profiles, използваме защитената RPC функция от
+  // supabase-client-name-fix.sql.
+  const direct = await sb.from("nb_profiles")
+    .update({ full_name: cleanName })
+    .eq("id", clientId)
+    .select("id");
+
+  if (!direct.error && direct.data && direct.data.length) return { ok:true };
+
+  const viaRpc = await sb.rpc("nb_set_client_name", {
+    p_client_id: clientId,
+    p_full_name: cleanName,
+  });
+  if (!viaRpc.error) return { ok:true };
+
+  return {
+    ok:false,
+    error: viaRpc.error.message || direct.error?.message || "Името не можа да бъде записано."
+  };
+}
+
 async function addClient(){
   const err = document.getElementById("ac-err"); err.textContent = "";
+  const name = document.getElementById("ac-name").value.trim();
   const email = document.getElementById("ac-email").value.trim();
   const prog = document.getElementById("ac-program").value.trim();
-  if (!email || !prog) { err.textContent = "Имейл и име на програма са задължителни."; return; }
+  if (!name || !email || !prog) {
+    err.textContent = "Име, имейл и основна цел / програма са задължителни.";
+    return;
+  }
+  if (name.length < 2) { err.textContent = "Въведи валидно име на клиента."; return; }
+
+  // Запомняме съществуващите програми, за да намерим точно новосъздадената.
+  const beforeIds = new Set(programs.map(p => p.id));
   const gender = document.getElementById("ac-gender").value || null;
   const sub = document.getElementById("ac-sub").value || null;
   const health = document.getElementById("ac-health").value.trim() || null;
@@ -404,9 +446,51 @@ async function addClient(){
     p_health: health,
   });
   if (error) { err.textContent = error.message; return; }
+
+  const after = await sb.from("nb_client_programs")
+    .select("id,client_id")
+    .eq("coach_id", me.id);
+  const created = (after.data || []).find(p => !beforeIds.has(p.id));
+
+  if (created?.client_id) {
+    const rename = await setClientName(created.client_id, name);
+    if (!rename.ok) {
+      await loadClients();
+      err.textContent = "Клиентът е добавен, но името не беше записано: " + rename.error +
+        " Пусни файла supabase-client-name-fix.sql веднъж в Supabase SQL Editor.";
+      return;
+    }
+  } else {
+    await loadClients();
+    err.textContent = "Клиентът е добавен, но не успях да открия новата програма, за да запиша името. Обнови страницата и използвай „Промени име“ в профила му.";
+    return;
+  }
+
   document.getElementById("addclient").hidden = true;
-  ["ac-email","ac-program","ac-kcal","ac-protein","ac-gender","ac-sub","ac-health"].forEach(i => document.getElementById(i).value = "");
+  ["ac-name","ac-email","ac-program","ac-kcal","ac-protein","ac-gender","ac-sub","ac-health"].forEach(i => document.getElementById(i).value = "");
   await loadClients();
+}
+
+async function editClientName(){
+  if (!cur?.client_id) return;
+  const currentName = (cur.client?.full_name || "").trim();
+  const suggested = /^нов клиент$/i.test(currentName) ? "" : currentName;
+  const entered = prompt("Име и фамилия на клиента:", suggested);
+  if (entered === null) return;
+  const name = entered.trim();
+  if (name.length < 2) { alert("Въведи валидно име на клиента."); return; }
+
+  const result = await setClientName(cur.client_id, name);
+  if (!result.ok) {
+    alert("Името не беше записано: " + result.error +
+      "\n\nАко това е първото обновяване, пусни supabase-client-name-fix.sql веднъж в Supabase SQL Editor.");
+    return;
+  }
+
+  const pid = cur.id;
+  await loadClients();
+  cur = programs.find(p => p.id === pid) || cur;
+  document.getElementById("cl-name").textContent = cur.client?.full_name || name;
 }
 
 /* ---------------- КЛИЕНТ ДЕТАЙЛ ---------------- */
