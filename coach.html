@@ -190,6 +190,15 @@
           <option value="male">Мъж</option>
           <option value="other">Друго / без значение</option>
         </select>
+        <select id="ac-sub" style="flex:1">
+          <option value="">Тип абонамент (по избор)</option>
+          <option value="Старт">Старт</option>
+          <option value="Insider">Insider</option>
+          <option value="Total 1:1">Total 1:1</option>
+        </select>
+      </div>
+      <div class="row">
+        <input type="text" id="ac-health" placeholder="Специална здравословна програма — опиши състоянието или остави празно" style="flex:1">
         <button class="btn primary" onclick="addClient()">Добави</button>
       </div>
       <div class="err" id="ac-err"></div>
@@ -367,8 +376,9 @@ async function loadClients(){
   document.getElementById("clients").innerHTML = programs.length ? programs.map(p => `
     <div class="card clientcard" onclick="openClient('${p.id}')">
       <div>
-        <div class="nm">${esc(p.client?.full_name || "—")}</div>
+        <div class="nm">${esc(p.client?.full_name || "—")}${p.special_health_program ? ` <span title="${esc(p.special_health_program)}" style="color:#FFA65C">⚕️</span>` : ""}</div>
         <div class="pg">${esc(p.program_name)} · Седмица ${p.current_week} · ${p.status === "active" ? "активна" : esc(p.status)}</div>
+        ${p.subscription_type ? `<div style="margin-top:4px"><span style="font-size:11px;font-weight:600;background:#143E4C;color:#7FC6D8;padding:3px 9px;border-radius:999px">${esc(p.subscription_type)}</span>${p.special_health_program ? ` <span style="font-size:11px;color:#FFA65C">⚕️ ${esc(p.special_health_program)}</span>` : ""}</div>` : (p.special_health_program ? `<div style="margin-top:4px;font-size:11px;color:#FFA65C">⚕️ ${esc(p.special_health_program)}</div>` : "")}
       </div>
       ${unread[p.id] ? `<span class="badge">${unread[p.id]} ново</span>` : ""}
     </div>`).join("") :
@@ -383,15 +393,19 @@ async function addClient(){
   const prog = document.getElementById("ac-program").value.trim();
   if (!email || !prog) { err.textContent = "Имейл и име на програма са задължителни."; return; }
   const gender = document.getElementById("ac-gender").value || null;
+  const sub = document.getElementById("ac-sub").value || null;
+  const health = document.getElementById("ac-health").value.trim() || null;
   const { error } = await sb.rpc("nb_add_client", {
     p_email: email, p_program: prog,
     p_kcal: parseInt(document.getElementById("ac-kcal").value) || null,
     p_protein: parseInt(document.getElementById("ac-protein").value) || null,
     p_gender: gender,
+    p_subscription: sub,
+    p_health: health,
   });
   if (error) { err.textContent = error.message; return; }
   document.getElementById("addclient").hidden = true;
-  ["ac-email","ac-program","ac-kcal","ac-protein","ac-gender"].forEach(i => document.getElementById(i).value = "");
+  ["ac-email","ac-program","ac-kcal","ac-protein","ac-gender","ac-sub","ac-health"].forEach(i => document.getElementById(i).value = "");
   await loadClients();
 }
 
