@@ -757,15 +757,22 @@ function openResultsWindow(){
 
   const marksHtml = marks.map(m => {
     const isR = m.side === "r";
-    return '<div style="position:absolute;top:' + m.yp + '%;' + (isR ? 'right:2%' : 'left:2%') +
-      ';text-align:' + (isR ? 'left' : 'right') + ';transform:translateY(-50%)">' +
+    const edge = isR ? "right" : "left";
+    // текст до ръба
+    const label = '<div style="position:absolute;top:' + m.yp + '%;' + edge + ':2%;' +
+      'text-align:' + (isR ? 'left' : 'right') + ';transform:translateY(-50%)">' +
       '<div style="font-size:11px;color:#9FB0B5;line-height:1.2">' + m.label + '</div>' +
       '<div style="font-size:15px;font-weight:700;color:' + m.d.col + '">' + m.d.text + ' см</div>' +
-      '</div>' +
-      '<div style="position:absolute;top:' + m.yp + '%;' + (isR ? 'right:14%' : 'left:14%') +
-      ';' + (isR ? 'right' : 'left') + ':14%;width:' + (m.xp - 14) + '%;height:1px;border-top:1.5px dashed #F97316"></div>' +
-      '<div style="position:absolute;top:' + m.yp + '%;' + (isR ? 'right:' : 'left:') + m.xp +
-      '%;width:8px;height:8px;background:#F97316;border-radius:50%;transform:translate(' + (isR ? '50%' : '-50%') + ',-50%)"></div>';
+      '</div>';
+    // линия: от точката (xp%) до близо до текста (14% от ръба)
+    const lineStart = 14;
+    const lineWidth = Math.max(m.xp - lineStart, 4);
+    const line = '<div style="position:absolute;top:' + m.yp + '%;' + edge + ':' + lineStart + '%;' +
+      'width:' + lineWidth + '%;height:0;border-top:1.5px dashed #F97316"></div>';
+    // точка
+    const dot = '<div style="position:absolute;top:' + m.yp + '%;' + edge + ':' + m.xp + '%;' +
+      'width:8px;height:8px;background:#F97316;border-radius:50%;transform:translate(' + (isR ? '50%' : '-50%') + ',-50%)"></div>';
+    return label + line + dot;
   }).join("");
 
   const bodyDir = location.href.split("/").slice(0, -1).join("/");
