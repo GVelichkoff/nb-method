@@ -746,18 +746,19 @@ function openResultsWindow(){
   const startDate = new Date(logs[0].week_start).toLocaleDateString("bg-BG",{day:"numeric",month:"short"});
 
   // зони с числата на промяната (проценти по височината на тялото)
+// yp = височина %, xp = разстояние на точката от съответния край %
   const marks = [
-    { label: "Гърди", d: fmt(delta("chest_cm")), yp: 33, side: "r" },
-    { label: "Ръка",  d: fmt(delta("arm_cm")),   yp: 50, side: "l" },
-    { label: "Талия", d: fmt(delta("waist_cm")), yp: 47, side: "r" },
-    { label: "Ханш",  d: fmt(delta("hips_cm")),  yp: 53, side: "l" },
-    { label: "Бедро", d: fmt(delta("thigh_cm")), yp: 68, side: "r" },
+    { label: "Гърди", d: fmt(delta("chest_cm")), yp: 33, xp: 46, side: "r" },
+    { label: "Ръка",  d: fmt(delta("arm_cm")),   yp: 46, xp: 33, side: "l" },
+    { label: "Талия", d: fmt(delta("waist_cm")), yp: 47, xp: 48, side: "r" },
+    { label: "Ханш",  d: fmt(delta("hips_cm")),  yp: 56, xp: 46, side: "l" },
+    { label: "Бедро", d: fmt(delta("thigh_cm")), yp: 68, xp: 44, side: "r" },
   ].filter(m => m.d);
 
   const marksHtml = marks.map(m => {
     const isR = m.side === "r";
-    return '<div style="position:absolute;top:' + m.yp + '%;' + (isR ? 'right:2%' : 'left:2%') +
-      ';text-align:' + (isR ? 'left' : 'right') + ';transform:translateY(-50%)">' +
+    return '<div style="position:absolute;top:' + m.yp + '%;' + (isR ? 'right:' : 'left:') + m.xp +
+      '%;width:7px;height:7px;background:#F97316;border-radius:50%;transform:translate(' + (isR ? '50%' : '-50%') + ',-50%)"></div>';
       '<div style="font-size:11px;color:#9FB0B5;line-height:1.2">' + m.label + '</div>' +
       '<div style="font-size:15px;font-weight:700;color:' + m.d.col + '">' + m.d.text + ' см</div>' +
       '</div>' +
