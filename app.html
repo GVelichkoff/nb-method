@@ -762,8 +762,8 @@ function openResultsWindow(){
       '<div style="font-size:11px;color:#9FB0B5;line-height:1.2">' + m.label + '</div>' +
       '<div style="font-size:15px;font-weight:700;color:' + m.d.col + '">' + m.d.text + ' см</div>' +
       '</div>' +
-      '<div style="position:absolute;top:' + m.yp + '%;' + (isR ? 'right:' + (m.xp + 2) : 'left:' + (m.xp + 2)) +
-      '%;width:' + (isR ? (46 - m.xp) : (46 - m.xp)) + '%;min-width:6%;height:1px;border-top:1.5px dashed #F97316"></div>' +
+      '<div style="position:absolute;top:' + m.yp + '%;' + (isR ? 'right:14%' : 'left:14%') +
+      ';' + (isR ? 'right' : 'left') + ':14%;width:' + (m.xp - 14) + '%;height:1px;border-top:1.5px dashed #F97316"></div>' +
       '<div style="position:absolute;top:' + m.yp + '%;' + (isR ? 'right:' : 'left:') + m.xp +
       '%;width:8px;height:8px;background:#F97316;border-radius:50%;transform:translate(' + (isR ? '50%' : '-50%') + ',-50%)"></div>';
   }).join("");
