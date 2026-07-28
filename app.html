@@ -280,6 +280,15 @@
     .daytotals{gap:8px 12px;padding:11px 12px}
   }
 
+
+  /* ===== LOCAL WEBP ASSETS ===== */
+  .brand{display:inline-flex;align-items:center;text-decoration:none}
+  .brand img{display:block;width:auto;height:42px;max-width:190px;object-fit:contain}
+  .ex-media img{width:100%;height:100%;object-fit:cover;display:block}
+  @media(max-width:480px){
+    .brand img{height:36px;max-width:160px}
+  }
+
 </style>
 </head>
 <body>
@@ -532,7 +541,16 @@ async function boot(){
   const { data: { session } } = await sb.auth.getSession();
   if (!session) return; // stay on login
 
-  const { data: profile } = await sb.from("nb_profiles").select("*").eq("id", session.user.id).single();
+  const { data: profile, error: profileError } = await sb.from("nb_profiles")
+    .select("*").eq("id", session.user.id).single();
+
+  if (profileError || !profile) {
+    console.error("NB Method: profile load failed", profileError);
+    document.getElementById("screen-login").hidden = false;
+    const err = document.getElementById("loginerr");
+    if (err) err.textContent = "Профилът не можа да се зареди. Провери nb_profiles / RLS.";
+    return;
+  }
   me = profile;
 
   if (me.role === "coach") {
@@ -541,9 +559,17 @@ async function boot(){
   }
 
   // active program + coach name
-  const { data: prog } = await sb.from("nb_client_programs")
+  const { data: activePrograms, error: progError } = await sb.from("nb_client_programs")
     .select("*, coach:coach_id ( full_name )")
-    .eq("client_id", me.id).eq("status", "active").maybeSingle();
+    .eq("client_id", me.id)
+    .eq("status", "active")
+    .order("current_week", { ascending: false })
+    .limit(1);
+
+  if (progError) {
+    console.error("NB Method: active program load failed", progError);
+  }
+  const prog = activePrograms?.[0] || null;
 
   document.getElementById("screen-login").hidden = true;
   document.getElementById("screen-app").hidden = false;
@@ -556,8 +582,9 @@ async function boot(){
     renderNav(); return;
   }
   program = prog;
-  document.getElementById("coachname").textContent = "Треньор: " + (prog.coach?.full_name || "");
-  document.getElementById("programname").textContent = `Програма: ${prog.program_name} · Седмица ${prog.current_week}`;
+  document.getElementById("programname").textContent =
+    `Програма: ${prog.program_name} · Седмица ${prog.current_week}` +
+    (prog.coach?.full_name ? ` · ${prog.coach.full_name}` : "");
   document.getElementById("chat-title").textContent = "Чат с " + (prog.coach?.full_name?.split(" ")[0] || "треньора");
   document.getElementById("menu-sub").textContent = prog.daily_kcal_target
     ? `Цел: ~${prog.daily_kcal_target} ккал / ден` : "Изготвено от твоя треньор";
@@ -703,16 +730,50 @@ function currentWorkout(){
   return workouts.find(w => w.day_of_week === dow && w.workout_type !== "rest")
       || workouts.find(w => w.workout_type !== "rest");
 }
+function assetUrl(u){
+  const value = String(u || "").trim();
+  if (!value) return "";
+  if (/^(https?:|data:|blob:)/i.test(value)) return value;
+  if (value.startsWith("/")) return value;
+  try { return new URL(value, window.location.href).href; }
+  catch (_) { return value; }
+}
+
 function ytThumb(u){
   if (!u) return null;
   const m = String(u).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{6,})/);
   return m ? `https://i.ytimg.com/vi/${m[1]}/hqdefault.jpg` : null;
 }
 function exerciseMedia(e){
-  const u = e.demo_video_url || ""; const th = ytThumb(u);
-  if (th) return `<div class="ex-media"><img src="${esc(th)}" alt="${esc(e.name)}" loading="lazy"><button class="play-orb" data-u="${esc(u)}" onclick="playDemo(this.dataset.u)">▶</button></div>`;
-  if (/\.(mp4|webm|mov|m4v)(\?|$)/i.test(u) || u.includes("/storage/v1/object/public/videos/")) return `<div class="ex-media"><video src="${esc(u)}#t=0.1" muted playsinline preload="metadata"></video><button class="play-orb" data-u="${esc(u)}" onclick="playDemo(this.dataset.u)">▶</button></div>`;
-  return `<div class="ex-media" style="display:grid;place-items:center"><span class="brand-nb" style="font-size:52px;opacity:.32">NB</span>${u ? `<button class="play-orb" data-u="${esc(u)}" onclick="playDemo(this.dataset.u)">▶</button>` : ""}</div>`;
+  const raw = e.demo_video_url || "";
+  const u = assetUrl(raw);
+  const th = ytThumb(raw);
+
+  if (th) {
+    return `<div class="ex-media">
+      <img src="${esc(th)}" alt="${esc(e.name)}" loading="lazy">
+      <button class="play-orb" data-u="${esc(raw)}" onclick="playDemo(this.dataset.u)">▶</button>
+    </div>`;
+  }
+
+  // Local/static images, including files inside ./images/*.webp
+  if (/\.(webp|png|jpe?g|avif|gif)(\?|#|$)/i.test(raw)) {
+    return `<div class="ex-media">
+      <img src="${esc(u)}" alt="${esc(e.name)}" loading="lazy">
+    </div>`;
+  }
+
+  if (/\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(raw) || raw.includes("/storage/v1/object/public/videos/")) {
+    return `<div class="ex-media">
+      <video src="${esc(u)}#t=0.1" muted playsinline preload="metadata"></video>
+      <button class="play-orb" data-u="${esc(raw)}" onclick="playDemo(this.dataset.u)">▶</button>
+    </div>`;
+  }
+
+  return `<div class="ex-media" style="display:grid;place-items:center">
+    <span class="brand-nb" style="font-size:52px;opacity:.32">NB</span>
+    ${raw ? `<button class="play-orb" data-u="${esc(raw)}" onclick="playDemo(this.dataset.u)">▶</button>` : ""}
+  </div>`;
 }
 function renderTraining(){
   const w = currentWorkout(); const list = document.getElementById("exlist"), btn = document.getElementById("finishbtn"), hero=document.getElementById("training-hero");
@@ -963,8 +1024,10 @@ function openResultsWindow(){
     return label + line + dot;
   }).join("");
 
-  const bodyDir = location.href.split("/").slice(0, -1).join("/");
-  const bodyImg = bodyDir + "../images/body-" + ((me.gender === "male" || me.gender === "other") ? me.gender : "female") + ".webp";
+  const bodyGender = (me.gender === "male" || me.gender === "other") ? me.gender : "female";
+  // Build an ABSOLUTE URL before creating the blob window.
+  // Expected files: images/body-female.webp, body-male.webp, body-other.webp
+  const bodyImg = new URL(`images/body-${bodyGender}.webp`, window.location.href).href;
   
 
   const pts = logs.filter(p => p.weight_kg != null);
@@ -1092,13 +1155,31 @@ function endCall(){
 
 
 /* ---------------- ВИДЕО ПЛЕЙЪР ---------------- */
-function playDemo(u){
-  const isVideo = /\.(mp4|webm|mov|m4v)(\?|$)/i.test(u) || u.includes("/storage/v1/object/public/videos/");
-  if (!isVideo) { window.open(u, "_blank"); return; }
+function playDemo(raw){
+  const u = assetUrl(raw);
+  const isImage = /\.(webp|png|jpe?g|avif|gif)(\?|#|$)/i.test(raw || "");
+  const isVideo = /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(raw || "") ||
+                  String(raw || "").includes("/storage/v1/object/public/videos/");
+
+  if (isImage) {
+    const m = document.createElement("div");
+    m.className = "vmodal";
+    m.innerHTML = `<button class="vx" onclick="this.parentNode.remove()">Затвори ✕</button>
+                   <img src="${esc(u)}" alt="Демонстрация" style="max-width:100%;max-height:80vh;border-radius:12px;object-fit:contain">`;
+    m.addEventListener("click", ev => { if (ev.target === m) m.remove(); });
+    document.body.appendChild(m);
+    return;
+  }
+
+  if (!isVideo) {
+    window.open(u, "_blank", "noopener");
+    return;
+  }
+
   const m = document.createElement("div");
   m.className = "vmodal";
   m.innerHTML = `<button class="vx" onclick="this.parentNode.remove()">Затвори ✕</button>
-                 <video controls autoplay playsinline src="${u}"></video>`;
+                 <video controls autoplay playsinline src="${esc(u)}"></video>`;
   m.addEventListener("click", ev => { if (ev.target === m) m.remove(); });
   document.body.appendChild(m);
 }
@@ -1112,9 +1193,18 @@ function weekMonday(){
   return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
 }
 async function loadProgress(){
-  const { data } = await sb.from("nb_progress_logs").select("*")
+  const { data, error } = await sb.from("nb_progress_logs").select("*")
     .eq("program_id", program.id).order("week_start", { ascending: false });
-  progress = data || []; renderProgress();
+
+  if (error) {
+    console.error("NB Method: progress load failed", error);
+    const h = document.getElementById("prg-history");
+    if (h) h.innerHTML = `<div class="empty" style="padding:8px;color:#FFB4A0">Прогресът не можа да се зареди: ${esc(error.message)}</div>`;
+    return;
+  }
+
+  progress = data || [];
+  renderProgress();
 }
 function renderProgress(){
   const cur = progress.find(p => p.week_start === weekMonday());
@@ -1276,7 +1366,9 @@ function renderExerciseLibrary(){
   const q=(document.getElementById("lib-search")?.value||"").trim().toLowerCase();
   const seen=new Map(); exercises.forEach(e=>{const k=(e.name||"").trim().toLowerCase();if(k&&!seen.has(k))seen.set(k,e)});
   let rows=[...seen.values()]; if(libraryFilter==="video")rows=rows.filter(e=>e.demo_video_url); if(q)rows=rows.filter(e=>(e.name||"").toLowerCase().includes(q)||(e.coach_note||"").toLowerCase().includes(q));
-  el.innerHTML=rows.length?rows.map(e=>`<div class="card lib-card">${exerciseMedia(e)}<div class="lib-info"><strong>${esc(e.name)}</strong><small>${esc(e.sets_reps||"Виж в твоя план")}</small>${e.demo_video_url?`<button class="btn demo-btn" style="margin-top:10px" data-u="${esc(e.demo_video_url)}" onclick="playDemo(this.dataset.u)">▶ Демонстрация</button>`:""}</div></div>`).join(""):`<div class="card empty" style="grid-column:1/-1">${exercises.length?"Няма упражнение, което съвпада с филтъра.":"Видео библиотеката ще се попълни автоматично от упражненията в програмата ти."}</div>`;
+  el.innerHTML=rows.length?rows.map(e=>`<div class="card lib-card">${exerciseMedia(e)}<div class="lib-info"><strong>${esc(e.name)}</strong><small>${esc(e.sets_reps||"Виж в твоя план")}</small>${e.demo_video_url
+  ? `<button class="btn demo-btn" style="margin-top:10px" data-u="${esc(e.demo_video_url)}" onclick="playDemo(this.dataset.u)">${/\.(webp|png|jpe?g|avif|gif)(\?|#|$)/i.test(e.demo_video_url) ? "▣ Виж изображение" : "▶ Демонстрация"}</button>`
+  : ""}</div></div>`).join(""):`<div class="card empty" style="grid-column:1/-1">${exercises.length?"Няма упражнение, което съвпада с филтъра.":"Видео библиотеката ще се попълни автоматично от упражненията в програмата ти."}</div>`;
 }
 function renderChallenges(){
   const el=document.getElementById("challenge-content"); if(!el)return; const streak=habitStreakCount(), day=Math.min(streak,30), pct=Math.round(day/30*100); const today=dstr(new Date());
