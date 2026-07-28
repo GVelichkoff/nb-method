@@ -423,10 +423,10 @@
         </div>
       </div>
 
-      <button type="submit" class="cta-button" id="submitBtn">Изпрати апликацията →</button>
+      <button type="submit" class="cta-button" id="submitBtn">Изпрати заявката →</button>
       <div class="form-status" id="formStatus"></div>
 
-      <p class="footer-note">Недко Богданов преглежда апликациите лично. Ще се свържем с теб след преглед на заявката.</p>
+      <p class="footer-note">Недко Богданов преглежда заявките лично. Ще се свържем с теб след преглед на заявката.</p>
     </form>
   </main>
 
@@ -483,13 +483,13 @@
         status.className = "form-status error";
         status.textContent = "Заявката не беше изпратена. Моля, опитай отново.";
         btn.disabled = false;
-        btn.textContent = "Изпрати апликацията →";
+        btn.textContent = "Изпрати заяевлението →";
         return;
       }
 
       status.className = "form-status success";
-      status.textContent = "Готово. Апликацията е изпратена успешно.";
-      btn.textContent = "Апликацията е изпратена ✓";
+      status.textContent = "Готово. Заявлението е изпратена успешно.";
+      btn.textContent = "Заявлението е изпратена ✓";
       form.reset();
     });
   </script>
