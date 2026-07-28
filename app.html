@@ -1616,7 +1616,7 @@ function renderShop(){
 function copyShop(){
   const text = shopAgg().map(r => "• " + r.name + " — " + shopQty(r)).join("\n");
   navigator.clipboard.writeText("Списък за пазаруване · NB Method\n" + text)
-    .then(() => alert("Списъкът е копиран — пейстни го в Бележки или го прати на когото пазарува 🙂"))
+    .then(() => alert("Списъкът е копиран — постави го в Бележки или го прати на този, който пазарува 🙂"))
     .catch(() => alert("Копирането не сработи — маркирай и копирай ръчно."));
 }
 
@@ -1681,7 +1681,7 @@ function updateChatAvailability(){
   inp.placeholder = open ? "Напиши съобщение…" : "Чатът е затворен в момента";
   note.hidden = open;
   if (!open) {
-    note.innerHTML = `💤 Недко приема съобщения от <b>${CHAT_HOURS.from}:00 до ${CHAT_HOURS.to}:00 българско време</b> (в момента там е ${sofiaNow().text}). Можеш спокойно да четеш плана и да отчиташ тренировки — пиши му, щом чатът отвори.`;
+    note.innerHTML = `💤 Недко приема съобщения от <b>${CHAT_HOURS.from}:00 до ${CHAT_HOURS.to}:00 българско време</b> (в момента е ${sofiaNow().text} българско време). Можеш спокойно да четеш плана и да отчиташ тренировки — пиши му, щом чатът отвори.`;
   }
 }
 
