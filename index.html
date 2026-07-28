@@ -37,6 +37,18 @@
   .menu a:hover{color:var(--orange)}
   .menu .btn.orange{padding:10px 22px;font-size:13px}
   @media (max-width:760px){ .menu a:not(.btn){display:none} }
+  .brand-logo{
+  flex:0 0 auto;
+  max-width:220px;
+}
+
+.brand-logo img{
+  display:block;
+  width:auto;
+  height:52px;
+  max-width:100%;
+  object-fit:contain;
+}
 
   /* ================= HERO ================= */
   .hero{
@@ -234,26 +246,14 @@
 </head>
 <body>
 
-<!-- ================= МЕНЮ =================
+<!-- ================= МЕНЮ ================= -->
 <nav>
   <div class="navin">
-   <div style="display:flex;align-items:left;width:20%">
-      <a class="brand disp" href="#top"><img type="image/webp" src="images/logo-big.webp" /></a>
-    </div>
-    <div class="menu">
-      <a href="#categories">Планове</a>
-      <a href="#kontakt">Контакт</a>
-      <a class="btn orange disp" href="login.html">Вход</a>
-    </div>
-  </div>
-</nav> -->
+    <a class="brand brand-logo" href="#top">
+      <img src="images/logo-big.webp" alt="NB Method">
+    </a>
 
-<nav>
-  <div class="hwrap">
-    <div style="display:flex;align-items:center;gap:12px">
-      <a class="brand disp" href="app.html"><img src="images/logo-big.webp" /></a>
-    </div>
-    <div style="text-align:right">
+    <div class="menu">
       <a href="#categories">Планове</a>
       <a href="#kontakt">Контакт</a>
       <a class="btn orange disp" href="login.html">Вход</a>
