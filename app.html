@@ -994,37 +994,58 @@ function openResultsWindow(){
   const lastW = [...logs].reverse().find(l => l.weight_kg != null);
   const startDate = new Date(logs[0].week_start).toLocaleDateString("bg-BG",{day:"numeric",month:"short"});
 
-  // зони с числата на промяната (проценти по височината на тялото)
-// yp = височина %, xp = разстояние на точката от съответния край %
- const marks = [
-    { label: "Гърди", d: fmt(delta("chest_cm")), yp: 33, xp: 44, side: "r" },
-    { label: "Ръка",  d: fmt(delta("arm_cm")),   yp: 44, xp: 35, side: "l" },
-    { label: "Талия", d: fmt(delta("waist_cm")), yp: 44, xp: 46, side: "r" },
-    { label: "Ханш",  d: fmt(delta("hips_cm")),  yp: 53, xp: 44, side: "l" },
-    { label: "Бедро", d: fmt(delta("thigh_cm")), yp: 66, xp: 42, side: "r" },
-  ].filter(m => m.d);
+  // Таговете вече са вързани към координати ВЪРХУ самото изображение,
+  // а не към външния контейнер. Така остават на правилното място
+  // независимо от ширината на екрана.
+  const bodyGender = (me.gender === "male" || me.gender === "other") ? me.gender : "female";
+
+  const BODY_ANCHORS = {
+    female: {
+      chest: { x: 70, y: 30, side: "r" },
+      arm:   { x: 18, y: 32, side: "l" },
+      waist: { x: 66, y: 44, side: "r" },
+      hips:  { x: 35, y: 52, side: "l" },
+      thigh: { x: 67, y: 63, side: "r" }
+    },
+    male: {
+      chest: { x: 72, y: 28, side: "r" },
+      arm:   { x: 16, y: 32, side: "l" },
+      waist: { x: 64, y: 43, side: "r" },
+      hips:  { x: 35, y: 52, side: "l" },
+      thigh: { x: 67, y: 63, side: "r" }
+    },
+    other: {
+      chest: { x: 70, y: 29, side: "r" },
+      arm:   { x: 17, y: 32, side: "l" },
+      waist: { x: 64, y: 44, side: "r" },
+      hips:  { x: 36, y: 52, side: "l" },
+      thigh: { x: 67, y: 63, side: "r" }
+    }
+  };
+
+  const anchors = BODY_ANCHORS[bodyGender] || BODY_ANCHORS.female;
+
+  const marks = [
+    { key:"chest", label:"Гърди", d:fmt(delta("chest_cm")) },
+    { key:"arm",   label:"Ръка",  d:fmt(delta("arm_cm")) },
+    { key:"waist", label:"Талия", d:fmt(delta("waist_cm")) },
+    { key:"hips",  label:"Ханш",  d:fmt(delta("hips_cm")) },
+    { key:"thigh", label:"Бедро", d:fmt(delta("thigh_cm")) }
+  ].filter(m => m.d).map(m => ({ ...m, ...anchors[m.key] }));
 
   const marksHtml = marks.map(m => {
-    const isR = m.side === "r";
-    const edge = isR ? "right" : "left";
-    // текст до ръба
-    const label = '<div style="position:absolute;top:' + m.yp + '%;' + edge + ':2%;' +
-      'text-align:' + (isR ? 'left' : 'right') + ';transform:translateY(-50%)">' +
-      '<div style="font-size:11px;color:#9FB0B5;line-height:1.2">' + m.label + '</div>' +
-      '<div style="font-size:15px;font-weight:700;color:' + m.d.col + '">' + m.d.text + ' см</div>' +
-      '</div>';
-    // линия: от точката (xp%) до близо до текста (14% от ръба)
-    const lineStart = 14;
-    const lineWidth = Math.max(m.xp - lineStart, 4);
-    const line = '<div style="position:absolute;top:' + m.yp + '%;' + edge + ':' + lineStart + '%;' +
-      'width:' + lineWidth + '%;height:0;border-top:1.5px dashed #F97316"></div>';
-    // точка
-    const dot = '<div style="position:absolute;top:' + m.yp + '%;' + edge + ':' + m.xp + '%;' +
-      'width:8px;height:8px;background:#F97316;border-radius:50%;transform:translate(' + (isR ? '50%' : '-50%') + ',-50%)"></div>';
-    return label + line + dot;
+    const sideClass = m.side === "r" ? "right" : "left";
+    return `
+      <div class="body-mark ${sideClass}" style="--mx:${m.x}%;--my:${m.y}%">
+        <span class="body-dot"></span>
+        <span class="body-line"></span>
+        <span class="body-label">
+          <small>${m.label}</small>
+          <b style="color:${m.d.col}">${m.d.text} см</b>
+        </span>
+      </div>`;
   }).join("");
 
-  const bodyGender = (me.gender === "male" || me.gender === "other") ? me.gender : "female";
   // Build an ABSOLUTE URL before creating the blob window.
   // Expected files: images/body-female.webp, body-male.webp, body-other.webp
   const bodyImg = new URL(`images/body-${bodyGender}.webp`, window.location.href).href;
@@ -1056,8 +1077,20 @@ function openResultsWindow(){
     '.card{background:#112B34;border:1px solid #24424D;border-radius:14px;padding:16px;margin-bottom:12px}' +
     '.big{font-size:34px;font-weight:800;line-height:1.1}' +
     '.sub{color:#9FB0B5;font-size:13px}' +
-    '.bodybox{position:relative;max-width:300px;margin:0 auto}' +
-    '.bodybox img{width:42%;display:block;margin:0 auto}' +
+    '.bodycard{overflow:hidden;padding:18px 8px}' +
+    '.bodybox{--stage:180px;position:relative;width:var(--stage);margin:0 auto;overflow:visible}' +
+    '.bodybox img{width:100%;height:auto;display:block;margin:0;position:relative;z-index:1}' +
+    '.body-mark{position:absolute;left:var(--mx);top:var(--my);z-index:3;transform:translate(-50%,-50%)}' +
+    '.body-dot{position:absolute;left:0;top:0;width:8px;height:8px;border-radius:50%;background:#F97316;transform:translate(-50%,-50%);box-shadow:0 0 0 3px rgba(249,115,22,.18)}' +
+    '.body-line{position:absolute;top:-1px;width:70px;border-top:1.5px dashed #F97316}' +
+    '.body-label{position:absolute;top:0;width:88px;transform:translateY(-50%);line-height:1.12}' +
+    '.body-label small{display:block;color:#9FB0B5;font-size:10px;margin-bottom:3px}' +
+    '.body-label b{display:block;font-size:14px;white-space:nowrap}' +
+    '.body-mark.right .body-line{left:5px}' +
+    '.body-mark.right .body-label{left:80px;text-align:left}' +
+    '.body-mark.left .body-line{right:5px}' +
+    '.body-mark.left .body-label{right:80px;text-align:right}' +
+    '@media(max-width:420px){.bodybox{--stage:145px}.body-line{width:55px}.body-label{width:70px}.body-mark.right .body-label{left:64px}.body-mark.left .body-label{right:64px}.body-label b{font-size:12px}.body-label small{font-size:9px}}' +
     '.bar{position:fixed;left:0;right:0;bottom:0;background:#0A1A20;border-top:1px solid #24424D;' +
       'padding:12px 14px calc(12px + env(safe-area-inset-bottom));display:flex;justify-content:center}' +
     '.bar button{flex:1;max-width:340px;background:#112B34;border:1px solid #24424D;color:#F0EDE4;' +
@@ -1069,7 +1102,7 @@ function openResultsWindow(){
       '<div class="sub">от началото (' + startDate + ') · сега: ' + (lastW ? lastW.weight_kg + ' кг' : '—') +
       ' · ' + logs.length + ' седмици</div>' +
     '</div>' +
-    '<div class="card"><div class="bodybox"><img src="' + bodyImg + '" alt="Тяло">' + marksHtml + '</div></div>' +
+    '<div class="card bodycard"><div class="bodybox"><img src="' + bodyImg + '" alt="Тяло">' + marksHtml + '</div></div>' +
     (chart ? '<div class="card"><div class="sub" style="margin-bottom:6px">Тегло по седмици</div>' + chart + '</div>' : '') +
     '</div>' +
     '<div class="bar"><button onclick="window.close()">← Назад</button></div>' +
