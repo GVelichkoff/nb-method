@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bg">
 <head>
@@ -174,6 +175,17 @@
     .category-overview{grid-template-columns:repeat(2,minmax(0,1fr))}
     .category-overview .category-filter:first-child{grid-column:1/-1}
   }
+
+  /* ===== LOGO SAFETY ===== */
+  .brand{display:inline-flex;align-items:center;max-width:100%;text-decoration:none}
+  .brand img{display:block;width:auto;height:42px;max-width:180px;object-fit:contain}
+  .login .brand{justify-content:center;width:100%;margin-bottom:14px}
+  .login .brand img{height:auto;max-height:76px;max-width:240px}
+  @media(max-width:520px){
+    .brand img{height:36px;max-width:150px}
+    .login .brand img{height:auto;max-height:68px;max-width:210px}
+  }
+
 </style>
 </head>
 <body>
@@ -194,8 +206,9 @@
 <div id="screen-app" hidden>
 <header>
   <div class="hwrap">
-    <div style="display:flex;align-items:center;gap:12px">
-      <a class="brand disp" href="app.html"><img src="images/logo-big.webp" /></a>
+    <div style="display:flex;align-items:center;gap:12px;min-width:0">
+      <a class="brand disp" href="app.html"><img src="images/logo-big.webp" alt="NB Method" /></a>
+      <div id="username" style="font-size:12px;color:#9FB0B5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
     </div>
     <button class="logout" onclick="changePass()">Смяна на парола</button>
     <button class="logout" onclick="logout()">Изход</button>
@@ -551,30 +564,66 @@ document.getElementById("pass").addEventListener("keydown", e => { if (e.key ===
 
 /* ---------------- BOOT ---------------- */
 async function boot(){
-  const { data: { session } } = await sb.auth.getSession();
+  const { data: { session }, error: sessionError } = await sb.auth.getSession();
+  if (sessionError) {
+    console.error("NB Method coach: session error", sessionError);
+    return;
+  }
   if (!session) return;
-  const { data: profile } = await sb.from("nb_profiles").select("*").eq("id", session.user.id).single();
+
+  const { data: profile, error: profileError } = await sb
+    .from("nb_profiles")
+    .select("*")
+    .eq("id", session.user.id)
+    .single();
+
+  if (profileError || !profile) {
+    console.error("NB Method coach: profile load failed", profileError);
+    const err = document.getElementById("loginerr");
+    if (err) err.textContent = "Профилът на треньора не можа да се зареди.";
+    return;
+  }
+
   me = profile;
+
   if (me.role !== "coach") {
     alert("Този панел е само за треньора. Влез през клиентското приложение.");
-    await sb.auth.signOut(); location.reload(); return;
+    await sb.auth.signOut();
+    location.reload();
+    return;
   }
+
   document.getElementById("screen-login").hidden = true;
   document.getElementById("screen-app").hidden = false;
-  document.getElementById("username").textContent = me.full_name;
+
+  // Header-ът вече е с изображение на логото и #username не е задължителен.
+  const usernameEl = document.getElementById("username");
+  if (usernameEl) usernameEl.textContent = me.full_name || "";
+
   await checkCategorySupport();
   await loadFoods();
   await loadClients();
 }
 
 async function loadClients(){
+  const holder = document.getElementById("clients");
+  if (holder) holder.innerHTML = `<div class="card empty">Зареждане на клиентите…</div>`;
+
   const { data, error } = await sb.from("nb_client_programs")
     .select("*, client:client_id ( full_name )")
-    .eq("coach_id", me.id).order("program_name");
+    .eq("coach_id", me.id)
+    .order("program_name");
+
   if (error) {
-    document.getElementById("clients").innerHTML = `<div class="card empty">Грешка при зареждане на клиентите: ${esc(error.message)}</div>`;
+    console.error("NB Method coach: clients load failed", error);
+    if (holder) {
+      holder.innerHTML = `<div class="card empty" style="color:#FFB4A0">
+        Грешка при зареждане на клиентите: ${esc(error.message)}
+      </div>`;
+    }
     return;
   }
+
   programs = data || [];
 
   // непрочетени съобщения по програма
