@@ -966,7 +966,7 @@ function openResultsWindow(){
   }).join("");
 
   const bodyDir = location.href.split("/").slice(0, -1).join("/");
-  const bodyImg = bodyDir + "../images/body-" + ((me.gender === "male" || me.gender === "other") ? me.gender : "female") + ".webp";
+  const bodyImg = bodyDir + "images/body-" + ((me.gender === "male" || me.gender === "other") ? me.gender : "female") + ".webp";
   
 
   const pts = logs.filter(p => p.weight_kg != null);
