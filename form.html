@@ -324,7 +324,7 @@
         <img src="images/logo-big.webp" alt="NB Method">
       </a>
       <div class="tag">NB Method · Coaching Application</div>
-      <h1>Заяви апликация</h1>
+      <h1>Изпрати заявка</h1>
       <p>Работим с ограничен брой клиенти и с персонален подход. Попълни формата, за да прегледаме твоя профил и целите ти.</p>
     </div>
 
@@ -423,10 +423,10 @@
         </div>
       </div>
 
-      <button type="submit" class="cta-button" id="submitBtn">Изпрати заявката →</button>
+      <button type="submit" class="cta-button" id="submitBtn">Изпрати заевлението →</button>
       <div class="form-status" id="formStatus"></div>
 
-      <p class="footer-note">Недко Богданов преглежда заявките лично. Ще се свържем с теб след преглед на заявката.</p>
+      <p class="footer-note">Недко Богданов преглежда всяка заявка лично. Ще се свържем с теб.</p>
     </form>
   </main>
 
@@ -483,13 +483,13 @@
         status.className = "form-status error";
         status.textContent = "Заявката не беше изпратена. Моля, опитай отново.";
         btn.disabled = false;
-        btn.textContent = "Изпрати заяевлението →";
+        btn.textContent = "Изпрати заявлението →";
         return;
       }
 
       status.className = "form-status success";
-      status.textContent = "Готово. Заявлението е изпратена успешно.";
-      btn.textContent = "Заявлението е изпратена ✓";
+      status.textContent = "Готово. Заявлението е изпратено успешно.";
+      btn.textContent = "Заявлението е изпратено ✓";
       form.reset();
     });
   </script>
