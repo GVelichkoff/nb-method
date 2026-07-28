@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NB Method — Треньорски панел</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0D1B21">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+  :root{
+    --ink:#12242B; --paper:#F5F3EE; --card:#FFFFFF; --line:#E4E1D7;
+    --petrol:#0F4C5C; --petrol-soft:#E2EDF0;
+    --olive:#5F7A3D; --olive-soft:#EAF0DF;
+    --amber:#D98E22; --amber-soft:#FBEFDC;
+    --gray:#6C7A80; --danger:#B4432E;
+  }
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--paper);color:var(--ink);font-family:'Inter','Segoe UI',sans-serif;min-height:100vh}
+  .disp{font-family:'Oswald','Arial Narrow',sans-serif;text-transform:uppercase;letter-spacing:.04em}
+  header{background:var(--ink);color:#fff;padding:16px 0 14px}
+  .hwrap,.shell{max-width:1080px;margin:0 auto;padding:0 16px}
+  .hwrap{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .logo{background:#fff;color:var(--ink);font-weight:700;font-size:15px;padding:6px 10px;border-radius:8px}
+  .shell{padding-bottom:60px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+  h1{font-size:24px;margin:22px 0 4px}
+  .sub{color:var(--gray);font-size:14px;margin-bottom:16px}
+  .pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px}
+  .btn{border:none;cursor:pointer;font-family:inherit;font-weight:600;border-radius:10px;font-size:13px;padding:9px 14px}
+  .btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .btn.primary{background:var(--petrol);color:#fff}
+  .btn.ghost{background:var(--petrol-soft);color:var(--petrol)}
+  .btn.olive{background:var(--olive-soft);color:var(--olive)}
+  .btn.warn{background:#F7E3DE;color:var(--danger)}
+  .btn.small{padding:5px 10px;font-size:12px}
+  .empty{padding:24px;text-align:center;color:var(--gray);font-size:14px}
+  .err{color:var(--danger);font-size:13px;margin-top:10px;min-height:18px}
+  /* login */
+  .login{max-width:380px;margin:60px auto;padding:28px}
+  .login h1{margin:0 0 4px;font-size:24px}
+  .login p{color:var(--gray);font-size:13px;margin-bottom:18px}
+  .login label{font-size:12px;font-weight:600;color:var(--gray);display:block;margin:12px 0 4px}
+  .login input{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 14px;font-family:inherit;font-size:14px}
+  .login .btn{width:100%;margin-top:18px;padding:13px;font-size:14px}
+  /* client list */
+  .clientcard{padding:16px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;cursor:pointer}
+  .clientcard:hover{border-color:var(--petrol)}
+  .clientcard .nm{font-size:15px;font-weight:600}
+  .clientcard .pg{font-size:13px;color:var(--gray);margin-top:2px}
+  .badge{background:var(--danger);color:#fff;font-size:11px;font-weight:700;border-radius:999px;padding:3px 8px}
+  /* tabs */
+  .tabs{display:flex;gap:6px;margin:14px 0}
+  .tabs .btn{background:var(--card);border:1px solid var(--line);color:var(--ink)}
+  .tabs .btn.on{background:var(--petrol);color:#fff;border-color:var(--petrol)}
+  /* week editor */
+  .weekbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  select,input[type=text],input[type=number],input[type=time],input[type=url],input[type=datetime-local],textarea{
+    border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-family:inherit;font-size:13px;background:var(--card)}
+  select:focus,input:focus,textarea:focus{outline:2px solid var(--petrol);border-color:var(--petrol)}
+  .day{margin-bottom:14px;padding:16px}
+  .dayhead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+  .dayhead h3{font-size:15px}
+  .wo{border:1px solid var(--line);border-radius:12px;padding:12px;margin:8px 0;background:var(--paper)}
+  .wohead{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center}
+  .wohead strong{font-size:14px;color:var(--petrol)}
+  .exrow{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:7px 0;border-bottom:1px dashed var(--line);align-items:center}
+  .exrow:last-of-type{border-bottom:none}
+  .exrow .nm{font-weight:600}
+  .exrow .dt{color:var(--gray)}
+  .mealrow{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:8px 0;border-bottom:1px dashed var(--line);align-items:center}
+  .mealrow .sl{font-weight:600;color:var(--olive)}
+  .addform{display:grid;gap:6px;margin-top:8px;padding:12px;border:1px dashed var(--line);border-radius:10px;background:var(--card)}
+  .addform .row{display:flex;gap:6px;flex-wrap:wrap}
+  .addform input,.addform select{flex:1;min-width:90px}
+  .x{background:none;border:none;color:var(--danger);cursor:pointer;font-size:15px;padding:2px 6px}
+  /* chat */
+  .chatbox{padding:16px;display:flex;flex-direction:column;gap:12px;min-height:300px;max-height:55vh;overflow-y:auto}
+  .msg{max-width:82%}
+  .msg .bubble{padding:10px 14px;font-size:14px;line-height:1.45;word-wrap:break-word}
+  .msg.other{align-self:flex-start}
+  .msg.other .bubble{background:var(--paper);border:1px solid var(--line);border-radius:14px 14px 14px 4px}
+  .msg.me{align-self:flex-end}
+  .msg.me .bubble{background:var(--petrol);color:#fff;border-radius:14px 14px 4px 14px}
+  .msg .meta{font-size:11px;color:var(--gray);margin-top:3px}
+  .msg.me .meta{text-align:right}
+  .chatrow{display:flex;gap:8px;margin-top:10px}
+  .chatrow input{flex:1}
+  /* calls */
+  .callrow{padding:14px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13px;margin-bottom:8px;align-items:center}
+  .logout{background:none;border:none;color:#fff;opacity:.6;font-size:12px;cursor:pointer;font-family:inherit}
+  .vframe{margin:14px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#000}
+  .vframe-inner{height:70vh;min-height:420px}
+  .vclose{width:100%;background:var(--ink);color:#fff;padding:12px;font-size:13px;border-radius:0}
+  .back{background:none;border:none;color:var(--petrol);font-weight:600;cursor:pointer;font-size:13px;font-family:inherit;padding:0;margin-top:18px}
+  section[hidden],div[hidden]{display:none}
+
+  /* ============ ТЪМНА БРАНД ТЕМА (NB Method) ============ */
+  :root{--orange:#F97316}
+  body{background:#0D1B21;color:#F0EDE4}
+  header{background:#0A1A20}
+  .card{background:#112B34;border-color:#24424D}
+  .sub,.clientcard .pg,.empty,.msg .meta,.exrow .dt{color:#9FB0B5}
+  select,input,textarea{background:#0E222A !important;border-color:#2A4652 !important;color:#F0EDE4 !important}
+  input::placeholder{color:#7E939A}
+  .login p,.login label{color:#9FB0B5}
+  .err{color:#FFB4A0}
+  .btn.primary{background:var(--orange)}
+  .btn.ghost{background:rgba(237,106,47,.16);color:#FFA65C}
+  .btn.olive{background:rgba(169,199,125,.16);color:#B9D48A}
+  .btn.warn{background:rgba(255,140,110,.15);color:#FFB4A0}
+  .clientcard:hover{border-color:var(--orange)}
+  .tabs .btn{background:#112B34;color:#F0EDE4;border-color:#24424D}
+  .tabs .btn.on{background:var(--orange);border-color:var(--orange)}
+  .wo{background:#0E222A;border-color:#24424D}
+  .wo[style*="olive-soft"]{background:#15251A!important;border-color:#2C4A38!important}
+  .wohead strong{color:#FFA65C}
+  .wohead strong[style*="--olive"]{color:#B9D48A!important}
+  .exrow{border-bottom-color:#24424D}
+  .addform{border-color:#2A4652;background:#0E222A}
+  .msg.other .bubble{background:#0E222A;border-color:#2A4652}
+  .msg.me .bubble{background:#0F4C5C}
+  .pill[style*="amber-soft"]{background:#3D2C12!important;color:#FFA65C!important}
+  .pill[style*="olive-soft"]{background:#22331B!important;color:#B9D48A!important}
+  .pill[style*="#eee"]{background:#24333A!important;color:#9FB0B5!important}
+  .back{color:#FFA65C}
+  .callrow a{color:#FFA65C}
+  .btn.primary,.tabs .btn.on{color:#FFFFFF !important}
+  .coach-note{margin:10px 0 14px;padding:12px 14px;border:1px solid #2A4652;border-left:4px solid var(--orange);border-radius:10px;background:#0E222A;color:#B9C6CA;font-size:12.5px;line-height:1.55}
+  .coach-note strong{color:#fff}
+
+  /* ============ METHOD CATEGORIES ============ */
+  .category-overview{
+    display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:14px 0 18px
+  }
+  .category-filter{
+    background:#112B34;border:1px solid #24424D;border-radius:12px;padding:12px 10px;
+    color:#F0EDE4;cursor:pointer;text-align:left;font-family:inherit;transition:.15s
+  }
+  .category-filter:hover{border-color:#4B6570;transform:translateY(-1px)}
+  .category-filter.on{border-color:var(--orange);box-shadow:0 0 0 1px var(--orange) inset}
+  .category-filter .cat-name{display:block;font-size:11px;font-weight:700;letter-spacing:.08em}
+  .category-filter .cat-count{display:block;font-size:22px;font-weight:700;margin-top:3px}
+  .category-filter .cat-sub{display:block;color:#8EA2A9;font-size:10.5px;margin-top:2px}
+  .category-filter[data-cat="EVERYDAY"] .cat-name,.cat-pill.everyday{color:#7FC6D8}
+  .category-filter[data-cat="ADAPT"] .cat-name,.cat-pill.adapt{color:#B9D48A}
+  .category-filter[data-cat="PERFORMANCE"] .cat-name,.cat-pill.performance{color:#FFA65C}
+  .category-filter[data-cat="ELITE"] .cat-name,.cat-pill.elite{color:#D7B6FF}
+
+  .category-warning{
+    margin:10px 0 16px;padding:12px 14px;border-radius:10px;
+    border:1px solid #6B4A22;background:#2F2418;color:#F6C98B;font-size:12.5px;line-height:1.5
+  }
+  .client-group{margin:18px 0 24px}
+  .client-group-head{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-bottom:8px}
+  .client-group-title{font-size:15px;font-weight:700}
+  .client-group-desc{font-size:11px;color:#8EA2A9;margin-top:2px}
+  .client-group-count{font-size:12px;color:#9FB0B5}
+  .cat-pill{
+    display:inline-block;border:1px solid #31505C;background:#0E222A;border-radius:999px;
+    padding:3px 8px;font-size:10px;font-weight:700;letter-spacing:.08em;vertical-align:1px
+  }
+  .client-category-edit{
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 4px
+  }
+  .client-category-edit label{font-size:11px;color:#8EA2A9;font-weight:700;letter-spacing:.08em}
+  .client-category-edit select{min-width:180px}
+  @media (max-width:760px){
+    .category-overview{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .category-overview .category-filter:first-child{grid-column:1/-1}
+  }
+</style>
+</head>
+<body>
+
+<div id="screen-login">
+  <div class="card login">
+    <div class="logo disp" style="display:inline-block;margin-bottom:14px">NB</div>
+    <h1 class="disp">NB Method</h1>
+    <p>Треньорски панел</p>
+    <label for="email">Имейл</label>
+    <input id="email" type="email" autocomplete="email">
+    <label for="pass">Парола</label>
+    <input id="pass" type="password" autocomplete="current-password">
+    <button class="btn primary" onclick="login()">Вход</button>
+    <div class="err" id="loginerr"></div>
+  </div>
+</div>
+
+<div id="screen-app" hidden>
+<header>
+  <div class="hwrap">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo disp">NB</div>
+      <div>
+        <div class="disp" style="font-size:16px;font-weight:600">NB Method · Треньор</div>
+        <div style="font-size:12px;opacity:.65" id="username"></div>
+      </div>
+    </div>
+    <button class="logout" onclick="changePass()">Смяна на парола</button>
+    <button class="logout" onclick="logout()">Изход</button>
+  </div>
+</header>
+
+<main class="shell">
+
+  <!-- СПИСЪК КЛИЕНТИ -->
+  <div id="view-list">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <div><h1 class="disp">Клиенти</h1><p class="sub" id="list-sub"></p></div>
+      <button class="btn primary" onclick="toggle('addclient')">＋ Добави клиент</button>
+    </div>
+    <div class="category-overview" id="category-filters">
+      <button class="category-filter on" data-cat="ALL" onclick="setCategoryFilter('ALL')">
+        <span class="cat-name disp">Всички</span><span class="cat-count" id="cat-count-ALL">0</span><span class="cat-sub">активни клиенти</span>
+      </button>
+      <button class="category-filter" data-cat="EVERYDAY" onclick="setCategoryFilter('EVERYDAY')">
+        <span class="cat-name disp">Everyday</span><span class="cat-count" id="cat-count-EVERYDAY">0</span><span class="cat-sub">general fitness</span>
+      </button>
+      <button class="category-filter" data-cat="ADAPT" onclick="setCategoryFilter('ADAPT')">
+        <span class="cat-name disp">Adapt</span><span class="cat-count" id="cat-count-ADAPT">0</span><span class="cat-sub">adapted training</span>
+      </button>
+      <button class="category-filter" data-cat="PERFORMANCE" onclick="setCategoryFilter('PERFORMANCE')">
+        <span class="cat-name disp">Performance</span><span class="cat-count" id="cat-count-PERFORMANCE">0</span><span class="cat-sub">advanced & competitive</span>
+      </button>
+      <button class="category-filter" data-cat="ELITE" onclick="setCategoryFilter('ELITE')">
+        <span class="cat-name disp">Elite</span><span class="cat-count" id="cat-count-ELITE">0</span><span class="cat-sub">professional athletes</span>
+      </button>
+    </div>
+    <div class="category-warning" id="category-db-warning" hidden>
+      За постоянно записване на категориите е нужна колоната <strong>method_category</strong> в Supabase.
+      Приложи приложения SQL migration файл веднъж. Дотогава панелът ще използва временно автоматично разпознаване.
+    </div>
+    <div class="card addform" id="addclient" hidden>
+      <div class="row">
+        <input type="text" id="ac-name" placeholder="Име и фамилия на клиента">
+        <input type="email" id="ac-email" placeholder="Имейл на клиента (акаунтът трябва да съществува)">
+      </div>
+      <div class="row">
+        <input type="text" id="ac-program" placeholder="Основна цел / програма, напр. сила, редукция, връщане към движение" style="flex:1">
+      </div>
+      <div class="row">
+        <input type="number" id="ac-kcal" placeholder="Цел ккал/ден (по избор)">
+        <input type="number" id="ac-protein" placeholder="Цел протеин г/ден (по избор)">
+      </div>
+      <div class="row">
+        <select id="ac-category" style="flex:1">
+          <option value="EVERYDAY">EVERYDAY — общ фитнес / трансформация</option>
+          <option value="ADAPT">ADAPT — адаптирано трениране</option>
+          <option value="PERFORMANCE">PERFORMANCE — напреднали / състезатели</option>
+          <option value="ELITE">ELITE — професионални спортисти</option>
+        </select>
+      </div>
+      <div class="row">
+        <select id="ac-gender" style="flex:1">
+          <option value="">Пол (по избор)</option>
+          <option value="female">Жена</option>
+          <option value="male">Мъж</option>
+          <option value="other">Друго / без значение</option>
+        </select>
+        <select id="ac-sub" style="flex:1">
+          <option value="">Тип абонамент (по избор)</option>
+          <option value="Старт">Старт</option>
+          <option value="Insider">Insider</option>
+          <option value="Total 1:1">Total 1:1</option>
+        </select>
+      </div>
+      <div class="row">
+        <input type="text" id="ac-health" placeholder="Специална здравословна програма — опиши състоянието или остави празно" style="flex:1">
+        <button class="btn primary" onclick="addClient()">Добави</button>
+      </div>
+      <div class="err" id="ac-err"></div>
+    </div>
+    <div id="clients"></div>
+  </div>
+
+  <!-- ДЕТАЙЛ КЛИЕНТ -->
+  <div id="view-client" hidden>
+    <button class="back" onclick="backToList()">← Всички клиенти</button>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <h1 class="disp" id="cl-name" style="margin-bottom:0"></h1>
+      <button class="btn ghost" type="button" onclick="editClientName()" title="Промени името на клиента">✎ Промени име</button>
+    </div>
+    <p class="sub" id="cl-sub"></p>
+    <div class="client-category-edit">
+      <label class="disp" for="cl-category">Method category</label>
+      <select id="cl-category">
+        <option value="EVERYDAY">EVERYDAY</option>
+        <option value="ADAPT">ADAPT</option>
+        <option value="PERFORMANCE">PERFORMANCE</option>
+        <option value="ELITE">ELITE</option>
+      </select>
+      <button class="btn ghost small" type="button" onclick="saveClientCategory()">Запази категория</button>
+    </div>
+    <div class="coach-note" id="category-note"></div>
+    <div class="tabs">
+      <button class="btn on" data-tab="weeks" onclick="ctab('weeks')">Седмици</button>
+      <button class="btn" data-tab="chat" onclick="ctab('chat')">Чат</button>
+      <button class="btn" data-tab="calls" onclick="ctab('calls')">Разговори</button>
+      <button class="btn" data-tab="progress" onclick="ctab('progress')">Прогрес & check-in</button>
+    </div>
+
+    <!-- Седмици -->
+    <div id="ctab-weeks">
+      <div class="weekbar">
+        <select id="weeksel" onchange="pickWeek(this.value)"></select>
+        <button class="btn ghost" onclick="newWeek(false)">＋ Нова празна седмица</button>
+        <button class="btn ghost" onclick="newWeek(true)">⧉ Нова седмица (копие на последната)</button>
+        <button class="btn warn" onclick="delWeek()">✕ Изтрий седмицата</button>
+      </div>
+      <div style="margin-bottom:10px">
+        <button class="btn olive small" onclick="toggle('newfood')">＋ Нова храна в списъка</button>
+      </div>
+      <div class="card addform" id="newfood" hidden style="margin-bottom:14px">
+        <div class="row">
+          <input type="text" id="nf-name" placeholder="Име, напр. Киноа (суров)">
+          <select id="nf-piece" style="max-width:130px">
+            <option value="100g">на 100 г</option>
+            <option value="piece">на брой/доза</option>
+          </select>
+          <input type="number" step="0.1" id="nf-kcal" placeholder="ккал" style="max-width:80px">
+        </div>
+        <div class="row">
+          <input type="number" step="0.01" id="nf-carbs" placeholder="Въгл. г" style="max-width:90px">
+          <input type="number" step="0.01" id="nf-fiber" placeholder="Фибри г" style="max-width:90px">
+          <input type="number" step="0.01" id="nf-fat" placeholder="Мазн. г" style="max-width:90px">
+          <input type="number" step="0.01" id="nf-prot" placeholder="Прот. г" style="max-width:90px">
+          <button class="btn primary small" onclick="saveFood()">Запази храната</button>
+        </div>
+      </div>
+      <datalist id="foodlist"></datalist>
+      <div class="card addform" style="margin-bottom:14px">
+        <div class="row">
+          <input type="text" id="wknotes" placeholder="Фокус / адаптации за седмицата (клиентът ги вижда)">
+          <button class="btn olive" onclick="saveNotes()">Запази бележките</button>
+        </div>
+      </div>
+      <div id="days"></div>
+    </div>
+
+    <!-- Чат -->
+    <div id="ctab-chat" hidden>
+      <div class="card chatbox" id="chatbox"></div>
+      <div class="chatrow">
+        <input id="chatin" placeholder="Напиши съобщение…" aria-label="Съобщение">
+        <button class="btn primary" onclick="sendMsg()">Изпрати</button>
+      </div>
+    </div>
+
+    <!-- Разговори -->
+    <div id="ctab-calls" hidden>
+      <div class="card callrow" style="border-left:4px solid var(--amber)">
+        <span><strong>Видео стая с клиента</strong> — обща за вас двамата, винаги отворена.</span>
+        <button class="btn primary" onclick="startCall()">▶ Влез във видео стаята</button>
+      </div>
+      <div class="vframe" id="vframe" hidden>
+        <div class="vframe-inner" id="vframe-inner"></div>
+        <button class="btn vclose" onclick="endCall()">Затвори видео разговора</button>
+      </div>
+      <div class="card addform" style="margin-bottom:14px">
+        <div class="row">
+          <input type="datetime-local" id="call-dt">
+          <input type="number" id="call-min" placeholder="Мин." value="30" style="max-width:90px">
+          <input type="text" id="call-topic" placeholder="Тема">
+        </div>
+        <div class="row">
+          <input type="url" id="call-url" placeholder="Линк за срещата (Whereby / Meet)">
+          <button class="btn primary" onclick="addCall()">Насрочи</button>
+        </div>
+      </div>
+      <div id="callslist"></div>
+    </div>
+
+    <!-- Прогрес -->
+    <div id="ctab-progress" hidden>
+      <div class="card addform" style="margin-bottom:14px">
+        <div class="row">
+          <input type="text" id="hb-icon" placeholder="Емоджи" style="max-width:80px" value="💧">
+          <input type="text" id="hb-title" placeholder="Навик, напр. Изпий 2 л вода">
+          <button class="btn primary small" onclick="addHabit()">＋ Добави навик</button>
+        </div>
+      </div>
+      <div class="card" style="padding:14px 16px;margin-bottom:14px" id="cl-habits"></div>
+      <div class="card" style="padding:14px 16px;overflow-x:auto" id="cl-progress"></div>
+    </div>
+  </div>
+
+  <datalist id="slotlist">
+    <option>закуска</option><option>втора закуска</option><option>обяд</option>
+    <option>втори обяд</option><option>след трен</option><option>вечеря</option>
+  </datalist>
+</main>
+</div>
+
+<script>
+/* ============================================================
+   НАСТРОЙКА — същите стойности като в клиентското приложение
+   ============================================================ */
+const SUPABASE_URL = "https://ncajmvrwueobqbiebphm.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_alDMU4EFhjzX1-XgcvKN-A_Pa5Y_uXH";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const DAYS = ["Понеделник","Вторник","Сряда","Четвъртък","Петък","Събота","Неделя"];
+const SLOTS = ["закуска","втора закуска","обяд","втори обяд","след трен","вечеря"];
+const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+let me, programs = [], unread = {}, cur = null;
+let weeks = [], wk = null, workouts = [], exercises = [], meals = [], mealItems = [];
+let FOODS = [];
+let calls = [], msgs = [], chatChannel = null;
+
+const METHOD_CATEGORIES = {
+  EVERYDAY: {
+    label: "EVERYDAY",
+    desc: "General fitness, навици и body transformation",
+    note: "<strong>NB Everyday:</strong> Фокус върху устойчив прогрес, техника, навици, хранене и програма, която работи в реалното ежедневие."
+  },
+  ADAPT: {
+    label: "ADAPT",
+    desc: "Адаптирано трениране при ограничения и специфичен контекст",
+    note: "<strong>NB Adapt:</strong> При нова болка, ограничение или промяна в здравословното състояние първо актуализирай тренировъчния контекст и работи в рамките на предоставените професионални препоръки."
+  },
+  PERFORMANCE: {
+    label: "PERFORMANCE",
+    desc: "Напреднали и състезатели — performance, load и periodization",
+    note: "<strong>NB Performance:</strong> Следи тренировъчния товар, RPE, възстановяването, performance тестовете и състезателния календар. Промените трябва да имат ясна performance цел."
+  },
+  ELITE: {
+    label: "ELITE",
+    desc: "Професионални спортисти — high-touch performance coaching",
+    note: "<strong>NB Elite:</strong> Работи с periodization, readiness, recovery, video analysis и competition planning. Данните подпомагат решението на треньора, но не заменят медицинска или физиотерапевтична преценка."
+  }
+};
+
+let categoryFilter = "ALL";
+let hasCategoryColumn = true;
+
+function normalizeCategory(value){
+  const v = String(value || "").trim().toUpperCase();
+  return METHOD_CATEGORIES[v] ? v : null;
+}
+
+function programCategory(p){
+  const saved = normalizeCategory(p?.method_category);
+  if (saved) return saved;
+
+  // Временен fallback за бази, в които migration-ът още не е приложен.
+  if (p?.special_health_program) return "ADAPT";
+  const hay = `${p?.program_name || ""} ${p?.subscription_type || ""}`.toLowerCase();
+  if (/\belite\b|професионал|professional/.test(hay)) return "ELITE";
+  if (/performance|състез|атлет|athlete|спорт|sport/.test(hay)) return "PERFORMANCE";
+  return "EVERYDAY";
+}
+
+function categoryClass(cat){ return String(cat || "EVERYDAY").toLowerCase(); }
+
+function categoryPill(cat){
+  return `<span class="cat-pill ${categoryClass(cat)}">${esc(cat)}</span>`;
+}
+
+async function checkCategorySupport(){
+  const { error } = await sb.from("nb_client_programs").select("method_category").limit(1);
+  hasCategoryColumn = !error;
+  const warning = document.getElementById("category-db-warning");
+  if (warning) warning.hidden = hasCategoryColumn;
+}
+
+function setCategoryFilter(cat){
+  categoryFilter = cat;
+  document.querySelectorAll(".category-filter").forEach(b => b.classList.toggle("on", b.dataset.cat === cat));
+  renderClientList();
+}
+
+function renderCategoryFilters(){
+  const counts = { ALL: programs.length, EVERYDAY:0, ADAPT:0, PERFORMANCE:0, ELITE:0 };
+  programs.forEach(p => counts[programCategory(p)]++);
+  Object.entries(counts).forEach(([cat,n]) => {
+    const el = document.getElementById("cat-count-" + cat);
+    if (el) el.textContent = n;
+  });
+  document.getElementById("list-sub").textContent =
+    `${programs.length} активни програми · ${counts.EVERYDAY} Everyday · ${counts.ADAPT} Adapt · ${counts.PERFORMANCE} Performance · ${counts.ELITE} Elite`;
+}
+
+function renderClientCard(p){
+  const cat = programCategory(p);
+  return `
+    <div class="card clientcard" onclick="openClient('${p.id}')">
+      <div>
+        <div class="nm">${esc(p.client?.full_name || "—")}${p.special_health_program ? ` <span title="${esc(p.special_health_program)}" style="color:#FFA65C">⚕️</span>` : ""}</div>
+        <div class="pg">${esc(p.program_name)} · Седмица ${p.current_week} · ${p.status === "active" ? "активна" : esc(p.status)}</div>
+        <div style="margin-top:5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          ${categoryPill(cat)}
+          ${p.subscription_type ? `<span style="font-size:11px;font-weight:600;background:#143E4C;color:#7FC6D8;padding:3px 9px;border-radius:999px">${esc(p.subscription_type)}</span>` : ""}
+          ${p.special_health_program ? `<span style="font-size:11px;color:#FFA65C">⚕️ ${esc(p.special_health_program)}</span>` : ""}
+        </div>
+      </div>
+      ${unread[p.id] ? `<span class="badge">${unread[p.id]} ново</span>` : ""}
+    </div>`;
+}
+
+function renderClientList(){
+  const holder = document.getElementById("clients");
+  if (!programs.length) {
+    holder.innerHTML = `<div class="card empty">Още нямаш клиенти — добави първия с бутона горе.</div>`;
+    return;
+  }
+
+  const cats = categoryFilter === "ALL"
+    ? ["EVERYDAY","ADAPT","PERFORMANCE","ELITE"]
+    : [categoryFilter];
+
+  const html = cats.map(cat => {
+    const list = programs.filter(p => programCategory(p) === cat);
+    if (!list.length && categoryFilter === "ALL") return "";
+    const meta = METHOD_CATEGORIES[cat];
+    return `<div class="client-group">
+      <div class="client-group-head">
+        <div>
+          <div class="client-group-title disp">${categoryPill(cat)} ${esc(meta.label)}</div>
+          <div class="client-group-desc">${esc(meta.desc)}</div>
+        </div>
+        <div class="client-group-count">${list.length} ${list.length === 1 ? "клиент" : "клиента"}</div>
+      </div>
+      ${list.length ? list.map(renderClientCard).join("") : `<div class="card empty">Няма клиенти в тази категория.</div>`}
+    </div>`;
+  }).join("");
+
+  holder.innerHTML = html || `<div class="card empty">Няма клиенти в тази категория.</div>`;
+}
+
+function renderClientCategoryContext(cat){
+  const c = normalizeCategory(cat) || "EVERYDAY";
+  const note = document.getElementById("category-note");
+  if (note) note.innerHTML = METHOD_CATEGORIES[c].note;
+}
+
+/* ---------------- AUTH ---------------- */
+async function login(){
+  const err = document.getElementById("loginerr");
+  err.textContent = "";
+  const { error } = await sb.auth.signInWithPassword({
+    email: document.getElementById("email").value.trim(),
+    password: document.getElementById("pass").value,
+  });
+  if (error) { err.textContent = "Грешка: " + error.message; return; }
+  boot();
+}
+async function logout(){ await sb.auth.signOut(); location.reload(); }
+document.getElementById("pass").addEventListener("keydown", e => { if (e.key === "Enter") login(); });
+
+/* ---------------- BOOT ---------------- */
+async function boot(){
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;
+  const { data: profile } = await sb.from("nb_profiles").select("*").eq("id", session.user.id).single();
+  me = profile;
+  if (me.role !== "coach") {
+    alert("Този панел е само за треньора. Влез през клиентското приложение.");
+    await sb.auth.signOut(); location.reload(); return;
+  }
+  document.getElementById("screen-login").hidden = true;
+  document.getElementById("screen-app").hidden = false;
+  document.getElementById("username").textContent = me.full_name;
+  await checkCategorySupport();
+  await loadFoods();
+  await loadClients();
+}
+
+async function loadClients(){
+  const { data, error } = await sb.from("nb_client_programs")
+    .select("*, client:client_id ( full_name )")
+    .eq("coach_id", me.id).order("program_name");
+  if (error) {
+    document.getElementById("clients").innerHTML = `<div class="card empty">Грешка при зареждане на клиентите: ${esc(error.message)}</div>`;
+    return;
+  }
+  programs = data || [];
+
+  // непрочетени съобщения по програма
+  const { data: un } = await sb.from("nb_messages")
+    .select("program_id").is("read_at", null).neq("sender_id", me.id);
+  unread = {};
+  (un || []).forEach(m => unread[m.program_id] = (unread[m.program_id] || 0) + 1);
+
+  renderCategoryFilters();
+  renderClientList();
+}
+
+function toggle(id){ const el = document.getElementById(id); el.hidden = !el.hidden; }
+
+async function setClientName(clientId, fullName){
+  const cleanName = (fullName || "").trim();
+  if (!clientId || cleanName.length < 2) {
+    return { ok:false, error:"Въведи валидно име на клиента." };
+  }
+
+  // Първо опитваме директно обновяване. Ако RLS не позволява на треньора
+  // да редактира nb_profiles, използваме защитената RPC функция от
+  // supabase-client-name-fix.sql.
+  const direct = await sb.from("nb_profiles")
+    .update({ full_name: cleanName })
+    .eq("id", clientId)
+    .select("id");
+
+  if (!direct.error && direct.data && direct.data.length) return { ok:true };
+
+  const viaRpc = await sb.rpc("nb_set_client_name", {
+    p_client_id: clientId,
+    p_full_name: cleanName,
+  });
+  if (!viaRpc.error) return { ok:true };
+
+  return {
+    ok:false,
+    error: viaRpc.error.message || direct.error?.message || "Името не можа да бъде записано."
+  };
+}
+
+async function addClient(){
+  const err = document.getElementById("ac-err"); err.textContent = "";
+  const name = document.getElementById("ac-name").value.trim();
+  const email = document.getElementById("ac-email").value.trim();
+  const prog = document.getElementById("ac-program").value.trim();
+  if (!name || !email || !prog) {
+    err.textContent = "Име, имейл и основна цел / програма са задължителни.";
+    return;
+  }
+  if (name.length < 2) { err.textContent = "Въведи валидно име на клиента."; return; }
+
+  // Запомняме съществуващите програми, за да намерим точно новосъздадената.
+  const beforeIds = new Set(programs.map(p => p.id));
+  const category = normalizeCategory(document.getElementById("ac-category").value) || "EVERYDAY";
+  const gender = document.getElementById("ac-gender").value || null;
+  const sub = document.getElementById("ac-sub").value || null;
+  const health = document.getElementById("ac-health").value.trim() || null;
+  const { error } = await sb.rpc("nb_add_client", {
+    p_email: email, p_program: prog,
+    p_kcal: parseInt(document.getElementById("ac-kcal").value) || null,
+    p_protein: parseInt(document.getElementById("ac-protein").value) || null,
+    p_gender: gender,
+    p_subscription: sub,
+    p_health: health,
+  });
+  if (error) { err.textContent = error.message; return; }
+
+  const after = await sb.from("nb_client_programs")
+    .select("id,client_id")
+    .eq("coach_id", me.id);
+  const created = (after.data || []).find(p => !beforeIds.has(p.id));
+
+  if (created?.client_id) {
+    if (hasCategoryColumn) {
+      const categorySave = await sb.from("nb_client_programs")
+        .update({ method_category: category })
+        .eq("id", created.id);
+      if (categorySave.error) {
+        console.warn("Method category was not saved:", categorySave.error.message);
+      }
+    }
+
+    const rename = await setClientName(created.client_id, name);
+    if (!rename.ok) {
+      await loadClients();
+      err.textContent = "Клиентът е добавен, но името не беше записано: " + rename.error +
+        " Пусни файла supabase-client-name-fix.sql веднъж в Supabase SQL Editor.";
+      return;
+    }
+  } else {
+    await loadClients();
+    err.textContent = "Клиентът е добавен, но не успях да открия новата програма, за да запиша името. Обнови страницата и използвай „Промени име“ в профила му.";
+    return;
+  }
+
+  document.getElementById("addclient").hidden = true;
+  ["ac-name","ac-email","ac-program","ac-kcal","ac-protein","ac-gender","ac-sub","ac-health"].forEach(i => document.getElementById(i).value = "");
+  document.getElementById("ac-category").value = "EVERYDAY";
+  await loadClients();
+  if (!hasCategoryColumn && category !== "EVERYDAY") {
+    alert("Клиентът е добавен, но избраната Method категория няма да се запази постоянно, докато не приложиш nb_method_category_migration.sql в Supabase.");
+  }
+}
+
+async function editClientName(){
+  if (!cur?.client_id) return;
+  const currentName = (cur.client?.full_name || "").trim();
+  const suggested = /^нов клиент$/i.test(currentName) ? "" : currentName;
+  const entered = prompt("Име и фамилия на клиента:", suggested);
+  if (entered === null) return;
+  const name = entered.trim();
+  if (name.length < 2) { alert("Въведи валидно име на клиента."); return; }
+
+  const result = await setClientName(cur.client_id, name);
+  if (!result.ok) {
+    alert("Името не беше записано: " + result.error +
+      "\n\nАко това е първото обновяване, пусни supabase-client-name-fix.sql веднъж в Supabase SQL Editor.");
+    return;
+  }
+
+  const pid = cur.id;
+  await loadClients();
+  cur = programs.find(p => p.id === pid) || cur;
+  document.getElementById("cl-name").textContent = cur.client?.full_name || name;
+}
+
+/* ---------------- КЛИЕНТ ДЕТАЙЛ ---------------- */
+async function openClient(pid){
+  cur = programs.find(p => p.id === pid);
+  document.getElementById("view-list").hidden = true;
+  document.getElementById("view-client").hidden = false;
+  document.getElementById("cl-name").textContent = cur.client?.full_name || "";
+  const cat = programCategory(cur);
+  document.getElementById("cl-category").value = cat;
+  renderClientCategoryContext(cat);
+  document.getElementById("cl-sub").innerHTML =
+    `${categoryPill(cat)} &nbsp; ${esc(cur.program_name)} · Седмица ${cur.current_week}` +
+    (cur.daily_kcal_target ? ` · Цел ${cur.daily_kcal_target} ккал` : "");
+  ctab("weeks");
+  await loadWeeks();
+  await loadChat(); subscribeChat();
+  await loadCalls();
+  await loadClientProgress();
+  await loadClientHabits();
+}
+async function saveClientCategory(){
+  if (!cur) return;
+  const cat = normalizeCategory(document.getElementById("cl-category").value) || "EVERYDAY";
+
+  if (!hasCategoryColumn) {
+    alert("Категорията не може да се запише постоянно, защото в Supabase още няма колона method_category. Приложи nb_method_category_migration.sql и обнови страницата.");
+    return;
+  }
+
+  const { error } = await sb.from("nb_client_programs")
+    .update({ method_category: cat })
+    .eq("id", cur.id);
+
+  if (error) {
+    alert("Категорията не беше записана: " + error.message);
+    return;
+  }
+
+  cur.method_category = cat;
+  const inList = programs.find(p => p.id === cur.id);
+  if (inList) inList.method_category = cat;
+  renderClientCategoryContext(cat);
+  document.getElementById("cl-sub").innerHTML =
+    `${categoryPill(cat)} &nbsp; ${esc(cur.program_name)} · Седмица ${cur.current_week}` +
+    (cur.daily_kcal_target ? ` · Цел ${cur.daily_kcal_target} ккал` : "");
+  renderCategoryFilters();
+}
+
+function backToList(){
+  endCall();
+  if (chatChannel) { sb.removeChannel(chatChannel); chatChannel = null; }
+  document.getElementById("view-client").hidden = true;
+  document.getElementById("view-list").hidden = false;
+  loadClients();
+}
+function ctab(t){
+  ["weeks","chat","calls","progress"].forEach(x => document.getElementById("ctab-" + x).hidden = x !== t);
+  document.querySelectorAll(".tabs .btn").forEach(b => b.classList.toggle("on", b.dataset.tab === t));
+  if (t === "chat") markRead();
+}
+
+/* ---------------- СЕДМИЦИ ---------------- */
+async function loadWeeks(){
+  const { data } = await sb.from("nb_weekly_plans")
+    .select("*").eq("program_id", cur.id).order("week_number", { ascending: false });
+  weeks = data || [];
+  const sel = document.getElementById("weeksel");
+  sel.innerHTML = weeks.length ? weeks.map(w =>
+    `<option value="${w.id}">Седмица ${w.week_number} (от ${w.week_start})</option>`).join("")
+    : `<option value="">Няма седмици</option>`;
+  if (weeks.length) await pickWeek(weeks[0].id);
+  else { wk = null; document.getElementById("days").innerHTML = `<div class="card empty">Създай първата седмица с бутона горе.</div>`; }
+}
+
+async function pickWeek(id){
+  wk = weeks.find(w => w.id === id); if (!wk) return;
+  document.getElementById("weeksel").value = id;
+  document.getElementById("wknotes").value = wk.coach_notes || "";
+  const [{ data: w }, { data: m }] = await Promise.all([
+    sb.from("nb_workouts").select("*").eq("weekly_plan_id", wk.id).order("day_of_week"),
+    sb.from("nb_meals").select("*").eq("weekly_plan_id", wk.id).order("day_of_week"),
+  ]);
+  workouts = w || []; meals = m || [];
+  const ids = workouts.map(x => x.id);
+  exercises = [];
+  if (ids.length) {
+    const { data: ex } = await sb.from("nb_workout_exercises").select("*").in("workout_id", ids).order("position");
+    exercises = ex || [];
+  }
+  mealItems = [];
+  const mids = meals.map(x => x.id);
+  if (mids.length) {
+    const { data: mi } = await sb.from("nb_meal_items").select("*").in("meal_id", mids).order("position");
+    mealItems = mi || [];
+  }
+  renderDays();
+}
+
+async function saveNotes(){
+  if (!wk) return;
+  const notes = document.getElementById("wknotes").value;
+  await sb.from("nb_weekly_plans").update({ coach_notes: notes }).eq("id", wk.id);
+  wk.coach_notes = notes;
+}
+
+async function newWeek(copy){
+  const last = weeks[0] || null;
+  const num = last ? last.week_number + 1 : 1;
+  const start = last
+    ? new Date(new Date(last.week_start + "T00:00:00").getTime() + 7 * 864e5)
+    : (() => { const d = new Date(); const off = (d.getDay() + 6) % 7; d.setDate(d.getDate() - off); return d; })();
+  const p2 = n => String(n).padStart(2, "0");
+  const startStr = start.getFullYear() + "-" + p2(start.getMonth() + 1) + "-" + p2(start.getDate());
+
+  const { data: np, error } = await sb.from("nb_weekly_plans")
+    .insert({ program_id: cur.id, week_number: num, week_start: startStr }).select().single();
+  if (error) { alert(error.message); return; }
+
+  if (copy && last) {
+    // копирай тренировки + упражнения
+    const { data: lw } = await sb.from("nb_workouts").select("*").eq("weekly_plan_id", last.id);
+    for (const w of (lw || [])) {
+      const { data: nw } = await sb.from("nb_workouts").insert({
+        weekly_plan_id: np.id, day_of_week: w.day_of_week, title: w.title,
+        workout_type: w.workout_type, est_minutes: w.est_minutes,
+      }).select().single();
+      const { data: lex } = await sb.from("nb_workout_exercises").select("*").eq("workout_id", w.id).order("position");
+      if (lex?.length) {
+        await sb.from("nb_workout_exercises").insert(lex.map(e => ({
+          workout_id: nw.id, position: e.position, name: e.name, sets_reps: e.sets_reps,
+          rest_seconds: e.rest_seconds, coach_note: e.coach_note, why_note: e.why_note,
+          demo_video_url: e.demo_video_url,
+        })));
+      }
+    }
+    // копирай меню
+    const { data: lm } = await sb.from("nb_meals").select("*").eq("weekly_plan_id", last.id);
+    if (lm?.length) {
+      await sb.from("nb_meals").insert(lm.map(m => ({
+        weekly_plan_id: np.id, day_of_week: m.day_of_week, meal_slot: m.meal_slot,
+        meal_time: m.meal_time, description: m.description, kcal: m.kcal, protein_g: m.protein_g,
+      })));
+    }
+  }
+
+  await sb.from("nb_client_programs").update({ current_week: num }).eq("id", cur.id);
+  cur.current_week = num;
+  await loadWeeks();
+}
+
+async function delWeek(){
+  if (!wk) return;
+  const ok = confirm(
+    `Изтриване на Седмица ${wk.week_number} (от ${wk.week_start})?\n\n` +
+    `Ще се изтрият ВСИЧКИ нейни тренировки, упражнения и менюта.\n` +
+    `Клиентът ще спре да я вижда. Действието е необратимо.`
+  );
+  if (!ok) return;
+  const { error } = await sb.from("nb_weekly_plans").delete().eq("id", wk.id);
+  if (error) { alert(error.message); return; }
+  const { data: rest } = await sb.from("nb_weekly_plans")
+    .select("week_number").eq("program_id", cur.id)
+    .order("week_number", { ascending: false }).limit(1);
+  const top = rest?.[0]?.week_number || 0;
+  if (cur.current_week > top) {
+    await sb.from("nb_client_programs").update({ current_week: Math.max(top, 1) }).eq("id", cur.id);
+    cur.current_week = Math.max(top, 1);
+  }
+  await loadWeeks();
+}
+
+/* ---------------- РЕНДЕР НА ДНИТЕ ---------------- */
+function renderDays(){
+  const start = new Date(wk.week_start + "T00:00:00");
+  document.getElementById("days").innerHTML = DAYS.map((dn, i) => {
+    const dow = i + 1;
+    const date = new Date(start); date.setDate(start.getDate() + i);
+    const dws = workouts.filter(w => w.day_of_week === dow);
+    const dms = meals.filter(m => m.day_of_week === dow)
+      .sort((a,b) => SLOTS.indexOf(a.meal_slot) - SLOTS.indexOf(b.meal_slot));
+
+    return `<div class="card day">
+      <div class="dayhead">
+        <h3 class="disp">${dn} · ${date.getDate()}.${date.getMonth()+1}</h3>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn ghost small" onclick="toggle('wof-${dow}')">＋ Тренировка</button>
+          <button class="btn olive small" onclick="toggle('mf-${dow}')">＋ Хранене</button>
+        </div>
+      </div>
+
+      <div class="addform" id="wof-${dow}" hidden>
+        <div class="row">
+          <input type="text" id="wt-${dow}" placeholder="Заглавие, напр. Сила — долна част">
+          <select id="wy-${dow}">
+            <option value="strength">Сила</option><option value="cardio">Кардио</option>
+            <option value="mobility">Подвижност</option><option value="rest">Почивка</option>
+          </select>
+          <input type="number" id="wm-${dow}" placeholder="Мин." style="max-width:80px">
+          <button class="btn primary small" onclick="addWorkout(${dow})">Добави</button>
+        </div>
+      </div>
+
+      ${dws.map(w => `
+        <div class="wo">
+          <div class="wohead">
+            <strong class="disp">${esc(w.title)} · ${w.workout_type}${w.est_minutes ? " · " + w.est_minutes + " мин" : ""}${w.completed_at ? " · ✓ изпълнена" : ""}</strong>
+            <div>
+              <button class="btn ghost small" onclick="toggle('exf-${w.id}')">＋ Упражнение</button>
+              <button class="x" title="Изтрий тренировката" onclick="delWorkout('${w.id}')">✕</button>
+            </div>
+          </div>
+          ${exercises.filter(e => e.workout_id === w.id).map(e => `
+            <div class="exrow">
+              <span><span class="nm">${esc(e.name)}</span> — ${esc(e.sets_reps)}${e.rest_seconds ? " · почивка " + e.rest_seconds + "с" : ""}${e.coach_note ? ` · <span class="dt">${esc(e.coach_note)}</span>` : ""}${e.why_note ? ` · <span class="dt">💡 ${esc(e.why_note)}</span>` : ""}${e.done ? " · ✓" : ""}</span>
+              <button class="x" title="Изтрий" onclick="delEx('${e.id}')">✕</button>
+            </div>`).join("")}
+          <div class="addform" id="exf-${w.id}" hidden>
+            <div class="row">
+              <input type="text" id="en-${w.id}" placeholder="Упражнение">
+              <input type="text" id="es-${w.id}" placeholder="Серии, напр. 4 × 8" style="max-width:110px">
+              <input type="number" id="er-${w.id}" placeholder="Поч. сек" style="max-width:90px">
+            </div>
+            <div class="row">
+              <input type="text" id="ec-${w.id}" placeholder="Бележка (тежест, техника)">
+              <input type="text" id="ew-${w.id}" placeholder="Защо? (напр. подобрява стойката)">
+              <input type="url" id="ev-${w.id}" placeholder="Видео линк (по избор)">
+              <input type="file" id="ef-${w.id}" accept="video/mp4,video/webm" style="max-width:210px">
+              <button class="btn primary small" onclick="addEx('${w.id}')">Добави</button>
+            </div>
+          </div>
+        </div>`).join("")}
+
+      ${dms.length ? `<div style="margin-top:8px">` + dms.map(m => {
+        const its = mealItems.filter(i => i.meal_id === m.id);
+        const tk = its.length ? Math.round(its.reduce((s,i)=>s+(+i.kcal||0),0)) : (m.kcal || 0);
+        const tp = its.length ? Math.round(its.reduce((s,i)=>s+(+i.protein_g||0),0)) : (m.protein_g || 0);
+        return `
+        <div class="wo" style="background:var(--olive-soft);border-color:#D8E2C6">
+          <div class="wohead">
+            <strong class="disp" style="color:var(--olive)">${esc(m.meal_slot)}${m.meal_time ? " · " + esc(m.meal_time) : ""} · ${tk} ккал · ${tp} г прот.${m.link_url ? ` · <a href="${esc(m.link_url)}" target="_blank" rel="noopener" style="color:#FFA65C">линк ↗</a>` : ""}</strong>
+            <div>
+              <button class="btn olive small" onclick="toggle('itf-${m.id}')">＋ Съставка</button>
+              <button class="x" title="Изтрий храненето" onclick="delMeal('${m.id}')">✕</button>
+            </div>
+          </div>
+          ${its.map(i => `
+            <div class="exrow">
+              <span><span class="nm">${esc(i.name)}</span>${i.grams ? " — " + i.grams + " гр/бр" : ""} · ${i.kcal != null ? Math.round(i.kcal) + " ккал" : ""}${i.carbs_g != null ? " · В " + i.carbs_g : ""}${i.fiber_g != null ? " · Ф " + i.fiber_g : ""}${i.fat_g != null ? " · М " + i.fat_g : ""}${i.protein_g != null ? " · П " + i.protein_g : ""}</span>
+              <button class="x" title="Изтрий" onclick="delItem('${i.id}','${m.id}')">✕</button>
+            </div>`).join("")}
+          ${!its.length && m.description ? `<div class="exrow"><span class="dt">${esc(m.description)}</span></div>` : ""}
+          <div class="addform" id="itf-${m.id}" hidden>
+            <div class="row">
+              <input type="text" id="in-${m.id}" list="foodlist" placeholder="Съставка — избери от списъка" oninput="autoFill('${m.id}')">
+              <input type="number" id="ig-${m.id}" placeholder="гр/бр" style="max-width:80px" oninput="autoFill('${m.id}')">
+              <input type="number" id="ik-${m.id}" placeholder="ккал" style="max-width:80px">
+            </div>
+            <div class="row">
+              <input type="number" step="0.1" id="ic-${m.id}" placeholder="Въгл. г" style="max-width:90px">
+              <input type="number" step="0.1" id="if-${m.id}" placeholder="Фибри г" style="max-width:90px">
+              <input type="number" step="0.1" id="im-${m.id}" placeholder="Мазн. г" style="max-width:90px">
+              <input type="number" step="0.1" id="ip-${m.id}" placeholder="Прот. г" style="max-width:90px">
+              <button class="btn primary small" onclick="addItem('${m.id}')">Добави</button>
+            </div>
+          </div>
+        </div>`;}).join("") + `</div>` : ""}
+
+      <div class="addform" id="mf-${dow}" hidden>
+        <div class="row">
+          <input type="text" id="ms-${dow}" list="slotlist" placeholder="Хранене (закуска, обяд…)" style="max-width:170px">
+          <input type="time" id="mt-${dow}">
+          <input type="number" id="mk-${dow}" placeholder="ккал" style="max-width:80px">
+          <input type="number" id="mp-${dow}" placeholder="прот. г" style="max-width:90px">
+        </div>
+        <div class="row">
+          <input type="text" id="md-${dow}" placeholder="Описание (по избор — съставките се добавят после)">
+          <input type="url" id="mlk-${dow}" placeholder="Линк (рецепта/видео)">
+          <input type="file" id="mvf-${dow}" accept="video/mp4,video/webm" style="max-width:210px">
+          <button class="btn primary small" onclick="addMeal(${dow})">Добави</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ---------------- CRUD ---------------- */
+async function addWorkout(dow){
+  const title = document.getElementById("wt-" + dow).value.trim();
+  if (!title) return;
+  const { error } = await sb.from("nb_workouts").insert({
+    weekly_plan_id: wk.id, day_of_week: dow, title,
+    workout_type: document.getElementById("wy-" + dow).value,
+    est_minutes: parseInt(document.getElementById("wm-" + dow).value) || null,
+  });
+  if (error) { alert(error.message); return; }
+  pickWeek(wk.id);
+}
+async function delWorkout(id){
+  if (!confirm("Изтриване на тренировката и всичките ѝ упражнения?")) return;
+  await sb.from("nb_workouts").delete().eq("id", id);
+  pickWeek(wk.id);
+}
+async function addEx(wid){
+  const name = document.getElementById("en-" + wid).value.trim();
+  const sets = document.getElementById("es-" + wid).value.trim();
+  if (!name || !sets) return;
+  let videoUrl = document.getElementById("ev-" + wid).value.trim() || null;
+
+  const fileEl = document.getElementById("ef-" + wid);
+  if (fileEl && fileEl.files.length) {
+    const f = fileEl.files[0];
+    if (f.size > 60 * 1024 * 1024) { alert("Клипът е над 60 MB — компресирай го първо."); return; }
+    const ext = f.name.split(".").pop().toLowerCase();
+    const path = "ex-" + crypto.randomUUID() + "." + ext;
+    const { error: upErr } = await sb.storage.from("videos").upload(path, f);
+    if (upErr) { alert("Качването се провали: " + upErr.message); return; }
+    videoUrl = sb.storage.from("videos").getPublicUrl(path).data.publicUrl;
+  }
+
+  const pos = exercises.filter(e => e.workout_id === wid).length + 1;
+  const { error } = await sb.from("nb_workout_exercises").insert({
+    workout_id: wid, position: pos, name, sets_reps: sets,
+    rest_seconds: parseInt(document.getElementById("er-" + wid).value) || null,
+    coach_note: document.getElementById("ec-" + wid).value.trim() || null,
+    why_note: document.getElementById("ew-" + wid).value.trim() || null,
+    demo_video_url: videoUrl,
+  });
+  if (error) { alert(error.message); return; }
+  pickWeek(wk.id);
+}
+async function delEx(id){
+  await sb.from("nb_workout_exercises").delete().eq("id", id);
+  pickWeek(wk.id);
+}
+async function addMeal(dow){
+  const slot = document.getElementById("ms-" + dow).value.trim().toLowerCase();
+  if (!slot) { alert("Напиши какво е храненето (закуска, обяд…)"); return; }
+  let mealLink = document.getElementById("mlk-" + dow).value.trim() || null;
+  const mFile = document.getElementById("mvf-" + dow);
+  if (mFile && mFile.files.length) {
+    const f = mFile.files[0];
+    if (f.size > 60 * 1024 * 1024) { alert("Клипът е над 60 MB — компресирай го първо."); return; }
+    const ext = f.name.split(".").pop().toLowerCase();
+    const path = "meal-" + crypto.randomUUID() + "." + ext;
+    const { error: upErr } = await sb.storage.from("videos").upload(path, f);
+    if (upErr) { alert("Качването се провали: " + upErr.message); return; }
+    mealLink = sb.storage.from("videos").getPublicUrl(path).data.publicUrl;
+  }
+  const { error } = await sb.from("nb_meals").insert({
+    weekly_plan_id: wk.id, day_of_week: dow,
+    meal_slot: slot,
+    meal_time: document.getElementById("mt-" + dow).value || null,
+    description: document.getElementById("md-" + dow).value.trim() || null,
+    link_url: mealLink,
+    kcal: parseInt(document.getElementById("mk-" + dow).value) || null,
+    protein_g: parseInt(document.getElementById("mp-" + dow).value) || null,
+  });
+  if (error) { alert(error.message); return; }
+  pickWeek(wk.id);
+}
+
+async function addItem(mealId){
+  const name = document.getElementById("in-" + mealId).value.trim();
+  if (!name) return;
+  const num = id => { const v = document.getElementById(id + "-" + mealId).value; return v === "" ? null : parseFloat(v); };
+  const pos = mealItems.filter(i => i.meal_id === mealId).length + 1;
+  const { error } = await sb.from("nb_meal_items").insert({
+    meal_id: mealId, position: pos, name,
+    grams: num("ig"), kcal: num("ik"), carbs_g: num("ic"),
+    fiber_g: num("if"), fat_g: num("im"), protein_g: num("ip"),
+  });
+  if (error) { alert(error.message); return; }
+  await syncMealTotals(mealId, name);
+  pickWeek(wk.id);
+}
+async function delItem(id, mealId){
+  await sb.from("nb_meal_items").delete().eq("id", id);
+  await syncMealTotals(mealId);
+  pickWeek(wk.id);
+}
+async function syncMealTotals(mealId){
+  const { data: its } = await sb.from("nb_meal_items").select("kcal,protein_g,name").eq("meal_id", mealId);
+  const kcal = Math.round((its || []).reduce((s,i)=>s+(+i.kcal||0),0)) || null;
+  const prot = Math.round((its || []).reduce((s,i)=>s+(+i.protein_g||0),0)) || null;
+  const desc = (its || []).map(i=>i.name).join(", ") || null;
+  await sb.from("nb_meals").update({ kcal, protein_g: prot, description: desc }).eq("id", mealId);
+}
+async function delMeal(id){
+  await sb.from("nb_meals").delete().eq("id", id);
+  pickWeek(wk.id);
+}
+
+/* ---------------- ЧАТ ---------------- */
+async function loadChat(){
+  const { data } = await sb.from("nb_messages")
+    .select("*").eq("program_id", cur.id)
+    .order("created_at", { ascending: true }).limit(200);
+  msgs = data || []; renderChat();
+}
+function renderChat(){
+  const box = document.getElementById("chatbox");
+  box.innerHTML = msgs.length ? msgs.map(m => {
+    const mine = m.sender_id === me.id;
+    const t = new Date(m.created_at).toLocaleString("bg-BG",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+    return `<div class="msg ${mine?"me":"other"}">
+      <div class="bubble">${esc(m.body)}</div>
+      <div class="meta">${mine ? "" : esc((cur.client?.full_name || "").split(" ")[0]) + " · "}${t}</div></div>`;
+  }).join("") : `<div class="empty">Няма съобщения още.</div>`;
+  box.scrollTop = box.scrollHeight;
+}
+async function sendMsg(){
+  const inp = document.getElementById("chatin");
+  const t = inp.value.trim(); if (!t) return;
+  inp.value = "";
+  await sb.from("nb_messages").insert({ program_id: cur.id, sender_id: me.id, body: t });
+}
+function subscribeChat(){
+  if (chatChannel) sb.removeChannel(chatChannel);
+  chatChannel = sb.channel("coach-chat-" + cur.id)
+    .on("postgres_changes",
+      { event: "INSERT", schema: "public", table: "nb_messages", filter: "program_id=eq." + cur.id },
+      payload => { msgs.push(payload.new); renderChat(); if (!document.getElementById("ctab-chat").hidden) markRead(); })
+    .subscribe();
+}
+async function markRead(){
+  await sb.from("nb_messages").update({ read_at: new Date().toISOString() })
+    .eq("program_id", cur.id).neq("sender_id", me.id).is("read_at", null);
+}
+document.getElementById("chatin").addEventListener("keydown", e => { if (e.key === "Enter") sendMsg(); });
+
+/* ---------------- РАЗГОВОРИ ---------------- */
+async function loadCalls(){
+  const { data } = await sb.from("nb_video_calls")
+    .select("*").eq("program_id", cur.id).order("scheduled_at", { ascending: false });
+  calls = data || []; renderCalls();
+}
+function renderCalls(){
+  document.getElementById("callslist").innerHTML = calls.length ? calls.map(c => `
+    <div class="card callrow">
+      <span>
+        <strong>${new Date(c.scheduled_at).toLocaleString("bg-BG",{day:"numeric",month:"long",hour:"2-digit",minute:"2-digit"})}</strong>
+        · ${c.duration_min || 30} мин${c.topic ? " · " + esc(c.topic) : ""}
+        · <span class="pill" style="background:${c.status==="scheduled"?"var(--amber-soft)":c.status==="done"?"var(--olive-soft)":"#eee"};color:${c.status==="scheduled"?"var(--amber)":c.status==="done"?"var(--olive)":"var(--gray)"}">${c.status==="scheduled"?"насрочен":c.status==="done"?"проведен":"отменен"}</span>
+        ${c.join_url ? ` · <a href="${esc(c.join_url)}" target="_blank" rel="noopener">линк</a>` : ""}
+        ${c.recording_url ? ` · <a href="${esc(c.recording_url)}" target="_blank" rel="noopener">запис</a>` : ""}
+      </span>
+      <span>
+        ${c.status === "scheduled" ? `
+          <button class="btn olive small" onclick="doneCall('${c.id}')">Проведен ✓</button>
+          <button class="btn warn small" onclick="cancelCall('${c.id}')">Отмени</button>` : ""}
+      </span>
+    </div>`).join("") : `<div class="card empty">Няма разговори — насрочи първия с формата горе.</div>`;
+}
+async function addCall(){
+  const dt = document.getElementById("call-dt").value;
+  if (!dt) { alert("Избери дата и час."); return; }
+  const { error } = await sb.from("nb_video_calls").insert({
+    program_id: cur.id,
+    scheduled_at: new Date(dt).toISOString(),
+    duration_min: parseInt(document.getElementById("call-min").value) || 30,
+    topic: document.getElementById("call-topic").value.trim() || null,
+    join_url: document.getElementById("call-url").value.trim() || null,
+  });
+  if (error) { alert(error.message); return; }
+  document.getElementById("call-topic").value = ""; document.getElementById("call-url").value = "";
+  loadCalls();
+}
+async function doneCall(id){
+  const rec = prompt("Линк към записа (може празно):") || null;
+  await sb.from("nb_video_calls").update({ status: "done", recording_url: rec }).eq("id", id);
+  loadCalls();
+}
+async function cancelCall(id){
+  await sb.from("nb_video_calls").update({ status: "cancelled" }).eq("id", id);
+  loadCalls();
+}
+
+/* ---------------- ХРАНИ (автоматични макроси) ---------------- */
+async function loadFoods(){
+  const { data } = await sb.from("nb_foods").select("*").order("name");
+  FOODS = data || [];
+  document.getElementById("foodlist").innerHTML =
+    FOODS.map(f => `<option value="${esc(f.name)}">`).join("");
+}
+function findFood(name){
+  const n = (name || "").trim().toLowerCase();
+  return FOODS.find(f => f.name.toLowerCase() === n) || null;
+}
+function autoFill(mealId){
+  const food = findFood(document.getElementById("in-" + mealId).value);
+  if (!food) return;
+  const gEl = document.getElementById("ig-" + mealId);
+  let factor;
+  if (food.per_piece) {
+    const qty = parseFloat(gEl.value);
+    factor = (isNaN(qty) || qty <= 0) ? 1 : qty;
+  } else {
+    const grams = parseFloat(gEl.value);
+    if (isNaN(grams) || grams <= 0) return;
+    factor = grams / 100;
+  }
+  const r1 = v => v == null ? "" : Math.round(v * factor * 10) / 10;
+  document.getElementById("ik-" + mealId).value = r1(food.kcal);
+  document.getElementById("ic-" + mealId).value = r1(food.carbs_g);
+  document.getElementById("if-" + mealId).value = r1(food.fiber_g);
+  document.getElementById("im-" + mealId).value = r1(food.fat_g);
+  document.getElementById("ip-" + mealId).value = r1(food.protein_g);
+}
+async function saveFood(){
+  const name = document.getElementById("nf-name").value.trim();
+  if (!name) { alert("Име на храната?"); return; }
+  const num = id => { const v = document.getElementById(id).value; return v === "" ? null : parseFloat(v); };
+  const kcal = num("nf-kcal");
+  if (kcal == null) { alert("Калориите са задължителни."); return; }
+  const { error } = await sb.from("nb_foods").upsert({
+    name, kcal,
+    carbs_g: num("nf-carbs"), fiber_g: num("nf-fiber"),
+    fat_g: num("nf-fat"), protein_g: num("nf-prot"),
+    per_piece: document.getElementById("nf-piece").value === "piece",
+  }, { onConflict: "name" });
+  if (error) { alert(error.message); return; }
+  ["nf-name","nf-kcal","nf-carbs","nf-fiber","nf-fat","nf-prot"].forEach(i => document.getElementById(i).value = "");
+  document.getElementById("newfood").hidden = true;
+  await loadFoods();
+}
+
+/* ---------------- ПРОГРЕС НА КЛИЕНТА ---------------- */
+async function loadClientProgress(){
+  const { data } = await sb.from("nb_progress_logs").select("*")
+    .eq("program_id", cur.id).order("week_start", { ascending: false });
+  const logs = data || [];
+  const f = v => v == null ? "—" : v;
+  const grid = 'display:grid;grid-template-columns:90px repeat(6,72px);gap:6px';
+  let photosHtml = "";
+  const withPh = logs.filter(p => p.photo_url).sort((a,b) => a.week_start < b.week_start ? -1 : 1);
+  if (withPh.length) {
+    const { data: signed } = await sb.storage.from("progress")
+      .createSignedUrls(withPh.map(p => p.photo_url), 3600);
+    const urls = {}; (signed || []).forEach(s => { if (s.signedUrl) urls[s.path] = s.signedUrl; });
+    photosHtml = `<div style="display:flex;gap:10px;overflow-x:auto;margin-bottom:14px">` +
+      withPh.map(p => `<div style="flex-shrink:0;text-align:center">
+        <img src="${urls[p.photo_url] || ""}" style="width:100px;height:140px;object-fit:cover;border-radius:10px;border:1px solid #24424D">
+        <small style="display:block;color:#9FB0B5;font-size:11px;margin-top:3px">${new Date(p.week_start).toLocaleDateString("bg-BG",{day:"numeric",month:"short"})}</small>
+      </div>`).join("") + `</div>`;
+  }
+  document.getElementById("cl-progress").innerHTML = photosHtml + (logs.length ?
+    `<div class="exrow" style="font-size:11px;text-transform:uppercase;color:#7E939A"><span style="${grid}">
+      <b>Дата</b><b>кг</b><b>Талия</b><b>Гърди</b><b>Ханш</b><b>Бедро</b><b>Ръка</b></span></div>` +
+    logs.map((p, i) => {
+      const prev = logs[i + 1];
+      const diff = prev && p.weight_kg != null && prev.weight_kg != null ? (p.weight_kg - prev.weight_kg) : null;
+      const arrow = diff == null ? "" : diff < 0 ? ` <span style="color:#B9D48A">▼${Math.abs(diff).toFixed(1)}</span>`
+                  : diff > 0 ? ` <span style="color:#FFB4A0">▲${diff.toFixed(1)}</span>` : " =";
+      return `<div class="exrow"><span style="${grid}">
+        <b>${new Date(p.logged_at).toLocaleDateString("bg-BG",{day:"numeric",month:"short"})}</b>
+        <span>${f(p.weight_kg)}${arrow}</span><span>${f(p.waist_cm)}</span><span>${f(p.chest_cm)}</span>
+        <span>${f(p.hips_cm)}</span><span>${f(p.thigh_cm)}</span><span>${f(p.arm_cm)}</span></span></div>`;
+    }).join("")
+    : `<div class="empty">Клиентът още не е записал мерки.</div>`);
+}
+
+/* ---------------- ВГРАДЕНО ВИДЕО (Jitsi) ---------------- */
+let jitsiApi = null;
+async function ensureJitsi(){
+  if (window.JitsiMeetExternalAPI) return;
+  await new Promise((res, rej) => {
+    const s = document.createElement("script");
+    s.src = "https://meet.jit.si/external_api.js";
+    s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+async function startCall(){
+  if (!cur) return;
+  if (jitsiApi) { endCall(); }
+  await ensureJitsi();
+  document.getElementById("vframe").hidden = false;
+  jitsiApi = new JitsiMeetExternalAPI("meet.jit.si", {
+    roomName: "NBMethod-" + cur.id,
+    parentNode: document.getElementById("vframe-inner"),
+    userInfo: { displayName: me.full_name },
+    configOverwrite: { prejoinConfig: { enabled: false }, defaultLanguage: "bg" },
+  });
+}
+function endCall(){
+  if (jitsiApi) { jitsiApi.dispose(); jitsiApi = null; }
+  document.getElementById("vframe").hidden = true;
+  document.getElementById("vframe-inner").innerHTML = "";
+}
+
+/* ---------------- НАВИЦИ (треньор) ---------------- */
+async function loadClientHabits(){
+  const { data } = await sb.from("nb_habits").select("*")
+    .eq("program_id", cur.id).eq("active", true).order("created_at");
+  const hs = data || [];
+  let logs = [];
+  if (hs.length) {
+    const since = new Date(); since.setDate(since.getDate() - 7);
+    const p = n => String(n).padStart(2,"0");
+    const ds = since.getFullYear()+"-"+p(since.getMonth()+1)+"-"+p(since.getDate());
+    const { data: l } = await sb.from("nb_habit_logs").select("*")
+      .in("habit_id", hs.map(x => x.id)).gte("day", ds).eq("done", true);
+    logs = l || [];
+  }
+  document.getElementById("cl-habits").innerHTML = hs.length ? hs.map(h => {
+    const cnt = logs.filter(l => l.habit_id === h.id).length;
+    return `<div class="exrow">
+      <span>${h.icon || "✅"} <b>${esc(h.title)}</b> · <span style="color:#9FB0B5">${cnt}/7 дни тази седмица</span></span>
+      <button class="x" title="Премахни" onclick="delHabit('${h.id}')">✕</button>
+    </div>`;
+  }).join("") : `<div class="empty">Няма зададени навици — добави първия с формата горе.</div>`;
+}
+async function addHabit(){
+  const title = document.getElementById("hb-title").value.trim();
+  if (!title) return;
+  const { error } = await sb.from("nb_habits").insert({
+    program_id: cur.id, title,
+    icon: document.getElementById("hb-icon").value.trim() || "✅",
+  });
+  if (error) { alert(error.message); return; }
+  document.getElementById("hb-title").value = "";
+  loadClientHabits();
+}
+async function delHabit(id){
+  if (!confirm("Премахване на навика? Историята му също се трие.")) return;
+  await sb.from("nb_habits").delete().eq("id", id);
+  loadClientHabits();
+}
+
+/* ---------------- СМЯНА НА ПАРОЛА ---------------- */
+async function changePass(){
+  const p1 = prompt("Нова парола (минимум 8 знака):");
+  if (p1 === null) return;
+  if (p1.length < 8) { alert("Паролата трябва да е поне 8 знака."); return; }
+  const p2 = prompt("Повтори новата парола:");
+  if (p1 !== p2) { alert("Паролите не съвпадат."); return; }
+  const { error } = await sb.auth.updateUser({ password: p1 });
+  alert(error ? "Грешка: " + error.message : "Паролата е сменена успешно ✓");
+}
+
+if ("serviceWorker" in navigator) { navigator.serviceWorker.register("sw.js"); }
+
+boot();
+</script>
+</body>
+</html>
