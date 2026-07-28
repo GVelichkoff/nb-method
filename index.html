@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NB Method — Онлайн коучинг с Недко Богданов</title>
-<meta name="description" content="NB Method — персонален онлайн коучинг с тренировки, хранене и адаптации според твоето тяло, график, цели и реални възможности. Train smart, not hard.">
+<meta name="description" content="NB Method — онлайн коучинг от първа тренировка до състезателна подготовка. Everyday, Adapt, Performance и Elite. Train smart, not hard.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -93,6 +93,56 @@
     .adapt-head,.adapt-grid{grid-template-columns:1fr}
   }
 
+
+
+  /* ================= КАТЕГОРИИ ================= */
+  .paths{background:var(--paper)}
+  .paths-intro{display:flex;justify-content:space-between;gap:28px;align-items:flex-end;margin-bottom:30px}
+  .paths-intro .lead{margin-bottom:0}
+  .path-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .path-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px 20px;position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:290px;text-decoration:none;color:var(--ink);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+  .path-card:hover{transform:translateY(-4px);box-shadow:0 16px 36px rgba(13,27,33,.09);border-color:rgba(15,97,112,.35)}
+  .path-card::after{content:"";position:absolute;width:120px;height:120px;border-radius:50%;right:-55px;top:-55px;background:rgba(15,97,112,.06)}
+  .path-card .path-num{font-size:11px;color:var(--orange);font-weight:700;letter-spacing:.18em;margin-bottom:34px}
+  .path-card h3{font-size:25px;line-height:1;margin-bottom:11px}
+  .path-card .path-line{font-size:13px;font-weight:700;color:var(--petrol);margin-bottom:14px}
+  .path-card p{font-size:13.5px;color:var(--gray);line-height:1.6;margin-bottom:18px}
+  .path-card .path-go{margin-top:auto;font-size:12px;font-weight:700;letter-spacing:.09em;color:var(--orange)}
+  .path-card.adapt-path{background:#EAF0EE}
+  .path-card.performance-path{background:var(--petrol);color:#fff;border-color:var(--petrol)}
+  .path-card.performance-path .path-line,.path-card.performance-path .path-go{color:#FFD1AE}
+  .path-card.performance-path p{color:var(--oat)}
+  .path-card.performance-path::after{background:rgba(255,255,255,.08)}
+  .path-card.elite-path{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .path-card.elite-path .path-line,.path-card.elite-path .path-go{color:var(--orange)}
+  .path-card.elite-path p{color:var(--oat)}
+  .path-card.elite-path::after{background:rgba(249,115,22,.10)}
+  @media (max-width:900px){.path-grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:560px){.path-grid{grid-template-columns:1fr}.paths-intro{display:block}.paths-intro .lead{margin-top:10px}}
+
+  /* ================= PERFORMANCE / ELITE ================= */
+  .performance{background:linear-gradient(150deg,#0F6170 0%,#0A4550 100%);color:#fff}
+  .performance h2.sec,.elite h2.sec{color:#fff}
+  .performance .lead,.elite .lead{color:var(--oat)}
+  .performance-grid,.elite-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .perf-card{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);border-radius:16px;padding:25px 22px}
+  .perf-card .mini{font-size:11px;color:#FFD1AE;font-weight:700;letter-spacing:.14em;margin-bottom:12px}
+  .perf-card h3{font-size:17px;margin-bottom:9px}
+  .perf-card p{font-size:13.5px;line-height:1.65;color:var(--oat)}
+  .performance-strip{margin-top:22px;border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;gap:18px;background:rgba(13,27,33,.18)}
+  .performance-strip strong{font-size:17px}
+  .performance-strip span{font-size:13px;color:var(--oat)}
+  .elite{background:var(--ink);color:#fff}
+  .elite-grid{grid-template-columns:1.05fr .95fr}
+  .elite-panel{border:1px solid var(--dark-line);border-radius:18px;padding:28px 24px;background:rgba(255,255,255,.03)}
+  .elite-panel h3{font-size:20px;margin-bottom:12px}
+  .elite-panel p{font-size:14px;color:var(--oat);line-height:1.65}
+  .elite-list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:18px}
+  .elite-pill{border:1px solid var(--dark-line);border-radius:10px;padding:11px 12px;font-size:12px;color:var(--oat)}
+  .elite-callout{border-left:4px solid var(--orange);padding:4px 0 4px 18px;font-size:22px;font-weight:700;line-height:1.35;margin-bottom:20px}
+  .elite-note{font-size:12.5px;color:var(--oat);opacity:.8;margin-top:16px;line-height:1.6}
+  @media (max-width:860px){.performance-grid,.elite-grid{grid-template-columns:1fr}.performance-strip{align-items:flex-start;flex-direction:column}.elite-list{grid-template-columns:1fr}}
+
   /* ================= ЦЕНИ ================= */
   .price{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:30px 26px;display:flex;flex-direction:column;position:relative}
   .price.featured{border:2px solid var(--orange);box-shadow:0 12px 40px rgba(237,106,47,.14)}
@@ -123,9 +173,9 @@
   <div class="navin">
     <a class="brand disp" href="#top"><span class="nb">NB</span><span class="method">METHOD</span></a>
     <div class="menu">
-      <a href="#uslugi">Услуги</a>
+      <a href="#categories">Категории</a>
       <a href="#kak">Как работи</a>
-      <a href="#adapt">NB Adapt</a>
+      <a href="#performance">Performance</a>
       <a href="#ceni">Цени</a>
       <a href="#kontakt">Контакт</a>
       <a class="btn orange disp" href="login.html">Вход</a>
@@ -138,11 +188,59 @@
   <div class="wrap">
     <div class="kicker disp" style="margin-bottom:12px">NB METHOD · TRAIN SMART. NOT HARD.</div>
     <h1 class="disp">Спри да започваш<br>отначало<span class="dot">.</span></h1>
-    <p>Не ти трябва поредната доза мотивация. Трябва ти система, изградена около <strong>твоето тяло, твоя график, твоята цел и твоите реални възможности.</strong></p>
-    <p style="margin-top:-18px;font-size:14px;opacity:.9">Персонални тренировки · реалистично хранене · истински коучинг</p>
-    <a class="btn orange disp" href="#ceni">Намери своя Method</a>
+    <p>Не ти трябва поредната доза мотивация. Трябва ти система, изградена около <strong>твоето тяло, твоя график, твоята цел и нивото, на което тренираш.</strong></p>
+    <p style="margin-top:-18px;font-size:14px;opacity:.9">От първа тренировка до състезателна подготовка · един Method, различно ниво</p>
+    <a class="btn orange disp" href="#categories">Избери своя Method</a>
   </div>
 </header>
+
+
+<!-- ================= КАТЕГОРИИ ================= -->
+<section class="paths" id="categories">
+  <div class="wrap">
+    <div class="paths-intro">
+      <div>
+        <div class="kicker disp">ONE METHOD. EVERY LEVEL.</div>
+        <h2 class="sec disp">Къде започваш ти?</h2>
+      </div>
+      <p class="lead">NB Method не е една програма за всички. Избираш посоката според целта, опита, ограниченията и нивото си — а системата се адаптира около теб.</p>
+    </div>
+
+    <div class="path-grid">
+      <a class="path-card" href="#uslugi">
+        <div class="path-num disp">01 / EVERYDAY</div>
+        <h3 class="disp">BUILD YOUR BODY.</h3>
+        <div class="path-line">За реалния живот.</div>
+        <p>За начинаещи и активно трениращи, които искат по-добра форма, сила, структура и постоянство без фитнесът да се превръща във втори full-time job.</p>
+        <div class="path-go disp">ВИЖ EVERYDAY →</div>
+      </a>
+
+      <a class="path-card adapt-path" href="#adapt">
+        <div class="path-num disp">02 / ADAPT</div>
+        <h3 class="disp">WORK WITH YOUR BODY.</h3>
+        <div class="path-line">Тренирай според тялото си.</div>
+        <p>За хора със стари травми, двигателни ограничения, хроничен дискомфорт или здравословни фактори, които изискват по-внимателен и адаптиран подход.</p>
+        <div class="path-go disp">ВИЖ ADAPT →</div>
+      </a>
+
+      <a class="path-card performance-path" href="#performance">
+        <div class="path-num disp">03 / PERFORMANCE</div>
+        <h3 class="disp">BUILD PERFORMANCE.</h3>
+        <div class="path-line">За сериозно трениращи.</div>
+        <p>За състезатели и напреднали, които искат измерим прогрес в сила, кондиция, техника и спортна форма чрез планирани тренировъчни блокове.</p>
+        <div class="path-go disp">ВИЖ PERFORMANCE →</div>
+      </a>
+
+      <a class="path-card elite-path" href="#elite">
+        <div class="path-num disp">04 / ELITE</div>
+        <h3 class="disp">EVERYTHING INTENTIONAL.</h3>
+        <div class="path-line">За професионално ниво.</div>
+        <p>За професионални спортисти и състезателни цели, където подготовката, възстановяването, тестовете и календарът трябва да работят като една система.</p>
+        <div class="path-go disp">ВИЖ ELITE →</div>
+      </a>
+    </div>
+  </div>
+</section>
 
 <!-- ================= УСЛУГИ ================= -->
 <section id="uslugi">
@@ -239,12 +337,77 @@
   </div>
 </section>
 
+
+<!-- ================= NB PERFORMANCE ================= -->
+<section class="performance" id="performance">
+  <div class="wrap">
+    <div class="kicker disp" style="color:#FFD1AE">NB METHOD PERFORMANCE</div>
+    <h2 class="sec disp">Train for performance. Not exhaustion.</h2>
+    <p class="lead">За хора, които вече тренират сериозно и не търсят просто „по-тежка тренировка“, а по-добре планирана подготовка. Фокусът е върху развитие, измерване и адаптация спрямо спорта и състезателния календар.</p>
+
+    <div class="performance-grid">
+      <div class="perf-card">
+        <div class="mini disp">01 / PERIODIZATION</div>
+        <h3 class="disp">Планирани тренировъчни блокове</h3>
+        <p>Сила, мощност, кондиция, специфична подготовка, peak и recovery периоди — подредени според целта, а не като поредица от случайни тежки седмици.</p>
+      </div>
+      <div class="perf-card">
+        <div class="mini disp">02 / PERFORMANCE DATA</div>
+        <h3 class="disp">Следим повече от килограмите</h3>
+        <p>Работни тежести, тестове, обем, субективна трудност, техника и спортно-специфични показатели. Данните помагат на треньора да вижда тенденцията, не само отделната тренировка.</p>
+      </div>
+      <div class="perf-card">
+        <div class="mini disp">03 / VIDEO REVIEW</div>
+        <h3 class="disp">Техника под наблюдение</h3>
+        <p>Видео анализ на ключови упражнения и движения с конкретна обратна връзка, за да коригираме изпълнението и да надграждаме по-смислено.</p>
+      </div>
+    </div>
+
+    <div class="performance-strip">
+      <div><strong class="disp">FOR COMPETITIVE & ADVANCED ATHLETES</strong><br><span>Подходящо за силови спортове, bodybuilding, endurance и спортове, при които физическата подготовка е част от представянето.</span></div>
+      <a class="btn orange disp" href="form.html?plan=Performance">Performance консултация</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= NB ELITE ================= -->
+<section class="elite" id="elite">
+  <div class="wrap">
+    <div class="kicker disp">NB METHOD ELITE</div>
+    <h2 class="sec disp">Everything measured. Everything intentional.</h2>
+    <p class="lead">Elite е най-високото ниво на индивидуална работа — за професионални спортисти, конкретни състезателни цели и подготовка, при която тренировките трябва да се синхронизират с целия спортен календар.</p>
+
+    <div class="elite-grid">
+      <div class="elite-panel">
+        <div class="elite-callout disp">От следващата тренировка<br>до следващия старт.</div>
+        <p>Подходът се изгражда около спорта, сезона, тренировъчната история, текущата форма и ролята на останалите специалисти в екипа на спортиста.</p>
+        <div class="elite-list">
+          <div class="elite-pill">Competition planning</div>
+          <div class="elite-pill">Strength & conditioning</div>
+          <div class="elite-pill">Performance testing</div>
+          <div class="elite-pill">Training load review</div>
+          <div class="elite-pill">Video technique analysis</div>
+          <div class="elite-pill">Recovery & readiness check-ins</div>
+        </div>
+      </div>
+
+      <div class="elite-panel">
+        <h3 class="disp">COACHING, NOT A TEMPLATE.</h3>
+        <p>Elite не се продава като стандартен готов пакет. Започва с индивидуален разговор и оценка дали NB Method е подходящ за конкретния спорт, подготовка и очаквано ниво на подкрепа.</p>
+        <p style="margin-top:14px">Когато спортистът работи със спортен лекар, физиотерапевт, клубен треньор или друг специалист, физическата подготовка трябва да се съобразява с техните роли и професионални препоръки.</p>
+        <a class="btn orange disp" style="margin-top:22px" href="form.html?plan=Elite">Запитване за Elite</a>
+        <div class="elite-note">NB Method не замества медицинска диагностика, лечение или рехабилитация.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ================= ЦЕНИ ================= -->
 <section id="ceni">
   <div class="wrap">
     <div class="kicker disp">Избери нивото на подкрепа</div>
     <h2 class="sec disp">Твоят Method. Твоето темпо.</h2>
-    <p class="lead">Без дълги договори — месец за месец. Започваме с разговор, за да видим целта, стартовата точка и какъв тип подкрепа има смисъл за теб.</p>
+    <p class="lead">Без дълги договори — месец за месец. Стандартните планове са подходящи за Everyday и част от Adapt клиентите. Performance и Elite започват с индивидуална консултация според спорта, целта и необходимото ниво на подкрепа.</p>
     <div class="grid3">
 
       <div class="price">
