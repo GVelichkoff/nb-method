@@ -240,45 +240,197 @@
   }
   @media(max-width:480px){.side-stack{grid-template-columns:1fr}.more-grid,.library-grid{grid-template-columns:1fr}.week{gap:4px}.daycell b{font-size:17px}.home-hero{align-items:flex-start;flex-direction:column}.streak-chip{align-self:stretch}.progress-kpis{grid-template-columns:repeat(2,1fr)}}
 
-  /* Mobile nutrition: keep every macro readable inside the card. */
+  /* ===== MOBILE NUTRITION — compact readable table ===== */
   @media(max-width:560px){
-    .meal{padding:14px 12px}
-    .mealhead{align-items:flex-start}
-    .mealhead strong{font-size:17px;line-height:1.2}
-    .mealhead .macros{font-size:11px;line-height:1.25}
-    .ingtbl{margin-top:10px;min-width:0;width:100%;overflow:hidden}
+    .meal{
+      padding:15px 14px;
+      border-radius:18px;
+    }
+
+    .mealhead{
+      align-items:center;
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .mealhead strong{
+      font-size:19px;
+      line-height:1.15;
+      flex:1 1 180px;
+    }
+
+    .mealhead .macros{
+      font-size:11px;
+      line-height:1.2;
+      padding:7px 10px;
+      white-space:nowrap;
+    }
+
+    .ingtbl{
+      margin-top:4px;
+      width:100%;
+      min-width:0;
+    }
+
     .inghead{display:none}
+
     .ingrow:not(.inghead){
-      width:100%;min-width:0;
+      width:100%;
+      min-width:0;
       display:grid;
-      grid-template-columns:minmax(0,1fr) auto auto auto;
+      grid-template-columns:minmax(0,1fr) auto auto;
       grid-template-areas:
-        "name name qty kcal"
-        "carbs fiber fat protein";
-      gap:7px 8px;
-      padding:10px 0;
+        "name qty kcal"
+        "carbs fiber fat"
+        "protein protein protein";
+      column-gap:8px;
+      row-gap:8px;
+      padding:13px 0;
+      border-bottom:1px solid #203B46;
       align-items:center;
     }
-    .ingrow:not(.inghead) .nm{grid-area:name;min-width:0;font-size:13px;line-height:1.25;overflow-wrap:anywhere}
-    .ingrow:not(.inghead) .qty{grid-area:qty}
-    .ingrow:not(.inghead) .kcal{grid-area:kcal}
-    .ingrow:not(.inghead) .carbs{grid-area:carbs}
-    .ingrow:not(.inghead) .fiber{grid-area:fiber}
-    .ingrow:not(.inghead) .fat{grid-area:fat}
-    .ingrow:not(.inghead) .protein{grid-area:protein}
-    .ingrow:not(.inghead) .qty,.ingrow:not(.inghead) .kcal{
-      white-space:nowrap;font-size:11px;font-weight:700;color:#DDE6E9!important;
-      background:#102630;border:1px solid #203B46;border-radius:8px;padding:5px 6px;
+
+    .ingrow:not(.inghead):last-child{
+      border-bottom:none;
+      padding-bottom:5px;
     }
-    .ingrow:not(.inghead) .carbs,.ingrow:not(.inghead) .fiber,.ingrow:not(.inghead) .fat,.ingrow:not(.inghead) .protein{
-      text-align:left!important;white-space:nowrap;font-size:11px;color:#C5D0D4!important;
+
+    .ingrow:not(.inghead) .nm{
+      grid-area:name;
+      min-width:0;
+      font-size:15px;
+      line-height:1.25;
+      color:#F6F4EF;
+      overflow-wrap:anywhere;
     }
-    .ingrow:not(.inghead) .carbs:before{content:'В ';color:#718890;font-size:9px;font-weight:700}
-    .ingrow:not(.inghead) .fiber:before{content:'Фибри ';color:#718890;font-size:9px;font-weight:700}
-    .ingrow:not(.inghead) .fat:before{content:'М ';color:#718890;font-size:9px;font-weight:700}
-    .ingrow:not(.inghead) .protein:before{content:'П ';color:#718890;font-size:9px;font-weight:700}
-    .daytotals{gap:8px 12px;padding:11px 12px}
+
+    .ingrow:not(.inghead) .qty{
+      grid-area:qty;
+    }
+
+    .ingrow:not(.inghead) .kcal{
+      grid-area:kcal;
+    }
+
+    .ingrow:not(.inghead) .qty,
+    .ingrow:not(.inghead) .kcal{
+      min-width:58px;
+      display:flex;
+      align-items:baseline;
+      justify-content:center;
+      gap:3px;
+      white-space:nowrap;
+      color:#F6F4EF!important;
+      background:#102630;
+      border:1px solid #294754;
+      border-radius:10px;
+      padding:7px 8px;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .ingrow:not(.inghead) .qty::after{
+      content:" г";
+      color:#78909A;
+      font-size:9px;
+      font-weight:700;
+      text-transform:uppercase;
+    }
+
+    .ingrow:not(.inghead) .kcal::after{
+      content:" kcal";
+      color:#78909A;
+      font-size:9px;
+      font-weight:700;
+      text-transform:uppercase;
+    }
+
+    .ingrow:not(.inghead) .carbs{
+      grid-area:carbs;
+    }
+
+    .ingrow:not(.inghead) .fiber{
+      grid-area:fiber;
+    }
+
+    .ingrow:not(.inghead) .fat{
+      grid-area:fat;
+    }
+
+    .ingrow:not(.inghead) .protein{
+      grid-area:protein;
+    }
+
+    .ingrow:not(.inghead) .carbs,
+    .ingrow:not(.inghead) .fiber,
+    .ingrow:not(.inghead) .fat{
+      min-width:0;
+      text-align:left!important;
+      background:rgba(255,255,255,.025);
+      border:1px solid #1E3742;
+      border-radius:9px;
+      padding:7px 8px;
+      color:#D4DEE1!important;
+      font-size:12px;
+      font-weight:700;
+      white-space:nowrap;
+    }
+
+    .ingrow:not(.inghead) .protein{
+      text-align:left!important;
+      background:rgba(249,115,22,.08);
+      border:1px solid rgba(249,115,22,.22);
+      border-radius:9px;
+      padding:7px 9px;
+      color:#F3E7DE!important;
+      font-size:12px;
+      font-weight:700;
+      white-space:nowrap;
+    }
+
+    .ingrow:not(.inghead) .carbs::before,
+    .ingrow:not(.inghead) .fiber::before,
+    .ingrow:not(.inghead) .fat::before,
+    .ingrow:not(.inghead) .protein::before{
+      display:block;
+      margin-bottom:2px;
+      color:#718890;
+      font-size:8px;
+      line-height:1;
+      font-weight:800;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+    }
+
+    .ingrow:not(.inghead) .carbs::before{content:"Въгл."}
+    .ingrow:not(.inghead) .fiber::before{content:"Фибри"}
+    .ingrow:not(.inghead) .fat::before{content:"Мазн."}
+    .ingrow:not(.inghead) .protein::before{
+      content:"Протеин";
+      color:#B9825F;
+    }
+
+    .daytotals{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:7px;
+      padding:12px;
+      border-radius:15px;
+    }
+
+    .daytotals span{
+      background:rgba(255,255,255,.025);
+      border:1px solid #203B46;
+      border-radius:9px;
+      padding:8px 9px;
+      font-size:11px;
+    }
+
+    .daytotals span:first-child{
+      grid-column:1/-1;
+    }
   }
+
 
 
   /* ===== LOCAL WEBP ASSETS ===== */
@@ -287,6 +439,21 @@
   .ex-media img{width:100%;height:100%;object-fit:cover;display:block}
   @media(max-width:480px){
     .brand img{height:36px;max-width:160px}
+  }
+
+
+  @media(max-width:380px){
+    .ingrow:not(.inghead){
+      grid-template-columns:minmax(0,1fr) auto;
+      grid-template-areas:
+        "name name"
+        "qty kcal"
+        "carbs fiber"
+        "fat protein";
+    }
+    .ingrow:not(.inghead) .protein{
+      text-align:left!important;
+    }
   }
 
 </style>
