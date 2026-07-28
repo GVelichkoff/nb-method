@@ -133,6 +133,47 @@
   .btn.primary,.tabs .btn.on{color:#FFFFFF !important}
   .coach-note{margin:10px 0 14px;padding:12px 14px;border:1px solid #2A4652;border-left:4px solid var(--orange);border-radius:10px;background:#0E222A;color:#B9C6CA;font-size:12.5px;line-height:1.55}
   .coach-note strong{color:#fff}
+
+  /* ============ METHOD CATEGORIES ============ */
+  .category-overview{
+    display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:14px 0 18px
+  }
+  .category-filter{
+    background:#112B34;border:1px solid #24424D;border-radius:12px;padding:12px 10px;
+    color:#F0EDE4;cursor:pointer;text-align:left;font-family:inherit;transition:.15s
+  }
+  .category-filter:hover{border-color:#4B6570;transform:translateY(-1px)}
+  .category-filter.on{border-color:var(--orange);box-shadow:0 0 0 1px var(--orange) inset}
+  .category-filter .cat-name{display:block;font-size:11px;font-weight:700;letter-spacing:.08em}
+  .category-filter .cat-count{display:block;font-size:22px;font-weight:700;margin-top:3px}
+  .category-filter .cat-sub{display:block;color:#8EA2A9;font-size:10.5px;margin-top:2px}
+  .category-filter[data-cat="EVERYDAY"] .cat-name,.cat-pill.everyday{color:#7FC6D8}
+  .category-filter[data-cat="ADAPT"] .cat-name,.cat-pill.adapt{color:#B9D48A}
+  .category-filter[data-cat="PERFORMANCE"] .cat-name,.cat-pill.performance{color:#FFA65C}
+  .category-filter[data-cat="ELITE"] .cat-name,.cat-pill.elite{color:#D7B6FF}
+
+  .category-warning{
+    margin:10px 0 16px;padding:12px 14px;border-radius:10px;
+    border:1px solid #6B4A22;background:#2F2418;color:#F6C98B;font-size:12.5px;line-height:1.5
+  }
+  .client-group{margin:18px 0 24px}
+  .client-group-head{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-bottom:8px}
+  .client-group-title{font-size:15px;font-weight:700}
+  .client-group-desc{font-size:11px;color:#8EA2A9;margin-top:2px}
+  .client-group-count{font-size:12px;color:#9FB0B5}
+  .cat-pill{
+    display:inline-block;border:1px solid #31505C;background:#0E222A;border-radius:999px;
+    padding:3px 8px;font-size:10px;font-weight:700;letter-spacing:.08em;vertical-align:1px
+  }
+  .client-category-edit{
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 4px
+  }
+  .client-category-edit label{font-size:11px;color:#8EA2A9;font-weight:700;letter-spacing:.08em}
+  .client-category-edit select{min-width:180px}
+  @media (max-width:760px){
+    .category-overview{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .category-overview .category-filter:first-child{grid-column:1/-1}
+  }
 </style>
 </head>
 <body>
@@ -174,6 +215,27 @@
       <div><h1 class="disp">Клиенти</h1><p class="sub" id="list-sub"></p></div>
       <button class="btn primary" onclick="toggle('addclient')">＋ Добави клиент</button>
     </div>
+    <div class="category-overview" id="category-filters">
+      <button class="category-filter on" data-cat="ALL" onclick="setCategoryFilter('ALL')">
+        <span class="cat-name disp">Всички</span><span class="cat-count" id="cat-count-ALL">0</span><span class="cat-sub">активни клиенти</span>
+      </button>
+      <button class="category-filter" data-cat="EVERYDAY" onclick="setCategoryFilter('EVERYDAY')">
+        <span class="cat-name disp">Everyday</span><span class="cat-count" id="cat-count-EVERYDAY">0</span><span class="cat-sub">general fitness</span>
+      </button>
+      <button class="category-filter" data-cat="ADAPT" onclick="setCategoryFilter('ADAPT')">
+        <span class="cat-name disp">Adapt</span><span class="cat-count" id="cat-count-ADAPT">0</span><span class="cat-sub">adapted training</span>
+      </button>
+      <button class="category-filter" data-cat="PERFORMANCE" onclick="setCategoryFilter('PERFORMANCE')">
+        <span class="cat-name disp">Performance</span><span class="cat-count" id="cat-count-PERFORMANCE">0</span><span class="cat-sub">advanced & competitive</span>
+      </button>
+      <button class="category-filter" data-cat="ELITE" onclick="setCategoryFilter('ELITE')">
+        <span class="cat-name disp">Elite</span><span class="cat-count" id="cat-count-ELITE">0</span><span class="cat-sub">professional athletes</span>
+      </button>
+    </div>
+    <div class="category-warning" id="category-db-warning" hidden>
+      За постоянно записване на категориите е нужна колоната <strong>method_category</strong> в Supabase.
+      Приложи приложения SQL migration файл веднъж. Дотогава панелът ще използва временно автоматично разпознаване.
+    </div>
     <div class="card addform" id="addclient" hidden>
       <div class="row">
         <input type="text" id="ac-name" placeholder="Име и фамилия на клиента">
@@ -185,6 +247,14 @@
       <div class="row">
         <input type="number" id="ac-kcal" placeholder="Цел ккал/ден (по избор)">
         <input type="number" id="ac-protein" placeholder="Цел протеин г/ден (по избор)">
+      </div>
+      <div class="row">
+        <select id="ac-category" style="flex:1">
+          <option value="EVERYDAY">EVERYDAY — общ фитнес / трансформация</option>
+          <option value="ADAPT">ADAPT — адаптирано трениране</option>
+          <option value="PERFORMANCE">PERFORMANCE — напреднали / състезатели</option>
+          <option value="ELITE">ELITE — професионални спортисти</option>
+        </select>
       </div>
       <div class="row">
         <select id="ac-gender" style="flex:1">
@@ -217,7 +287,17 @@
       <button class="btn ghost" type="button" onclick="editClientName()" title="Промени името на клиента">✎ Промени име</button>
     </div>
     <p class="sub" id="cl-sub"></p>
-    <div class="coach-note"><strong>NB Adapt:</strong> При нова болка, ограничение или промяна в здравословното състояние първо актуализирай тренировъчния контекст и работи в рамките на предоставените професионални препоръки.</div>
+    <div class="client-category-edit">
+      <label class="disp" for="cl-category">Method category</label>
+      <select id="cl-category">
+        <option value="EVERYDAY">EVERYDAY</option>
+        <option value="ADAPT">ADAPT</option>
+        <option value="PERFORMANCE">PERFORMANCE</option>
+        <option value="ELITE">ELITE</option>
+      </select>
+      <button class="btn ghost small" type="button" onclick="saveClientCategory()">Запази категория</button>
+    </div>
+    <div class="coach-note" id="category-note"></div>
     <div class="tabs">
       <button class="btn on" data-tab="weeks" onclick="ctab('weeks')">Седмици</button>
       <button class="btn" data-tab="chat" onclick="ctab('chat')">Чат</button>
@@ -334,6 +414,132 @@ let weeks = [], wk = null, workouts = [], exercises = [], meals = [], mealItems 
 let FOODS = [];
 let calls = [], msgs = [], chatChannel = null;
 
+const METHOD_CATEGORIES = {
+  EVERYDAY: {
+    label: "EVERYDAY",
+    desc: "General fitness, навици и body transformation",
+    note: "<strong>NB Everyday:</strong> Фокус върху устойчив прогрес, техника, навици, хранене и програма, която работи в реалното ежедневие."
+  },
+  ADAPT: {
+    label: "ADAPT",
+    desc: "Адаптирано трениране при ограничения и специфичен контекст",
+    note: "<strong>NB Adapt:</strong> При нова болка, ограничение или промяна в здравословното състояние първо актуализирай тренировъчния контекст и работи в рамките на предоставените професионални препоръки."
+  },
+  PERFORMANCE: {
+    label: "PERFORMANCE",
+    desc: "Напреднали и състезатели — performance, load и periodization",
+    note: "<strong>NB Performance:</strong> Следи тренировъчния товар, RPE, възстановяването, performance тестовете и състезателния календар. Промените трябва да имат ясна performance цел."
+  },
+  ELITE: {
+    label: "ELITE",
+    desc: "Професионални спортисти — high-touch performance coaching",
+    note: "<strong>NB Elite:</strong> Работи с periodization, readiness, recovery, video analysis и competition planning. Данните подпомагат решението на треньора, но не заменят медицинска или физиотерапевтична преценка."
+  }
+};
+
+let categoryFilter = "ALL";
+let hasCategoryColumn = true;
+
+function normalizeCategory(value){
+  const v = String(value || "").trim().toUpperCase();
+  return METHOD_CATEGORIES[v] ? v : null;
+}
+
+function programCategory(p){
+  const saved = normalizeCategory(p?.method_category);
+  if (saved) return saved;
+
+  // Временен fallback за бази, в които migration-ът още не е приложен.
+  if (p?.special_health_program) return "ADAPT";
+  const hay = `${p?.program_name || ""} ${p?.subscription_type || ""}`.toLowerCase();
+  if (/\belite\b|професионал|professional/.test(hay)) return "ELITE";
+  if (/performance|състез|атлет|athlete|спорт|sport/.test(hay)) return "PERFORMANCE";
+  return "EVERYDAY";
+}
+
+function categoryClass(cat){ return String(cat || "EVERYDAY").toLowerCase(); }
+
+function categoryPill(cat){
+  return `<span class="cat-pill ${categoryClass(cat)}">${esc(cat)}</span>`;
+}
+
+async function checkCategorySupport(){
+  const { error } = await sb.from("nb_client_programs").select("method_category").limit(1);
+  hasCategoryColumn = !error;
+  const warning = document.getElementById("category-db-warning");
+  if (warning) warning.hidden = hasCategoryColumn;
+}
+
+function setCategoryFilter(cat){
+  categoryFilter = cat;
+  document.querySelectorAll(".category-filter").forEach(b => b.classList.toggle("on", b.dataset.cat === cat));
+  renderClientList();
+}
+
+function renderCategoryFilters(){
+  const counts = { ALL: programs.length, EVERYDAY:0, ADAPT:0, PERFORMANCE:0, ELITE:0 };
+  programs.forEach(p => counts[programCategory(p)]++);
+  Object.entries(counts).forEach(([cat,n]) => {
+    const el = document.getElementById("cat-count-" + cat);
+    if (el) el.textContent = n;
+  });
+  document.getElementById("list-sub").textContent =
+    `${programs.length} активни програми · ${counts.EVERYDAY} Everyday · ${counts.ADAPT} Adapt · ${counts.PERFORMANCE} Performance · ${counts.ELITE} Elite`;
+}
+
+function renderClientCard(p){
+  const cat = programCategory(p);
+  return `
+    <div class="card clientcard" onclick="openClient('${p.id}')">
+      <div>
+        <div class="nm">${esc(p.client?.full_name || "—")}${p.special_health_program ? ` <span title="${esc(p.special_health_program)}" style="color:#FFA65C">⚕️</span>` : ""}</div>
+        <div class="pg">${esc(p.program_name)} · Седмица ${p.current_week} · ${p.status === "active" ? "активна" : esc(p.status)}</div>
+        <div style="margin-top:5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          ${categoryPill(cat)}
+          ${p.subscription_type ? `<span style="font-size:11px;font-weight:600;background:#143E4C;color:#7FC6D8;padding:3px 9px;border-radius:999px">${esc(p.subscription_type)}</span>` : ""}
+          ${p.special_health_program ? `<span style="font-size:11px;color:#FFA65C">⚕️ ${esc(p.special_health_program)}</span>` : ""}
+        </div>
+      </div>
+      ${unread[p.id] ? `<span class="badge">${unread[p.id]} ново</span>` : ""}
+    </div>`;
+}
+
+function renderClientList(){
+  const holder = document.getElementById("clients");
+  if (!programs.length) {
+    holder.innerHTML = `<div class="card empty">Още нямаш клиенти — добави първия с бутона горе.</div>`;
+    return;
+  }
+
+  const cats = categoryFilter === "ALL"
+    ? ["EVERYDAY","ADAPT","PERFORMANCE","ELITE"]
+    : [categoryFilter];
+
+  const html = cats.map(cat => {
+    const list = programs.filter(p => programCategory(p) === cat);
+    if (!list.length && categoryFilter === "ALL") return "";
+    const meta = METHOD_CATEGORIES[cat];
+    return `<div class="client-group">
+      <div class="client-group-head">
+        <div>
+          <div class="client-group-title disp">${categoryPill(cat)} ${esc(meta.label)}</div>
+          <div class="client-group-desc">${esc(meta.desc)}</div>
+        </div>
+        <div class="client-group-count">${list.length} ${list.length === 1 ? "клиент" : "клиента"}</div>
+      </div>
+      ${list.length ? list.map(renderClientCard).join("") : `<div class="card empty">Няма клиенти в тази категория.</div>`}
+    </div>`;
+  }).join("");
+
+  holder.innerHTML = html || `<div class="card empty">Няма клиенти в тази категория.</div>`;
+}
+
+function renderClientCategoryContext(cat){
+  const c = normalizeCategory(cat) || "EVERYDAY";
+  const note = document.getElementById("category-note");
+  if (note) note.innerHTML = METHOD_CATEGORIES[c].note;
+}
+
 /* ---------------- AUTH ---------------- */
 async function login(){
   const err = document.getElementById("loginerr");
@@ -361,14 +567,19 @@ async function boot(){
   document.getElementById("screen-login").hidden = true;
   document.getElementById("screen-app").hidden = false;
   document.getElementById("username").textContent = me.full_name;
+  await checkCategorySupport();
   await loadFoods();
   await loadClients();
 }
 
 async function loadClients(){
-  const { data } = await sb.from("nb_client_programs")
+  const { data, error } = await sb.from("nb_client_programs")
     .select("*, client:client_id ( full_name )")
     .eq("coach_id", me.id).order("program_name");
+  if (error) {
+    document.getElementById("clients").innerHTML = `<div class="card empty">Грешка при зареждане на клиентите: ${esc(error.message)}</div>`;
+    return;
+  }
   programs = data || [];
 
   // непрочетени съобщения по програма
@@ -377,18 +588,8 @@ async function loadClients(){
   unread = {};
   (un || []).forEach(m => unread[m.program_id] = (unread[m.program_id] || 0) + 1);
 
-  document.getElementById("list-sub").textContent =
-    programs.length + " активни програми";
-  document.getElementById("clients").innerHTML = programs.length ? programs.map(p => `
-    <div class="card clientcard" onclick="openClient('${p.id}')">
-      <div>
-        <div class="nm">${esc(p.client?.full_name || "—")}${p.special_health_program ? ` <span title="${esc(p.special_health_program)}" style="color:#FFA65C">⚕️</span>` : ""}</div>
-        <div class="pg">${esc(p.program_name)} · Седмица ${p.current_week} · ${p.status === "active" ? "активна" : esc(p.status)}</div>
-        ${p.subscription_type ? `<div style="margin-top:4px"><span style="font-size:11px;font-weight:600;background:#143E4C;color:#7FC6D8;padding:3px 9px;border-radius:999px">${esc(p.subscription_type)}</span>${p.special_health_program ? ` <span style="font-size:11px;color:#FFA65C">⚕️ ${esc(p.special_health_program)}</span>` : ""}</div>` : (p.special_health_program ? `<div style="margin-top:4px;font-size:11px;color:#FFA65C">⚕️ ${esc(p.special_health_program)}</div>` : "")}
-      </div>
-      ${unread[p.id] ? `<span class="badge">${unread[p.id]} ново</span>` : ""}
-    </div>`).join("") :
-    `<div class="card empty">Още нямаш клиенти — добави първия с бутона горе.</div>`;
+  renderCategoryFilters();
+  renderClientList();
 }
 
 function toggle(id){ const el = document.getElementById(id); el.hidden = !el.hidden; }
@@ -434,6 +635,7 @@ async function addClient(){
 
   // Запомняме съществуващите програми, за да намерим точно новосъздадената.
   const beforeIds = new Set(programs.map(p => p.id));
+  const category = normalizeCategory(document.getElementById("ac-category").value) || "EVERYDAY";
   const gender = document.getElementById("ac-gender").value || null;
   const sub = document.getElementById("ac-sub").value || null;
   const health = document.getElementById("ac-health").value.trim() || null;
@@ -453,6 +655,15 @@ async function addClient(){
   const created = (after.data || []).find(p => !beforeIds.has(p.id));
 
   if (created?.client_id) {
+    if (hasCategoryColumn) {
+      const categorySave = await sb.from("nb_client_programs")
+        .update({ method_category: category })
+        .eq("id", created.id);
+      if (categorySave.error) {
+        console.warn("Method category was not saved:", categorySave.error.message);
+      }
+    }
+
     const rename = await setClientName(created.client_id, name);
     if (!rename.ok) {
       await loadClients();
@@ -468,7 +679,11 @@ async function addClient(){
 
   document.getElementById("addclient").hidden = true;
   ["ac-name","ac-email","ac-program","ac-kcal","ac-protein","ac-gender","ac-sub","ac-health"].forEach(i => document.getElementById(i).value = "");
+  document.getElementById("ac-category").value = "EVERYDAY";
   await loadClients();
+  if (!hasCategoryColumn && category !== "EVERYDAY") {
+    alert("Клиентът е добавен, но избраната Method категория няма да се запази постоянно, докато не приложиш nb_method_category_migration.sql в Supabase.");
+  }
 }
 
 async function editClientName(){
@@ -499,8 +714,11 @@ async function openClient(pid){
   document.getElementById("view-list").hidden = true;
   document.getElementById("view-client").hidden = false;
   document.getElementById("cl-name").textContent = cur.client?.full_name || "";
-  document.getElementById("cl-sub").textContent =
-    `${cur.program_name} · Седмица ${cur.current_week}` +
+  const cat = programCategory(cur);
+  document.getElementById("cl-category").value = cat;
+  renderClientCategoryContext(cat);
+  document.getElementById("cl-sub").innerHTML =
+    `${categoryPill(cat)} &nbsp; ${esc(cur.program_name)} · Седмица ${cur.current_week}` +
     (cur.daily_kcal_target ? ` · Цел ${cur.daily_kcal_target} ккал` : "");
   ctab("weeks");
   await loadWeeks();
@@ -509,6 +727,34 @@ async function openClient(pid){
   await loadClientProgress();
   await loadClientHabits();
 }
+async function saveClientCategory(){
+  if (!cur) return;
+  const cat = normalizeCategory(document.getElementById("cl-category").value) || "EVERYDAY";
+
+  if (!hasCategoryColumn) {
+    alert("Категорията не може да се запише постоянно, защото в Supabase още няма колона method_category. Приложи nb_method_category_migration.sql и обнови страницата.");
+    return;
+  }
+
+  const { error } = await sb.from("nb_client_programs")
+    .update({ method_category: cat })
+    .eq("id", cur.id);
+
+  if (error) {
+    alert("Категорията не беше записана: " + error.message);
+    return;
+  }
+
+  cur.method_category = cat;
+  const inList = programs.find(p => p.id === cur.id);
+  if (inList) inList.method_category = cat;
+  renderClientCategoryContext(cat);
+  document.getElementById("cl-sub").innerHTML =
+    `${categoryPill(cat)} &nbsp; ${esc(cur.program_name)} · Седмица ${cur.current_week}` +
+    (cur.daily_kcal_target ? ` · Цел ${cur.daily_kcal_target} ккал` : "");
+  renderCategoryFilters();
+}
+
 function backToList(){
   endCall();
   if (chatChannel) { sb.removeChannel(chatChannel); chatChannel = null; }
