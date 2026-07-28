@@ -287,8 +287,7 @@
 <!-- ============ ЕКРАН: ВХОД ============ -->
 <div id="screen-login">
   <div class="card login">
-   <a class="brand disp" href="#top"><img src="images/logo-big.webp" /></a>
-    <!--<h1 class="disp">NB Method</h1>-->
+   <a class="brand disp" href="index.html"><img src="images/logo-big.webp" /></a>
     <p>Твоята система за тренировки, хранене и реален коучинг.</p>
     <label for="email">Имейл</label>
     <input id="email" type="email" autocomplete="email">
@@ -304,8 +303,7 @@
 <header>
   <div class="hwrap">
     <div style="display:flex;align-items:center;gap:12px">
-      <a class="brand disp" href="#top"><img src="images/logo-big.webp" /></a>
-      <div><div style="font-size:12px;opacity:.65" id="coachname"></div></div>
+      <a class="brand disp" href="app.html"><img src="images/logo-big.webp" /></a>
     </div>
     <div style="text-align:right">
       <div style="font-size:13px;font-weight:600" id="username"></div>
@@ -966,7 +964,7 @@ function openResultsWindow(){
   }).join("");
 
   const bodyDir = location.href.split("/").slice(0, -1).join("/");
-  const bodyImg = bodyDir + "images/body-" + ((me.gender === "male" || me.gender === "other") ? me.gender : "female") + ".webp";
+  const bodyImg = bodyDir + "../images/body-" + ((me.gender === "male" || me.gender === "other") ? me.gender : "female") + ".webp";
   
 
   const pts = logs.filter(p => p.weight_kg != null);
