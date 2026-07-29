@@ -241,11 +241,21 @@
   .path-card h3,.path-card p,.path-card .path-line,.path-card .path-num{
     overflow-wrap:anywhere;word-break:normal
   }
-  left,.right{min-width:0}
+
+  /* IMPORTANT:
+     minmax(0,1fr) prevents image/content intrinsic width from
+     forcing one grid column wider and breaking the split layout. */
+  .split{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    width:100%;
+    min-height:100vh;
+  }
+
+  .left,.right{min-width:0}
 
   /* ================= ЛЯВА КОЛОНА — ВХОД ================= */
   .left{
-    background:linear-gradient(160deg,var(--petrol) 0%,var(--petrol-deep) 100%);
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -255,19 +265,39 @@
     overflow:hidden;
   }
 
-   .right{
+  /* ================= ДЯСНА КОЛОНА — ВИЗИЯ ================= */
+  .right{
     position:relative;
     overflow:hidden;
     min-height:100vh;
-    background:
-      linear-gradient(to top,rgba(13,27,33,.85) 0%,rgba(13,27,33,.25) 45%,rgba(13,27,33,.15) 100%),
-      url('hero.jpg') center center / cover no-repeat,
-      radial-gradient(1200px 600px at 70% 30%,#14586B 0%,#0A3542 55%,#0D1B21 100%);
     display:flex;
     align-items:flex-end;
   }
 
+  .right::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    opacity:.05;
+    pointer-events:none;
+  }
 
+  /* ================= MOBILE ================= */
+  @media (max-width:860px){
+    .split{
+      display:block;
+      min-height:100vh;
+    }
+
+    .right{display:none}
+
+    .left{
+      min-height:100vh;
+      padding:38px 20px;
+    }
+
+  }
+  
 </style>
 </head>
 <body>
@@ -289,18 +319,35 @@
 </nav>
 
 <!-- ================= HERO ================= -->
-<header class="hero" id="top">
-  <div class="wrap, left">
+<!-- <header class="hero" id="top">
+  <div class="wrap">
     <div class="kicker disp" style="margin-bottom:12px">NB METHOD · TRAIN SMART. NOT HARD.</div>
     <h1 class="disp">Спри да започваш<br>отначало<span class="dot">.</span></h1>
     <p style="text-align:justify">Не ти трябва поредната доза мотивация. Трябва ти система, изградена около <strong style="color:var(--orange)">твоето тяло, твоя график, твоята цел и нивото, на което тренираш.</strong></p>
     <p style="margin-top:-18px;font-size:14px;opacity:.9;"text-align:justify"">От първа тренировка до състезателна подготовка - един <strong style="color:var(--orange)">METHOD</strong>, различно ниво</p>
     <a class="btn orange disp" href="#categories">Избери своя Method</a>
   </div>
-  <div class="wrap, right">
-    <img src="images/Gemini_Generated_Image_en2l67en2l67en2l-removebg-preview.png"/>
+</header> -->
+
+<div class="split">
+
+  <div class="left">
+    <div class="panel">
+      <div class="wrap">
+    <div class="kicker disp" style="margin-bottom:12px">NB METHOD · TRAIN SMART. NOT HARD.</div>
+    <h1 class="disp">Спри да започваш<br>отначало<span class="dot">.</span></h1>
+    <p style="text-align:justify">Не ти трябва поредната доза мотивация. Трябва ти система, изградена около <strong style="color:var(--orange)">твоето тяло, твоя график, твоята цел и нивото, на което тренираш.</strong></p>
+    <p style="margin-top:-18px;font-size:14px;opacity:.9;"text-align:justify"">От първа тренировка до състезателна подготовка - един <strong style="color:var(--orange)">METHOD</strong>, различно ниво</p>
+    <a class="btn orange disp" href="#categories">Избери своя Method</a>
   </div>
-</header>
+    </div>
+  </div>
+
+  <div class="right" aria-hidden="true">
+    <img src="images/Gemini_Generated_Image_en2l67en2l67en2l-removebg-preview.png" />
+  </div>
+
+</div>
 
 
 
