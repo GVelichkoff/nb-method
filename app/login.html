@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NB Method — Вход</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="icon" type="image/webp" href="images/logo-small.webp">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --ink:#0D1B21;
+    --petrol:#0F4C5C;
+    --petrol-deep:#0A3542;
+    --orange:#F97316;
+    --orange-hover:#DD640B;
+    --oat:#E9E4D8;
+    --line:rgba(255,255,255,.18);
+    --danger:#FFB4A0;
+  }
+
+  *{box-sizing:border-box;margin:0}
+  html,body{min-height:100%;height:100%}
+
+  body{
+    font-family:'Inter','Segoe UI',sans-serif;
+    color:#fff;
+    background:var(--ink);
+    overflow-x:hidden;
+  }
+
+  .disp{
+    font-family:'Oswald','Arial Narrow',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:.05em
+  }
+
+  /* IMPORTANT:
+     minmax(0,1fr) prevents image/content intrinsic width from
+     forcing one grid column wider and breaking the split layout. */
+  .split{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    width:100%;
+    min-height:100vh;
+  }
+
+  .left,.right{min-width:0}
+
+  /* ================= ЛЯВА КОЛОНА — ВХОД ================= */
+  .left{
+    background:linear-gradient(160deg,var(--petrol) 0%,var(--petrol-deep) 100%);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:48px 24px;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .panel{
+    width:100%;
+    max-width:380px;
+    min-width:0;
+  }
+
+  /* NEW LOGO FIX */
+  .logo{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin-bottom:34px;
+    line-height:1;
+  }
+
+  .brand{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    max-width:100%;
+    text-decoration:none;
+  }
+
+  .brand img{
+    display:block;
+    width:auto;
+    height:auto;
+    max-width:min(280px,100%);
+    max-height:92px;
+    object-fit:contain;
+  }
+
+  h1{
+    font-size:26px;
+    font-weight:600;
+    text-align:center;
+    margin-bottom:8px;
+  }
+
+  .subtitle{
+    color:var(--oat);
+    font-size:14px;
+    text-align:center;
+    margin-bottom:30px;
+    line-height:1.5;
+  }
+
+  label{
+    display:block;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.04em;
+    color:var(--oat);
+    margin:16px 0 6px;
+    text-transform:uppercase;
+  }
+
+  input{
+    width:100%;
+    padding:13px 15px;
+    font-size:15px;
+    font-family:inherit;
+    color:#fff;
+    background:rgba(255,255,255,.07);
+    border:1px solid var(--line);
+    border-radius:12px;
+  }
+
+  input::placeholder{color:rgba(255,255,255,.35)}
+  input:focus{outline:2px solid var(--orange);border-color:var(--orange)}
+
+  .loginbtn{
+    color:#fff!important;
+    width:100%;
+    margin-top:26px;
+    padding:15px;
+    font-size:15px;
+    font-weight:700;
+    background:var(--orange);
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    letter-spacing:.08em;
+    transition:background .15s;
+  }
+
+  .loginbtn:hover{background:var(--orange-hover)}
+  .loginbtn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+  .loginbtn[disabled]{opacity:.6;cursor:default}
+
+  .err{
+    color:var(--danger);
+    font-size:13px;
+    text-align:center;
+    margin-top:14px;
+    min-height:18px;
+  }
+
+  .signup{
+    text-align:center;
+    margin-top:26px;
+    font-size:13px;
+    color:var(--oat);
+  }
+
+  .signup + .signup{margin-top:12px}
+
+  .signup a{
+    color:var(--orange);
+    font-weight:600;
+    text-decoration:none;
+  }
+
+  .signup a:hover{text-decoration:underline}
+
+  /* ================= ДЯСНА КОЛОНА — ВИЗИЯ ================= */
+  .right{
+    position:relative;
+    overflow:hidden;
+    min-height:100vh;
+    background:
+      linear-gradient(to top,rgba(13,27,33,.85) 0%,rgba(13,27,33,.25) 45%,rgba(13,27,33,.15) 100%),
+      url('hero.jpg') center center / cover no-repeat,
+      radial-gradient(1200px 600px at 70% 30%,#14586B 0%,#0A3542 55%,#0D1B21 100%);
+    display:flex;
+    align-items:flex-end;
+  }
+
+  .right::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    opacity:.05;
+    pointer-events:none;
+    background:repeating-linear-gradient(135deg,#fff 0 2px,transparent 2px 26px);
+  }
+
+  .hero{
+    position:relative;
+    z-index:1;
+    padding:56px 52px;
+    max-width:560px;
+  }
+
+  .hero h2{
+    font-size:clamp(28px,3.4vw,44px);
+    font-weight:700;
+    line-height:1.12;
+    text-shadow:0 2px 18px rgba(0,0,0,.45);
+  }
+
+  .hero h2 .dot{color:var(--orange)}
+
+  .hero p{
+    margin-top:12px;
+    color:var(--oat);
+    font-size:15px;
+    line-height:1.55;
+    text-shadow:0 1px 10px rgba(0,0,0,.5);
+  }
+
+  .hero .tag{color:var(--orange);font-weight:700}
+
+  /* ================= TABLET ================= */
+  @media (max-width:1100px){
+    .hero{padding:42px 34px}
+    .brand img{max-width:240px;max-height:80px}
+  }
+
+  /* ================= MOBILE ================= */
+  @media (max-width:860px){
+    .split{
+      display:block;
+      min-height:100vh;
+    }
+
+    .right{display:none}
+
+    .left{
+      min-height:100vh;
+      padding:38px 20px;
+    }
+
+    .brand img{
+      max-width:220px;
+      max-height:74px;
+    }
+
+    .logo{margin-bottom:28px}
+  }
+
+  @media (max-width:420px){
+    .left{padding:30px 18px}
+    .brand img{max-width:190px;max-height:66px}
+    h1{font-size:24px}
+  }
+</style>
+</head>
+<body>
+
+<div class="split">
+
+  <div class="left">
+    <div class="panel">
+      <div class="logo">
+        <a class="brand" href="index.html">
+          <img src="images/logo-big.webp" alt="NB Method">
+        </a>
+      </div>
+
+      <h1 class="disp">Здравей отново</h1>
+      <p class="subtitle">Твоят Method е тук. Продължи оттам, където спря.</p>
+
+      <label for="email">Имейл</label>
+      <input id="email" type="email" autocomplete="email" placeholder="ti@example.com">
+
+      <label for="pass">Парола</label>
+      <input id="pass" type="password" autocomplete="current-password" placeholder="••••••••">
+
+      <button class="loginbtn disp" id="loginbtn" onclick="login()">Вход</button>
+      <div class="err" id="loginerr"></div>
+
+      <p class="signup">Все още нямаш профил? <a href="../form.html">Свържи се с Недко Богданов</a></p>
+      <p class="signup"><a href="#" onclick="forgotPass();return false">Забравена парола?</a></p>
+    </div>
+  </div>
+
+  <div class="right" aria-hidden="true">
+    <div class="hero">
+      <h2 class="disp">Не рестартираш.<br>Адаптираш<span class="dot">.</span></h2>
+      <p>Тренировки, хранене и коучинг, изградени около реалния ти живот. <span class="tag">#NBMethod</span></p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SUPABASE_URL = "https://ncajmvrwueobqbiebphm.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_alDMU4EFhjzX1-XgcvKN-A_Pa5Y_uXH";
+const CLIENT_APP = "index.html";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+async function routeByRole(userId){
+  const { data: p } = await sb.from("nb_profiles").select("role").eq("id", userId).single();
+  location.href = (p && p.role === "coach") ? COACH_APP : CLIENT_APP;
+}
+
+async function login(){
+  const err = document.getElementById("loginerr");
+  const btn = document.getElementById("loginbtn");
+
+  err.style.color = "";
+  err.textContent = "";
+  btn.disabled = true;
+  btn.textContent = "Влизане…";
+
+  const { data, error } = await sb.auth.signInWithPassword({
+    email: document.getElementById("email").value.trim(),
+    password: document.getElementById("pass").value,
+  });
+
+  if (error) {
+    btn.disabled = false;
+    btn.textContent = "Вход";
+    err.textContent = error.message === "Invalid login credentials"
+      ? "Грешен имейл или парола."
+      : "Грешка: " + error.message;
+    return;
+  }
+
+  routeByRole(data.user.id);
+}
+
+document.getElementById("pass").addEventListener("keydown", e => {
+  if (e.key === "Enter") login();
+});
+
+async function forgotPass(){
+  const err = document.getElementById("loginerr");
+  const email = document.getElementById("email").value.trim();
+
+  if (!email) {
+    err.style.color = "";
+    err.textContent = "Първо напиши имейла си в полето горе.";
+    return;
+  }
+
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: location.href.split("#")[0].split("?")[0],
+  });
+
+  err.style.color = error ? "" : "#B9D48A";
+  err.textContent = error
+    ? "Грешка: " + error.message
+    : "Изпратихме ти линк за нова парола — провери пощата си (и папка Спам).";
+}
+
+sb.auth.onAuthStateChange(async (event) => {
+  if (event === "PASSWORD_RECOVERY") {
+    const p1 = prompt("Въведи НОВА парола (минимум 8 знака):");
+
+    if (!p1 || p1.length < 8) {
+      alert("Паролата трябва да е поне 8 знака. Отвори линка от имейла отново.");
+      return;
+    }
+
+    const { error } = await sb.auth.updateUser({ password: p1 });
+
+    if (error) {
+      alert("Грешка: " + error.message);
+      return;
+    }
+
+    alert("Паролата е сменена! Влизаш автоматично.");
+
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) routeByRole(session.user.id);
+  }
+});
+
+(async () => {
+  if (location.hash.includes("type=recovery")) return;
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) routeByRole(session.user.id);
+})();
+</script>
+</body>
+</html>
