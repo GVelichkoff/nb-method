@@ -75,6 +75,7 @@
   .daytabs .btn.on{background:var(--olive);color:#fff;border-color:var(--olive)}
   .meal{padding:16px;margin-bottom:10px}
   .mealhead{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px}
+  .mealdesc{font-size:14px;font-weight:600;color:#E8EEF0;margin:7px 0 2px}
   .mealhead strong{font-size:15px;color:var(--olive)}
   .macros{font-size:12px;color:var(--gray);font-weight:600}
   .meal p{font-size:14px;margin-top:6px}
@@ -603,11 +604,12 @@
   <section id="tab-more" hidden>
     <div class="toolbar"><div><div class="eyebrow">More than an app</div><h1 class="disp app-title">NB Method</h1><p class="sub">Всичко, което държи системата ти на едно място.</p></div></div>
     <div class="more-grid">
-      <div class="card more-card health-card">
-        <div class="mi">🫶</div><h2 class="disp">Здраве и ограничения</h2>
-        <p>Програмата трябва да се адаптира към реалните ти възможности. При нова болка, травма, медицинска препоръка или промяна в състоянието ти — кажи на Недко.</p>
-        <button class="btn primary-cta" style="margin-top:13px" onclick="go('chat')">Сподели промяна →</button>
+      <div class="card more-card health-card" onclick="go('health')">
+        <div class="mi">🩺</div><h2 class="disp">Здраве и изследвания</h2>
+        <p>Виж какви изследвания изисква NB Method, качи резултатите си и споделяй промени в състоянието си навреме.</p>
+        <button class="btn primary-cta" style="margin-top:13px" onclick="event.stopPropagation();go('health')">Отвори здраве →</button>
       </div>
+      <div class="card more-card" onclick="go('labs')"><div class="mi">🧪</div><h2 class="disp">Изисквани изследвания</h2><p>Какви изследвания и през какъв период изисква NB Method според твоята програма.</p></div>
       <div class="card more-card" onclick="go('library')"><div class="mi">🎬</div><h2 class="disp">Видео библиотека</h2><p>Упражненията от твоя план с демонстрации на едно място.</p></div>
       <div class="card more-card" onclick="go('challenges')"><div class="mi">🏆</div><h2 class="disp">Предизвикателства</h2><p>Навици, серии и малки цели, които печелят в дългосрочен план.</p></div>
       <div class="card more-card" onclick="go('quick')"><div class="mi">⚡</div><h2 class="disp">Бързи отговори</h2><p>Кратки отговори за тренировки, хранене и възстановяване.</p></div>
@@ -648,6 +650,69 @@
     </div>
   </section>
 
+  <!-- HEALTH -->
+  <section id="tab-health" hidden>
+    <button class="btn back-btn" onclick="go('more')">← Още</button>
+    <div class="toolbar"><div><div class="eyebrow">Health first</div><h1 class="disp app-title">Здраве и изследвания</h1><p class="sub">Тренираме върху здрава основа — с актуални изследвания и медицинска яснота.</p></div></div>
+
+    <div class="card" style="border-left:3px solid #FF7A18;margin-bottom:14px">
+      <p style="font-size:13px;line-height:1.55;margin:0">
+        <b>Важно:</b> Недко Богданов е треньор, не лекар. Списъкът по-долу е ориентировъчен —
+        конкретните изследвания, честотата и тълкуването на резултатите се определят от твоя лекар.
+        При отклонения първо се консултирай с лекар, а след това пиши на Недко, за да адаптираме плана
+        според медицинските препоръки.
+      </p>
+    </div>
+
+    <div class="card" style="margin-bottom:14px;cursor:pointer" onclick="go('labs')">
+      <h2 class="disp" style="font-size:16px;margin-bottom:6px">🧪 Какво изисква NB Method</h2>
+      <p style="font-size:13px;color:#AFC0C6;margin:0 0 10px">Пълният списък с изисквани изследвания и периодите за твоята програма.</p>
+      <button class="btn" onclick="event.stopPropagation();go('labs')">Виж изследванията →</button>
+    </div>
+
+    <div class="card" style="margin-bottom:14px">
+      <h2 class="disp" style="font-size:16px;margin-bottom:6px">Качи изследване</h2>
+      <p style="font-size:12.5px;color:#AFC0C6;margin:0 0 10px">PDF или снимка на резултатите (до 15 MB). Файловете се виждат само от теб и от Недко.</p>
+      <input type="file" id="health-file" accept=".pdf,image/*">
+      <input id="health-note" placeholder="Бележка, напр. „панел преди подготовка“ (по избор)" style="margin-top:8px">
+      <button class="btn primary-cta" style="margin-top:10px" onclick="uploadHealthFile()">Качи изследване →</button>
+      <div class="err" id="health-msg" style="margin-top:8px"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px">
+      <h2 class="disp" style="font-size:16px;margin-bottom:10px">Твоите изследвания</h2>
+      <div id="health-files"><div class="empty">Зареждане…</div></div>
+    </div>
+
+    <div class="card">
+      <h2 class="disp" style="font-size:16px;margin-bottom:6px">Промяна в състоянието?</h2>
+      <p style="font-size:13px;color:#AFC0C6;margin:0 0 10px">При нова болка, травма, диагноза или медицинска препоръка — кажи на Недко, за да адаптираме програмата.</p>
+      <button class="btn" onclick="go('chat')">Сподели промяна →</button>
+    </div>
+  </section>
+
+  <!-- LABS: ИЗИСКВАНИ ИЗСЛЕДВАНИЯ -->
+  <section id="tab-labs" hidden>
+    <button class="btn back-btn" onclick="go('more')">← Още</button>
+    <div class="toolbar"><div><div class="eyebrow">Know your numbers</div><h1 class="disp app-title">Изисквани изследвания</h1><p class="sub" id="labs-sub">Какво и кога изисква NB Method за твоята програма.</p></div></div>
+
+    <div class="card" style="border-left:3px solid #FF7A18;margin-bottom:14px">
+      <p style="font-size:13px;line-height:1.55;margin:0">
+        <b>Важно:</b> Недко Богданов е треньор, не лекар. Този списък е ориентировъчен —
+        изследванията се назначават, извършват и тълкуват от лекар и лаборатория.
+        Финалният панел и честотата се определят от твоя лекар според историята и състоянието ти.
+      </p>
+    </div>
+
+    <div id="labs-required"></div>
+
+    <div class="card" style="margin-top:14px">
+      <h2 class="disp" style="font-size:16px;margin-bottom:6px">Готови ли са резултатите?</h2>
+      <p style="font-size:13px;color:#AFC0C6;margin:0 0 10px">Качи ги като PDF или снимка, за да ги види Недко преди следващата адаптация на плана.</p>
+      <button class="btn primary-cta" onclick="go('health')">Качи резултати →</button>
+    </div>
+  </section>
+
   <!-- CHAT -->
   <section id="tab-chat" hidden>
     <button class="btn back-btn" onclick="go('more')">← Още</button>
@@ -682,7 +747,7 @@ const CHAT_HOURS = { from: 8, to: 22 };
 
 const DAYS = ["Пн","Вт","Ср","Чт","Пт","Сб","Нд"];
 const NAV = [["week","Начало","⌂"],["training","Тренировки","◆"],["menu","Хранене","◈"],["progress","Прогрес","↗"],["more","Още","•••"]];
-const AUX_TABS = ["library","challenges","quick","chat","video"];
+const AUX_TABS = ["library","challenges","quick","chat","video","health","labs"];
 const ALL_TABS = [...NAV.map(x => x[0]), ...AUX_TABS];
 const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 const todayDow = () => ((new Date().getDay() + 6) % 7) + 1; // 1=Пн … 7=Нд
@@ -787,6 +852,8 @@ function go(t){
   if (target === "library") renderExerciseLibrary();
   if (target === "challenges") renderChallenges();
   if (target === "progress") renderProgress();
+  if (target === "health") { renderHealthRequired(); loadHealthFiles(); }
+  if (target === "labs") renderHealthRequired();
 }
 function renderNav(){
   document.getElementById("nav").innerHTML = NAV.map(([id,label,ico]) =>
@@ -1029,15 +1096,33 @@ function renderMenu(){
       <span>Прот. <b>${r1(day.prot)}</b> г</span>
     </div>`;
 
-  document.getElementById("nb_meals").innerHTML = totalsBar + dm.map(m => {
-    const its = itemsOf(m.id);
-    const s = its.length ? sumItems(its) : { kcal:+m.kcal||0, prot:+m.protein_g||0 };
+  // Сливане на хранения с еднакъв слот и час — описанието става заглавие на съставките
+  const merged = [];
+  dm.forEach(m => {
+    const key = (m.meal_slot || "").trim().toLowerCase() + "|" + (m.meal_time || "");
+    const ex = merged.find(x => x._key === key);
+    if (ex) {
+      ex._rows.push(m);
+      if (m.description && !ex.description) ex.description = m.description;
+      else if (m.description && ex.description && ex.description !== m.description) ex.description += " · " + m.description;
+      if (!ex.link_url && m.link_url) ex.link_url = m.link_url;
+    } else {
+      merged.push({ ...m, _key: key, _rows: [m] });
+    }
+  });
+
+  document.getElementById("nb_meals").innerHTML = totalsBar + merged.map(m => {
+    const its = m._rows.flatMap(r => itemsOf(r.id));
+    const s = sumItems(its);
+    // хранения без съставки добавят собствените си ккал/протеин към сумата на картата
+    m._rows.forEach(r => { if (!itemsOf(r.id).length) { s.kcal += +r.kcal || 0; s.prot += +r.protein_g || 0; } });
     return `
     <div class="card meal">
       <div class="mealhead">
         <strong class="disp">${cap(esc(m.meal_slot))}${m.meal_time ? " · " + esc(m.meal_time) : ""}</strong>
         <span class="macros">${Math.round(s.kcal)} ккал · ${r1(s.prot)} г протеин</span>
       </div>
+      ${m.description ? `<p class="mealdesc">${esc(m.description)}</p>` : ""}
       ${its.length ? `
         <div class="ingtbl">
           <div class="ingrow inghead"><span>Съставка</span><span>гр/бр</span><span>ккал</span><span>В</span><span>Ф</span><span>М</span><span>П</span></div>
@@ -1051,7 +1136,7 @@ function renderMenu(){
               <span class="fat">${i.fat_g != null ? r1(i.fat_g) : "—"}</span>
               <span class="protein">${i.protein_g != null ? r1(i.protein_g) : "—"}</span>
             </div>`).join("")}
-        </div>` : (m.description ? `<p>${esc(m.description)}</p>` : "")}
+        </div>` : ""}
       ${m.link_url ? `<button class="btn demo-btn" style="margin-top:10px" data-u="${esc(m.link_url)}" onclick="playDemo(this.dataset.u)">▶ Рецепта / видео</button>` : ""}
     </div>`;
   }).join("");
@@ -1509,6 +1594,158 @@ async function setMood(k, d){
       body: k === "pain" ? "😣 Днес имам болки." : "😴 Днес съм уморен." });
   }
   renderMood(k, d);
+}
+
+/* ---------------- ЗДРАВЕ И ИЗСЛЕДВАНИЯ ----------------
+   Ориентировъчни панели. Назначаването и тълкуването е работа на лекар. */
+const HEALTH_PANELS = {
+  BASE: {
+    title: "Базов здравен панел — всички клиенти",
+    every: "Преди старта на програмата и на всеки ~6 месеца",
+    months: 6,
+    items: [
+      "ПКК (пълна кръвна картина)",
+      "Кръвна захар на гладно",
+      "Липиден профил — общ холестерол, LDL, HDL, триглицериди",
+      "Чернодробни ензими — ASAT, ALAT, GGT",
+      "Креатинин / бъбречна функция",
+      "TSH (щитовидна жлеза)",
+      "Витамин D и феритин",
+      "Артериално налягане (може и с домашни измервания)"
+    ]
+  },
+  PERFORMANCE: {
+    title: "Разширен панел — Performance / Elite (състезатели и културисти)",
+    every: "Преди подготовка, по средата и след пика — на всеки ~3 месеца",
+    months: 3,
+    items: [
+      "Всичко от базовия панел",
+      "Електролити — натрий, калий, магнезий",
+      "Пикочна киселина и CRP (възпалителен маркер)",
+      "Хормонален панел по преценка на лекаря",
+      "ЕКГ и преглед при кардиолог — веднъж годишно",
+      "Редовно проследяване на кръвно налягане и пулс в покой"
+    ]
+  }
+};
+function healthCategory(){
+  const v = String(program?.method_category || "").trim().toUpperCase();
+  if (v === "PERFORMANCE" || v === "ELITE") return "PERFORMANCE";
+  if (v === "EVERYDAY" || v === "ADAPT") return "BASE";
+  const n = String(program?.program_name || "").toLowerCase();
+  return /performance|elite|състезан|подготовк|културиз/.test(n) ? "PERFORMANCE" : "BASE";
+}
+function healthMonths(){ return healthCategory() === "PERFORMANCE" ? 3 : 6; }
+async function renderHealthRequired(){
+  const el = document.getElementById("labs-required"); if (!el) return;
+  const cat = healthCategory();
+  const sub = document.getElementById("labs-sub");
+
+  // Панели, зададени от Недко за тази програма (ако има)
+  let custom = [];
+  if (program) {
+    const { data, error } = await sb.from("nb_health_requirements").select("*")
+      .eq("program_id", program.id)
+      .order("position", { ascending: true }).order("created_at", { ascending: true });
+    if (!error && data) custom = data;
+  }
+
+  if (custom.length) {
+    if (sub) sub.textContent = "Панелите са зададени от Недко специално за твоята програма.";
+    el.innerHTML = custom.map(p => `
+      <div class="card" style="margin-bottom:14px">
+        <div style="font-weight:700;font-size:14.5px" class="disp">${esc(p.title)}</div>
+        ${p.period_note ? `<div style="font-size:12px;color:#FFB37A;margin:4px 0 8px">📅 ${esc(p.period_note)}</div>` : ""}
+        <ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.7;color:#DDE6E4">
+          ${String(p.items || "").split("\n").map(s => s.trim()).filter(Boolean).map(i => `<li>${esc(i)}</li>`).join("")}
+        </ul>
+      </div>`).join("");
+    return;
+  }
+
+  if (sub) sub.textContent = cat === "PERFORMANCE"
+    ? "Твоята програма е Performance / Elite — важат базовият и разширеният панел."
+    : "За твоята програма важи базовият здравен панел.";
+  const panels = cat === "PERFORMANCE"
+    ? [HEALTH_PANELS.BASE, HEALTH_PANELS.PERFORMANCE] : [HEALTH_PANELS.BASE];
+  el.innerHTML = panels.map(p => `
+    <div class="card" style="margin-bottom:14px">
+      <div style="font-weight:700;font-size:14.5px" class="disp">${p.title}</div>
+      <div style="font-size:12px;color:#FFB37A;margin:4px 0 8px">📅 ${p.every}</div>
+      <ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.7;color:#DDE6E4">
+        ${p.items.map(i => `<li>${i}</li>`).join("")}
+      </ul>
+    </div>`).join("");
+}
+let healthFiles = [];
+function healthDueLine(){
+  if (!healthFiles.length)
+    return `<div class="empty" style="margin-bottom:10px">Все още няма качени изследвания. Първият панел е преди старта на програмата.</div>`;
+  const months = healthMonths();
+  const last = new Date(healthFiles[0].created_at);
+  const due = new Date(last); due.setMonth(due.getMonth() + months);
+  const fmt = d => d.toLocaleDateString("bg-BG", { day:"numeric", month:"long", year:"numeric" });
+  const overdue = due < new Date();
+  return `<div style="font-size:12.5px;margin-bottom:10px;color:${overdue ? "#FFB4A0" : "#B9D48A"}">
+    Последно качване: ${fmt(last)} · Следващи изследвания: около ${fmt(due)}${overdue ? " — време е за нов панел 🧪" : ""}</div>`;
+}
+async function loadHealthFiles(){
+  const box = document.getElementById("health-files"); if (!box) return;
+  if (!program) { box.innerHTML = `<div class="empty">Нямаш активна програма.</div>`; return; }
+  const { data, error } = await sb.from("nb_health_files").select("*")
+    .eq("program_id", program.id).order("created_at", { ascending: false });
+  if (error) {
+    healthFiles = [];
+    box.innerHTML = `<div class="empty">Качването на изследвания още не е активирано. Пиши на Недко в чата.</div>`;
+    return;
+  }
+  healthFiles = data || [];
+  renderHealthFiles();
+}
+async function renderHealthFiles(){
+  const box = document.getElementById("health-files"); if (!box) return;
+  if (!healthFiles.length) { box.innerHTML = healthDueLine(); return; }
+  const { data: signed } = await sb.storage.from("health")
+    .createSignedUrls(healthFiles.map(f => f.file_path), 3600);
+  const urls = {}; (signed || []).forEach(s => { if (s.signedUrl) urls[s.path] = s.signedUrl; });
+  box.innerHTML = healthDueLine() + healthFiles.map(f => `
+    <div style="display:flex;align-items:center;gap:10px;justify-content:space-between;padding:9px 0;border-bottom:1px solid #1D333D">
+      <div style="min-width:0">
+        <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🧪 ${esc(f.note || "Изследване")}</div>
+        <div style="font-size:11.5px;color:#8EA2A9">${new Date(f.created_at).toLocaleDateString("bg-BG",{day:"numeric",month:"long",year:"numeric"})}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        ${urls[f.file_path] ? `<a class="btn" href="${urls[f.file_path]}" target="_blank" rel="noopener" style="padding:7px 11px;font-size:12px">Отвори</a>` : ""}
+        <button class="btn" style="padding:7px 11px;font-size:12px" onclick="deleteHealthFile('${f.id}')" title="Изтрий">✕</button>
+      </div>
+    </div>`).join("");
+}
+async function uploadHealthFile(){
+  const msg = document.getElementById("health-msg");
+  msg.style.color = "#FFB4A0"; msg.textContent = "";
+  if (!program) { msg.textContent = "Нямаш активна програма."; return; }
+  const inp = document.getElementById("health-file");
+  if (!inp.files.length) { msg.textContent = "Избери файл с резултатите."; return; }
+  const f = inp.files[0];
+  if (f.size > 15 * 1024 * 1024) { msg.textContent = "Файлът е над 15 MB."; return; }
+  const ext = ((f.name.split(".").pop() || "") .toLowerCase().replace(/[^a-z0-9]/g, "")) || "pdf";
+  const path = me.id + "/" + Date.now() + "." + ext;
+  const { error: upErr } = await sb.storage.from("health").upload(path, f);
+  if (upErr) { msg.textContent = "Файлът не се качи: " + upErr.message; return; }
+  const note = document.getElementById("health-note").value.trim() || f.name;
+  const { error } = await sb.from("nb_health_files").insert({
+    program_id: program.id, client_id: me.id, file_path: path, note });
+  if (error) { msg.textContent = "Записът не се създаде: " + error.message; return; }
+  msg.style.color = "#B9D48A"; msg.textContent = "Качено ✓ Недко ще го види в панела си.";
+  inp.value = ""; document.getElementById("health-note").value = "";
+  loadHealthFiles();
+}
+async function deleteHealthFile(id){
+  const f = healthFiles.find(x => x.id === id); if (!f) return;
+  if (!confirm("Изтриване на това изследване?")) return;
+  await sb.storage.from("health").remove([f.file_path]);
+  await sb.from("nb_health_files").delete().eq("id", id);
+  loadHealthFiles();
 }
 
 /* ---------------- НАВИЦИ ---------------- */

@@ -311,6 +311,7 @@
       <button class="btn" data-tab="chat" onclick="ctab('chat')">Чат</button>
       <button class="btn" data-tab="calls" onclick="ctab('calls')">Разговори</button>
       <button class="btn" data-tab="progress" onclick="ctab('progress')">Прогрес & check-in</button>
+      <button class="btn" data-tab="health" onclick="ctab('health')">Здраве</button>
     </div>
 
     <!-- Седмици -->
@@ -395,6 +396,39 @@
       </div>
       <div class="card" style="padding:14px 16px;margin-bottom:14px" id="cl-habits"></div>
       <div class="card" style="padding:14px 16px;overflow-x:auto" id="cl-progress"></div>
+    </div>
+
+    <!-- Здраве -->
+    <div id="ctab-health" hidden>
+      <div class="card" style="margin-bottom:12px;padding:14px 16px">
+        <b>Здраве и изследвания</b>
+        <p style="font-size:12.5px;color:#8EA2A9;margin:6px 0 0">
+          Файловете са качени от клиента през приложението. NB Method не диагностицира и не тълкува
+          резултати — при отклонения насочвай клиента към лекар и адаптирай програмата според
+          медицинските препоръки. За Performance / Elite очакваният интервал е ~3 месеца, за останалите ~6.
+        </p>
+      </div>
+      <div class="card empty" id="coach-health-files" style="padding:14px 16px">Зареждане…</div>
+
+      <div class="card" style="margin-top:12px;padding:14px 16px">
+        <b>🧪 Изисквани изследвания за този клиент</b>
+        <p style="font-size:11.5px;color:#8EA2A9;margin:4px 0 10px">Клиентът вижда тези панели в приложението си. Списъкът е ориентировъчен — назначаването и тълкуването е работа на лекар.</p>
+        <div id="coach-health-required" class="empty">Зареждане…</div>
+
+        <div class="addform" style="margin-top:12px;border-top:1px solid #1D333D;padding-top:12px">
+          <b id="req-form-title" style="font-size:13px">＋ Нов панел</b>
+          <input type="text" id="req-title" placeholder="Заглавие, напр. „Разширен панел — подготовка“" style="margin-top:8px">
+          <input type="text" id="req-period" placeholder="Период, напр. „на всеки ~3 месеца“" style="margin-top:8px">
+          <textarea id="req-items" rows="6" placeholder="По едно изследване на ред, напр.:&#10;ПКК&#10;Липиден профил&#10;Чернодробни ензими" style="margin-top:8px;width:100%"></textarea>
+          <div class="row" style="margin-top:8px">
+            <button class="btn primary small" id="req-save-btn" onclick="saveRequirement()">＋ Добави панел</button>
+            <button class="btn ghost small" id="req-cancel-btn" onclick="cancelRequirementEdit()" hidden>Откажи редакцията</button>
+          </div>
+          <div class="err" id="req-msg" style="margin-top:6px"></div>
+        </div>
+
+        <button class="btn primary small" style="margin-top:12px" onclick="sendLabsToChat()">Изпрати списъка в чата →</button>
+      </div>
     </div>
   </div>
 
@@ -807,9 +841,209 @@ function backToList(){
   loadClients();
 }
 function ctab(t){
-  ["weeks","chat","calls","progress"].forEach(x => document.getElementById("ctab-" + x).hidden = x !== t);
+  ["weeks","chat","calls","progress","health"].forEach(x => document.getElementById("ctab-" + x).hidden = x !== t);
   document.querySelectorAll(".tabs .btn").forEach(b => b.classList.toggle("on", b.dataset.tab === t));
   if (t === "chat") markRead();
+  if (t === "health") { loadClientHealth(); loadHealthRequirements(); }
+}
+
+/* Дефолтни панели — само начална заготовка, Недко ги редактира свободно.
+   Назначаването и тълкуването на изследвания е работа на лекар. */
+const HEALTH_PANELS = {
+  BASE: {
+    title: "Базов здравен панел",
+    period: "преди старта и на всеки ~6 месеца",
+    items: [
+      "ПКК (пълна кръвна картина)",
+      "Кръвна захар на гладно",
+      "Липиден профил — общ холестерол, LDL, HDL, триглицериди",
+      "Чернодробни ензими — ASAT, ALAT, GGT",
+      "Креатинин / бъбречна функция",
+      "TSH (щитовидна жлеза)",
+      "Витамин D и феритин",
+      "Артериално налягане"
+    ]
+  },
+  PERFORMANCE: {
+    title: "Разширен панел — Performance / Elite",
+    period: "преди подготовка, по средата и след пика — на всеки ~3 месеца",
+    items: [
+      "Всичко от базовия панел",
+      "Електролити — натрий, калий, магнезий",
+      "Пикочна киселина и CRP",
+      "Хормонален панел по преценка на лекаря",
+      "ЕКГ и преглед при кардиолог — веднъж годишно",
+      "Проследяване на кръвно налягане и пулс в покой"
+    ]
+  }
+};
+function defaultPanelsFor(){
+  const cat = programCategory(cur);
+  return (cat === "PERFORMANCE" || cat === "ELITE")
+    ? [HEALTH_PANELS.BASE, HEALTH_PANELS.PERFORMANCE]
+    : [HEALTH_PANELS.BASE];
+}
+
+let reqPanels = [], reqEditId = null, reqTableMissing = false;
+
+async function loadHealthRequirements(){
+  const el = document.getElementById("coach-health-required"); if (!el || !cur) return;
+  const { data, error } = await sb.from("nb_health_requirements").select("*")
+    .eq("program_id", cur.id)
+    .order("position", { ascending: true }).order("created_at", { ascending: true });
+  if (error) {
+    reqTableMissing = true; reqPanels = [];
+    el.className = "empty";
+    el.textContent = "Редактирането изисква таблицата nb_health_requirements — изпълни nb_health_requirements_migration.sql в Supabase.";
+    return;
+  }
+  reqTableMissing = false;
+  reqPanels = data || [];
+  renderCoachHealthRequired();
+}
+
+function renderCoachHealthRequired(){
+  const el = document.getElementById("coach-health-required"); if (!el || !cur) return;
+  if (reqTableMissing) return;
+  if (!reqPanels.length) {
+    el.className = "";
+    el.innerHTML = `<div class="empty" style="margin-bottom:10px">Няма зададени панели — клиентът вижда панелите по подразбиране за категорията си.</div>
+      <button class="btn ghost small" onclick="seedDefaultPanels()">＋ Зареди панелите по подразбиране за редакция</button>`;
+    return;
+  }
+  el.className = "";
+  el.innerHTML = reqPanels.map(p => `
+    <div style="margin-bottom:12px;padding:10px 12px;border:1px solid #1D333D;border-radius:10px">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+        <div style="min-width:0">
+          <div style="font-size:13px;font-weight:700">${esc(p.title)}</div>
+          ${p.period_note ? `<div style="font-size:11.5px;color:#FFB37A;margin-top:2px">📅 ${esc(p.period_note)}</div>` : ""}
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="btn ghost small" onclick="editRequirement('${p.id}')">Редактирай</button>
+          <button class="btn ghost small" onclick="deleteRequirement('${p.id}')">✕</button>
+        </div>
+      </div>
+      <ul style="margin:6px 0 0;padding-left:18px;font-size:12.5px;line-height:1.65;color:#C9D4D8">
+        ${String(p.items || "").split("\n").map(s => s.trim()).filter(Boolean).map(i => `<li>${esc(i)}</li>`).join("")}
+      </ul>
+    </div>`).join("");
+}
+
+async function seedDefaultPanels(){
+  if (!cur || reqTableMissing) return;
+  const rows = defaultPanelsFor().map((p, i) => ({
+    program_id: cur.id, title: p.title, period_note: p.period,
+    items: p.items.join("\n"), position: i
+  }));
+  const { error } = await sb.from("nb_health_requirements").insert(rows);
+  if (error) { alert("Панелите не се заредиха: " + error.message); return; }
+  loadHealthRequirements();
+}
+
+function editRequirement(id){
+  const p = reqPanels.find(x => x.id === id); if (!p) return;
+  reqEditId = id;
+  document.getElementById("req-title").value = p.title || "";
+  document.getElementById("req-period").value = p.period_note || "";
+  document.getElementById("req-items").value = p.items || "";
+  document.getElementById("req-form-title").textContent = "✎ Редакция: " + p.title;
+  document.getElementById("req-save-btn").textContent = "Запази промените";
+  document.getElementById("req-cancel-btn").hidden = false;
+  document.getElementById("req-msg").textContent = "";
+  document.getElementById("req-title").focus();
+}
+
+function cancelRequirementEdit(){
+  reqEditId = null;
+  ["req-title","req-period","req-items"].forEach(i => document.getElementById(i).value = "");
+  document.getElementById("req-form-title").textContent = "＋ Нов панел";
+  document.getElementById("req-save-btn").textContent = "＋ Добави панел";
+  document.getElementById("req-cancel-btn").hidden = true;
+  document.getElementById("req-msg").textContent = "";
+}
+
+async function saveRequirement(){
+  if (!cur) return;
+  const msg = document.getElementById("req-msg");
+  if (reqTableMissing) { msg.textContent = "Първо изпълни nb_health_requirements_migration.sql."; return; }
+  const title = document.getElementById("req-title").value.trim();
+  const period = document.getElementById("req-period").value.trim() || null;
+  const items = document.getElementById("req-items").value.split("\n").map(s => s.trim()).filter(Boolean).join("\n");
+  if (!title || !items) { msg.textContent = "Заглавие и поне едно изследване са задължителни."; return; }
+  let error;
+  if (reqEditId) {
+    ({ error } = await sb.from("nb_health_requirements")
+      .update({ title, period_note: period, items }).eq("id", reqEditId));
+  } else {
+    ({ error } = await sb.from("nb_health_requirements")
+      .insert({ program_id: cur.id, title, period_note: period, items, position: reqPanels.length }));
+  }
+  if (error) { msg.textContent = "Грешка: " + error.message; return; }
+  cancelRequirementEdit();
+  loadHealthRequirements();
+}
+
+async function deleteRequirement(id){
+  const p = reqPanels.find(x => x.id === id); if (!p) return;
+  if (!confirm(`Изтриване на панела „${p.title}“?`)) return;
+  await sb.from("nb_health_requirements").delete().eq("id", id);
+  if (reqEditId === id) cancelRequirementEdit();
+  loadHealthRequirements();
+}
+
+function panelsForChat(){
+  if (reqPanels.length) return reqPanels.map(p => ({
+    title: p.title + (p.period_note ? ` (${p.period_note})` : ""),
+    items: String(p.items || "").split("\n").map(s => s.trim()).filter(Boolean)
+  }));
+  return defaultPanelsFor().map(p => ({ title: p.title + ` (${p.period})`, items: p.items }));
+}
+
+async function sendLabsToChat(){
+  if (!cur) return;
+  const body = "🧪 Изследвания за следващия ти панел:\n\n" +
+    panelsForChat().map(p => p.title + ":\n" + p.items.map(i => "• " + i).join("\n")).join("\n\n") +
+    "\n\nВажно: не съм лекар — изследванията се назначават и тълкуват от твоя лекар. Качи резултатите в „Здраве и изследвания“ в приложението.";
+  const { error } = await sb.from("nb_messages").insert({ program_id: cur.id, sender_id: me.id, body });
+  alert(error ? "Съобщението не се изпрати: " + error.message : "Списъкът е изпратен в чата ✓");
+}
+
+async function loadClientHealth(){
+  const box = document.getElementById("coach-health-files"); if (!box || !cur) return;
+  const { data, error } = await sb.from("nb_health_files").select("*")
+    .eq("program_id", cur.id).order("created_at", { ascending: false });
+  if (error) {
+    box.className = "card empty";
+    box.textContent = "Секцията изисква таблицата nb_health_files — изпълни nb_health_migration.sql в Supabase.";
+    return;
+  }
+  const files = data || [];
+  if (!files.length) {
+    box.className = "card empty";
+    box.textContent = "Клиентът още не е качил изследвания.";
+    return;
+  }
+  const { data: signed } = await sb.storage.from("health")
+    .createSignedUrls(files.map(f => f.file_path), 3600);
+  const urls = {}; (signed || []).forEach(s => { if (s.signedUrl) urls[s.path] = s.signedUrl; });
+  const cat = programCategory(cur);
+  const months = (cat === "PERFORMANCE" || cat === "ELITE") ? 3 : 6;
+  const last = new Date(files[0].created_at);
+  const due = new Date(last); due.setMonth(due.getMonth() + months);
+  const fmt = d => d.toLocaleDateString("bg-BG", { day:"numeric", month:"long", year:"numeric" });
+  const overdue = due < new Date();
+  box.className = "card";
+  box.style.padding = "14px 16px";
+  box.innerHTML = `<div style="font-size:12.5px;margin-bottom:10px;color:${overdue ? "#FFB4A0" : "#B9D48A"}">
+      Последно качване: ${fmt(last)} · Следващ панел (~${months} мес.): около ${fmt(due)}${overdue ? " — просрочен, напомни на клиента" : ""}</div>` +
+    files.map(f => `<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #1D333D">
+      <div style="min-width:0">
+        <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🧪 ${esc(f.note || "Изследване")}</div>
+        <div style="font-size:11.5px;color:#8EA2A9">${fmt(new Date(f.created_at))}</div>
+      </div>
+      ${urls[f.file_path] ? `<a class="btn" target="_blank" rel="noopener" href="${urls[f.file_path]}" style="padding:7px 11px;font-size:12px;flex-shrink:0">Отвори</a>` : ""}
+    </div>`).join("");
 }
 
 /* ---------------- СЕДМИЦИ ---------------- */
