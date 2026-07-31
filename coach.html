@@ -1217,40 +1217,57 @@ function renderDays(){
           </div>
         </div>`).join("")}
 
-      ${dms.length ? `<div style="margin-top:8px">` + dms.map(m => {
-        const its = mealItems.filter(i => i.meal_id === m.id);
-        const tk = its.length ? Math.round(its.reduce((s,i)=>s+(+i.kcal||0),0)) : (m.kcal || 0);
-        const tp = its.length ? Math.round(its.reduce((s,i)=>s+(+i.protein_g||0),0)) : (m.protein_g || 0);
-        return `
+      ${dms.length ? `<div style="margin-top:8px">` + (() => {
+        // Сливане на хранения с еднакъв слот и час — описанието става заглавие на съставките
+        const groups = [];
+        dms.forEach(m => {
+          const key = (m.meal_slot || "").trim().toLowerCase() + "|" + String(m.meal_time || "").slice(0,5);
+          const ex = groups.find(g => g._key === key);
+          if (ex) {
+            ex._rows.push(m);
+            if (m.description && !ex.description) ex.description = m.description;
+            else if (m.description && ex.description && ex.description !== m.description) ex.description += " · " + m.description;
+            if (!ex.link_url && m.link_url) ex.link_url = m.link_url;
+          } else groups.push({ ...m, _key: key, _rows: [m] });
+        });
+        return groups.map(g => {
+          const its = g._rows.flatMap(r => mealItems.filter(i => i.meal_id === r.id));
+          let tk = its.reduce((s,i)=>s+(+i.kcal||0),0), tp = its.reduce((s,i)=>s+(+i.protein_g||0),0);
+          g._rows.forEach(r => { if (!mealItems.some(i => i.meal_id === r.id)) { tk += +r.kcal||0; tp += +r.protein_g||0; } });
+          tk = Math.round(tk); tp = Math.round(tp);
+          // съставките се добавят към записа, който вече ги държи (или първия)
+          const prim = g._rows.find(r => mealItems.some(i => i.meal_id === r.id)) || g._rows[0];
+          const ids = g._rows.map(r => r.id).join(",");
+          return `
         <div class="wo" style="background:var(--olive-soft);border-color:#D8E2C6">
           <div class="wohead">
-            <strong class="disp" style="color:var(--olive)">${esc(m.meal_slot)}${m.meal_time ? " · " + esc(m.meal_time) : ""} · ${tk} ккал · ${tp} г прот.${m.link_url ? ` · <a href="${esc(m.link_url)}" target="_blank" rel="noopener" style="color:#FFA65C">линк ↗</a>` : ""}</strong>
+            <strong class="disp" style="color:var(--olive)">${esc(g.meal_slot)}${g.meal_time ? " · " + esc(g.meal_time) : ""} · ${tk} ккал · ${tp} г прот.${g.link_url ? ` · <a href="${esc(g.link_url)}" target="_blank" rel="noopener" style="color:#FFA65C">линк ↗</a>` : ""}</strong>
             <div>
-              <button class="btn olive small" onclick="toggle('itf-${m.id}')">＋ Съставка</button>
-              <button class="x" title="Изтрий храненето" onclick="delMeal('${m.id}')">✕</button>
+              <button class="btn olive small" onclick="toggle('itf-${prim.id}')">＋ Съставка</button>
+              <button class="x" title="Изтрий храненето" onclick="delMealGroup('${ids}')">✕</button>
             </div>
           </div>
+          ${g.description ? `<div class="exrow"><span class="nm">${esc(g.description)}</span></div>` : ""}
           ${its.map(i => `
             <div class="exrow">
               <span><span class="nm">${esc(i.name)}</span>${i.grams ? " — " + i.grams + " гр/бр" : ""} · ${i.kcal != null ? Math.round(i.kcal) + " ккал" : ""}${i.carbs_g != null ? " · В " + i.carbs_g : ""}${i.fiber_g != null ? " · Ф " + i.fiber_g : ""}${i.fat_g != null ? " · М " + i.fat_g : ""}${i.protein_g != null ? " · П " + i.protein_g : ""}</span>
-              <button class="x" title="Изтрий" onclick="delItem('${i.id}','${m.id}')">✕</button>
+              <button class="x" title="Изтрий" onclick="delItem('${i.id}','${i.meal_id}')">✕</button>
             </div>`).join("")}
-          ${!its.length && m.description ? `<div class="exrow"><span class="dt">${esc(m.description)}</span></div>` : ""}
-          <div class="addform" id="itf-${m.id}" hidden>
+          <div class="addform" id="itf-${prim.id}" hidden>
             <div class="row">
-              <input type="text" id="in-${m.id}" list="foodlist" placeholder="Съставка — избери от списъка" oninput="autoFill('${m.id}')">
-              <input type="number" id="ig-${m.id}" placeholder="гр/бр" style="max-width:80px" oninput="autoFill('${m.id}')">
-              <input type="number" id="ik-${m.id}" placeholder="ккал" style="max-width:80px">
+              <input type="text" id="in-${prim.id}" list="foodlist" placeholder="Съставка — избери от списъка" oninput="autoFill('${prim.id}')">
+              <input type="number" id="ig-${prim.id}" placeholder="гр/бр" style="max-width:80px" oninput="autoFill('${prim.id}')">
+              <input type="number" id="ik-${prim.id}" placeholder="ккал" style="max-width:80px">
             </div>
             <div class="row">
-              <input type="number" step="0.1" id="ic-${m.id}" placeholder="Въгл. г" style="max-width:90px">
-              <input type="number" step="0.1" id="if-${m.id}" placeholder="Фибри г" style="max-width:90px">
-              <input type="number" step="0.1" id="im-${m.id}" placeholder="Мазн. г" style="max-width:90px">
-              <input type="number" step="0.1" id="ip-${m.id}" placeholder="Прот. г" style="max-width:90px">
-              <button class="btn primary small" onclick="addItem('${m.id}')">Добави</button>
+              <input type="number" step="0.1" id="ic-${prim.id}" placeholder="Въгл. г" style="max-width:90px">
+              <input type="number" step="0.1" id="if-${prim.id}" placeholder="Фибри г" style="max-width:90px">
+              <input type="number" step="0.1" id="im-${prim.id}" placeholder="Мазн. г" style="max-width:90px">
+              <input type="number" step="0.1" id="ip-${prim.id}" placeholder="Прот. г" style="max-width:90px">
+              <button class="btn primary small" onclick="addItem('${prim.id}')">Добави</button>
             </div>
           </div>
-        </div>`;}).join("") + `</div>` : ""}
+        </div>`;}).join("");})() + `</div>` : ""}
 
       <div class="addform" id="mf-${dow}" hidden>
         <div class="row">
@@ -1374,6 +1391,14 @@ async function syncMealTotals(mealId){
 }
 async function delMeal(id){
   await sb.from("nb_meals").delete().eq("id", id);
+  pickWeek(wk.id);
+}
+async function delMealGroup(idsCsv){
+  const ids = idsCsv.split(",").filter(Boolean);
+  if (!confirm(ids.length > 1
+    ? "Изтриване на храненето? Ще бъдат изтрити и обединените му записи (описание + съставки)."
+    : "Изтриване на храненето?")) return;
+  for (const id of ids) await sb.from("nb_meals").delete().eq("id", id);
   pickWeek(wk.id);
 }
 
