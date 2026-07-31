@@ -75,7 +75,7 @@
   .daytabs .btn.on{background:var(--olive);color:#fff;border-color:var(--olive)}
   .meal{padding:16px;margin-bottom:10px}
   .mealhead{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px}
-  .mealdesc{font-size:14px;font-weight:600;color:#E8EEF0;margin:7px 0 2px}
+  .mealslot{font-size:10.5px;letter-spacing:.9px;text-transform:uppercase;color:#8EA2A9;margin-bottom:3px;font-weight:700}
   .mealhead strong{font-size:15px;color:var(--olive)}
   .macros{font-size:12px;color:var(--gray);font-weight:600}
   .meal p{font-size:14px;margin-top:6px}
@@ -1119,10 +1119,13 @@ function renderMenu(){
     return `
     <div class="card meal">
       <div class="mealhead">
-        <strong class="disp">${cap(esc(m.meal_slot))}${m.meal_time ? " · " + esc(m.meal_time) : ""}</strong>
+        <div style="min-width:0">
+          ${m.description
+            ? `<div class="mealslot">${cap(esc(m.meal_slot))}${m.meal_time ? " · " + esc(m.meal_time) : ""}</div><strong class="disp">${esc(m.description)}</strong>`
+            : `<strong class="disp">${cap(esc(m.meal_slot))}${m.meal_time ? " · " + esc(m.meal_time) : ""}</strong>`}
+        </div>
         <span class="macros">${Math.round(s.kcal)} ккал · ${r1(s.prot)} г протеин</span>
       </div>
-      ${m.description ? `<p class="mealdesc">${esc(m.description)}</p>` : ""}
       ${its.length ? `
         <div class="ingtbl">
           <div class="ingrow inghead"><span>Съставка</span><span>гр/бр</span><span>ккал</span><span>В</span><span>Ф</span><span>М</span><span>П</span></div>
