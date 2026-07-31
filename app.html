@@ -1099,7 +1099,7 @@ function renderMenu(){
   // Сливане на хранения с еднакъв слот и час — описанието става заглавие на съставките
   const merged = [];
   dm.forEach(m => {
-    const key = (m.meal_slot || "").trim().toLowerCase() + "|" + (m.meal_time || "");
+    const key = (m.meal_slot || "").trim().toLowerCase() + "|" + String(m.meal_time || "").slice(0,5);
     const ex = merged.find(x => x._key === key);
     if (ex) {
       ex._rows.push(m);
