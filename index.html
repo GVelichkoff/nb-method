@@ -480,29 +480,46 @@ document.addEventListener("keydown", e => {
   if(e.key === "Escape") closeMethod();
 });
 
-/* ---------------- HERO БАНЕРИ ----------------
+/* ---------------- HERO БАНЕРИ (random) ----------------
    Добави/махни файлове в images/banners/ и ги опиши тук. */
 const HERO_BANNERS = [
-  "images/banners/1.png",
-  "images/banners/2.png",
-  "images/banners/1 (1).webp"
+  "images/banners/1.webp",
+  "images/banners/2.webp",
+  "images/banners/3.webp",
+  "images/banners/4.webp",
+  "images/banners/5.webp",
+  "images/banners/6.webp",
+  "images/banners/7.webp",
+  "images/banners/8.webp",
+  "images/banners/9.webp"
 ];
 (function initHeroBanners(){
   const box = document.getElementById("hero-banner");
   if (!box || !HERO_BANNERS.length) return;
+
+  // разбъркване при всяко зареждане (Fisher–Yates)
+  for (let i = HERO_BANNERS.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [HERO_BANNERS[i], HERO_BANNERS[j]] = [HERO_BANNERS[j], HERO_BANNERS[i]];
+  }
+
   box.innerHTML = HERO_BANNERS.map((src, i) =>
     `<img src="${src}" alt="" loading="${i ? "lazy" : "eager"}" class="${i === 0 ? "on" : ""}">`).join("");
   if (HERO_BANNERS.length < 2) return;
+
   let cur = 0;
   setInterval(() => {
     const imgs = box.querySelectorAll("img");
-    if (!imgs.length) return;
+    if (imgs.length < 2) return;
+    // случайна следваща, различна от текущата
+    let next;
+    do { next = Math.floor(Math.random() * imgs.length); } while (next === cur);
     imgs[cur].classList.remove("on");
-    cur = (cur + 1) % imgs.length;
+    cur = next;
     imgs[cur].classList.add("on");
   }, 5000);
 })();
+  
 </script>
-
 </body>
 </html>
