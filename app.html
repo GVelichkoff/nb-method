@@ -497,7 +497,7 @@
   <section id="tab-week">
     <div class="home-hero">
       <div>
-        <div class="eyebrow">Добре дошъл</div>
+        <div class="eyebrow" id="home-welcome">Добре дошли</div>
         <h1 class="disp" id="home-name">NB Method</h1>
         <p class="sub">Днес не започваш отначало. Продължаваш напред.</p>
       </div>
@@ -753,6 +753,12 @@ const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").repl
 const todayDow = () => ((new Date().getDay() + 6) % 7) + 1; // 1=Пн … 7=Нд
 
 let me, program, plan, workouts = [], exercises = [], meals = [], mealItems = [], calls = [], msgs = [];
+
+/* Родово-съобразени текстове според профила:
+   male → мъжки род · female → женски род · other / непосочен → неутрално (мн. число) */
+function gform(m, f, o){
+  return me?.gender === "male" ? m : me?.gender === "female" ? f : o;
+}
 let selDay = todayDow(), selTrainDay = null, chatChannel = null;
 
 /* ---------------- AUTH ---------------- */
@@ -808,6 +814,7 @@ async function boot(){
   document.getElementById("screen-app").hidden = false;
   document.getElementById("username").textContent = me.full_name;
   document.getElementById("home-name").textContent = (me.full_name || "").split(" ")[0] || "NB Method";
+  document.getElementById("home-welcome").textContent = gform("Добре дошъл", "Добре дошла", "Добре дошли");
 
   if (!prog) {
     document.getElementById("summary").innerHTML =
@@ -1588,13 +1595,16 @@ async function loadMood(){
 }
 function renderMood(cur, d){
   const el=document.getElementById("mood-btns"); if(!el)return;
-  el.innerHTML=MOODS.map(([k,label])=>`<button class="btn mood-choice" onclick="setMood('${k}','${d}')" style="padding:10px 12px;font-size:12px;background:${cur===k?"var(--orange)":"#102630"};color:#fff;border:1px solid ${cur===k?"var(--orange)":"#25424D"}">${label}</button>`).join("");
+  el.innerHTML=MOODS.map(([k,label])=>{
+    if (k === "tired") label = "😴 " + gform("Уморен", "Уморена", "Уморени");
+    return `<button class="btn mood-choice" onclick="setMood('${k}','${d}')" style="padding:10px 12px;font-size:12px;background:${cur===k?"var(--orange)":"#102630"};color:#fff;border:1px solid ${cur===k?"var(--orange)":"#25424D"}">${label}</button>`;
+  }).join("");
 }
 async function setMood(k, d){
   await sb.from("nb_checkins").upsert({ program_id: program.id, day: d, mood: k }, { onConflict: "program_id,day" });
   if (k === "pain" || k === "tired") {
     await sb.from("nb_messages").insert({ program_id: program.id, sender_id: me.id,
-      body: k === "pain" ? "😣 Днес имам болки." : "😴 Днес съм уморен." });
+      body: k === "pain" ? "😣 Днес имам болки." : gform("😴 Днес съм уморен.", "😴 Днес съм уморена.", "😴 Днес се чувствам без енергия.") });
   }
   renderMood(k, d);
 }
