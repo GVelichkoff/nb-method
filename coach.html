@@ -1374,7 +1374,9 @@ async function addItem(mealId){
     fiber_g: num("if"), fat_g: num("im"), protein_g: num("ip"),
   });
   if (error) { alert(error.message); return; }
-  await syncMealTotals(mealId, name);
+  await syncMealTotals(mealId);
+  document.getElementById("in-" + mealId).value = "";
+  ["ig","ik","ic","if","im","ip"].forEach(p => { const el = document.getElementById(p + "-" + mealId); if (el) el.value = ""; });
   pickWeek(wk.id);
 }
 async function delItem(id, mealId){
@@ -1383,11 +1385,11 @@ async function delItem(id, mealId){
   pickWeek(wk.id);
 }
 async function syncMealTotals(mealId){
-  const { data: its } = await sb.from("nb_meal_items").select("kcal,protein_g,name").eq("meal_id", mealId);
+  const { data: its } = await sb.from("nb_meal_items").select("kcal,protein_g").eq("meal_id", mealId);
   const kcal = Math.round((its || []).reduce((s,i)=>s+(+i.kcal||0),0)) || null;
   const prot = Math.round((its || []).reduce((s,i)=>s+(+i.protein_g||0),0)) || null;
-  const desc = (its || []).map(i=>i.name).join(", ") || null;
-  await sb.from("nb_meals").update({ kcal, protein_g: prot, description: desc }).eq("id", mealId);
+  // описанието е ръчно заглавие на храненето — не се пипа при добавяне/триене на съставки
+  await sb.from("nb_meals").update({ kcal, protein_g: prot }).eq("id", mealId);
 }
 async function delMeal(id){
   await sb.from("nb_meals").delete().eq("id", id);
