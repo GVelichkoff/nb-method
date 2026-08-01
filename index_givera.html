@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Givera — AI решения за устойчив бизнес растеж</title>
+<meta name="description" content="Givera създава интелигентни AI решения, уеб продукти и автоматизации, които превръщат данните в действия и бизнеса – в бъдеще.">
+<meta property="og:title" content="Givera — AI решения за устойчив бизнес растеж">
+<meta property="og:description" content="AI аналитика, интелигентен уеб дизайн, автоматизация на процеси и AI консултации.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,600&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='none' stroke='%230a5f4e' stroke-width='9'/><path d='M35 38 L65 38 L50 66 Z' fill='none' stroke='%23d9a441' stroke-width='7'/></svg>">
+<style>
+:root{
+  /* --- Палитра Givera --- */
+  --ivory:#fbf8f1;
+  --ivory-deep:#f3ecdd;
+  --paper:#fffdf8;
+  --gold-wash:#fcf3da;
+  --teal-deep:#0a5f4e;   /* дълбок аквамарин — текст и бутони */
+  --teal:#0f8a72;        /* основен аквамарин — лого, акценти */
+  --teal-bright:#2fc9a6; /* ярък аквамарин — линии, фокус */
+  --aqua:#7fffd4;        /* чист aquamarine — само върху тъмен фон */
+  --ink:#123f37;
+  --ink-soft:#52817a;
+  --gold:#d9a441;
+  --gold-light:#f0cd80;
+  --line:rgba(217,164,65,.28);
+  --line-soft:rgba(16,63,55,.10);
+
+  --shadow-s:0 2px 10px rgba(16,63,55,.05);
+  --shadow-m:0 14px 40px -22px rgba(16,63,55,.35);
+  --shadow-l:0 30px 70px -40px rgba(16,63,55,.45);
+
+  --display:"Playfair Display",Georgia,serif;
+  --body:"Source Serif 4",Georgia,serif;
+  --util:"Manrope",system-ui,sans-serif;
+
+  --r-lg:26px;
+  --r-md:18px;
+  --r-pill:999px;
+  --shell:1280px;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--ivory);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit}
+:focus-visible{outline:2px solid var(--teal-bright);outline-offset:3px;border-radius:6px}
+
+/* ---------- Атмосфера: мрежа от вериги във фона ---------- */
+.atmos{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.atmos::before{
+  content:"";position:absolute;inset:-10%;
+  background:
+    radial-gradient(60% 45% at 78% 12%, rgba(47,201,166,.14), transparent 65%),
+    radial-gradient(50% 40% at 10% 4%, rgba(240,205,128,.20), transparent 70%),
+    linear-gradient(180deg,#fdfbf5 0%, #fbf8f1 40%, #f5efe2 100%);
+}
+.atmos svg{position:absolute;top:0;right:0;width:min(72vw,1000px);opacity:.5}
+
+.shell{width:min(100% - 44px,var(--shell));margin-inline:auto;position:relative;z-index:1}
+
+/* ---------- Шапка ---------- */
+.topbar{position:sticky;top:14px;z-index:60;padding-top:14px}
+.topbar-inner{
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+  background:rgba(255,253,248,.86);
+  backdrop-filter:blur(14px);
+  border:1px solid var(--line);
+  border-radius:var(--r-lg);
+  padding:14px 22px 14px 20px;
+  box-shadow:var(--shadow-m);
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-name{font-family:var(--display);font-size:30px;font-weight:500;color:var(--teal);letter-spacing:.01em}
+.nav{display:flex;align-items:center;gap:34px}
+.nav a{font-size:16.5px;color:var(--ink);position:relative;padding:4px 0}
+.nav a::after{
+  content:"";position:absolute;left:0;bottom:-2px;width:0;height:1.5px;
+  background:linear-gradient(90deg,var(--teal-bright),var(--gold));
+  transition:width .35s ease;
+}
+.nav a:hover::after{width:100%}
+.orb{
+  width:38px;height:38px;border-radius:50%;flex:none;
+  border:1px solid var(--line);background:var(--paper);
+  display:grid;place-items:center;cursor:pointer;
+  box-shadow:inset 0 0 0 4px rgba(240,205,128,.18);
+}
+.orb i{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+.burger{display:none;width:42px;height:38px;border:1px solid var(--line);background:var(--paper);border-radius:12px;cursor:pointer}
+.burger span{display:block;width:18px;height:1.6px;background:var(--teal);margin:3.6px auto;transition:.3s}
+
+/* ---------- Общи елементи ---------- */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  border:1px solid var(--line);border-radius:var(--r-pill);
+  padding:8px 18px;background:rgba(255,253,248,.7);
+  font-family:var(--util);font-size:13.5px;font-weight:600;letter-spacing:.02em;color:var(--teal-deep);
+}
+.eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}
+
+/* Подпис на секция: златен проводник с възел */
+.sec-head{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:34px}
+.sec-title{display:flex;align-items:center;gap:16px;margin:0;font-family:var(--display);font-size:clamp(28px,3.4vw,40px);font-weight:500;color:var(--teal-deep)}
+.wire{width:46px;height:12px;flex:none}
+
+.btn{
+  display:inline-flex;align-items:center;gap:12px;
+  padding:15px 26px;border-radius:var(--r-pill);
+  font-family:var(--body);font-size:17px;cursor:pointer;
+  border:1px solid var(--line);background:var(--paper);color:var(--teal-deep);
+  transition:transform .3s ease, box-shadow .3s ease, background .3s ease;
+}
+.btn svg{transition:transform .3s ease}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-m)}
+.btn:hover svg{transform:translateX(4px)}
+.btn-primary{
+  background:linear-gradient(140deg,var(--teal) 0%,var(--teal-deep) 100%);
+  color:#fdf8ec;border:1px solid var(--gold);
+  box-shadow:0 12px 30px -16px rgba(10,95,78,.9), inset 0 1px 0 rgba(255,255,255,.25);
+}
+.btn-primary:hover{box-shadow:0 18px 40px -18px rgba(10,95,78,.95)}
+
+section{padding:88px 0}
+.lead{font-size:19px;color:var(--ink-soft);max-width:62ch}
+
+/* ---------- Герой ---------- */
+.hero{padding:56px 0 34px}
+.hero-grid{display:grid;grid-template-columns:1.08fr .92fr;align-items:center;gap:40px}
+.hero h1{
+  font-family:var(--display);font-weight:500;
+  font-size:clamp(44px,6.4vw,86px);line-height:1.03;letter-spacing:-.015em;
+  margin:26px 0 0;color:var(--teal-deep);
+}
+.hero h1 .soft{color:var(--teal);opacity:.92}
+.hero-rule{display:flex;align-items:center;gap:0;margin:30px 0 22px}
+.hero-rule .l{height:1px;width:150px;background:linear-gradient(90deg,var(--gold),rgba(217,164,65,0))}
+.hero-rule .d{width:9px;height:9px;border-radius:50%;background:var(--gold);order:-1;box-shadow:0 0 10px var(--gold)}
+.hero p{font-size:20px;color:var(--teal-deep);opacity:.85;max-width:34ch;margin:0 0 34px}
+.hero-cta{display:flex;gap:16px;flex-wrap:wrap}
+
+/* Емблема */
+.emblem{position:relative;display:grid;place-items:center;min-height:440px}
+.emblem svg{width:min(100%,470px);overflow:visible}
+.spin{transform-origin:250px 330px;animation:spin 26s linear infinite}
+.spin-rev{transform-origin:250px 330px;animation:spin 38s linear infinite reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pulse{animation:pulse 3.4s ease-in-out infinite}
+.pulse-2{animation:pulse 3.4s ease-in-out .8s infinite}
+.pulse-3{animation:pulse 3.4s ease-in-out 1.6s infinite}
+@keyframes pulse{0%,100%{opacity:.35;r:5}50%{opacity:1;r:7}}
+.float{animation:float 7s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+/* ---------- Услуги ---------- */
+.services{padding-top:24px}
+.card-row{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.card{
+  background:var(--paper);border:1px solid var(--line-soft);border-radius:var(--r-lg);
+  padding:26px 24px 22px;box-shadow:var(--shadow-s);
+  display:flex;flex-direction:column;min-height:100%;
+  transition:transform .4s cubic-bezier(.2,.7,.3,1), box-shadow .4s ease, border-color .4s ease;
+}
+.card:hover{transform:translateY(-6px);box-shadow:var(--shadow-l);border-color:var(--line)}
+.card-top{display:flex;gap:18px;align-items:flex-start}
+.ico{
+  width:76px;height:76px;flex:none;border-radius:50%;
+  background:radial-gradient(circle at 32% 28%, #ffffff, #f7f1e2);
+  border:1px solid var(--line);display:grid;place-items:center;
+  box-shadow:inset 0 2px 8px rgba(255,255,255,.9), 0 6px 16px -12px rgba(16,63,55,.6);
+}
+.card h3{font-family:var(--display);font-size:21px;font-weight:500;color:var(--teal-deep);margin:2px 0 8px;line-height:1.22}
+.card p{margin:0;font-size:15.5px;color:var(--ink-soft);line-height:1.55}
+.card-go{
+  margin-top:auto;align-self:flex-end;width:38px;height:38px;border-radius:50%;
+  border:1px solid var(--line);display:grid;place-items:center;color:var(--teal);
+  transition:background .3s ease,color .3s ease,transform .3s ease;
+}
+.card:hover .card-go{background:var(--teal);color:#fff;transform:translateX(3px)}
+
+/* ---------- Продукти ---------- */
+.prod-row{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.prod{
+  position:relative;border-radius:var(--r-md);padding:24px 22px 20px;
+  background:linear-gradient(165deg,#fdf7e6 0%, #fbf0d3 100%);
+  border:1px solid rgba(217,164,65,.35);overflow:hidden;
+  display:flex;flex-direction:column;min-height:260px;
+  transition:transform .4s cubic-bezier(.2,.7,.3,1), box-shadow .4s ease;
+}
+.prod:hover{transform:translateY(-6px);box-shadow:var(--shadow-l)}
+.prod .art{position:absolute;right:-6px;top:26px;width:130px;opacity:.9;pointer-events:none}
+.tag{
+  font-family:var(--util);font-size:11px;font-weight:700;letter-spacing:.12em;
+  padding:5px 11px;border-radius:var(--r-pill);border:1px solid rgba(217,164,65,.5);
+  background:rgba(255,253,246,.8);color:var(--teal-deep);align-self:flex-start;
+}
+.prod h3{font-family:var(--display);font-size:22px;font-weight:500;margin:22px 0 8px;color:var(--teal-deep);max-width:11ch}
+.prod p{margin:0;font-size:15px;color:var(--ink-soft);max-width:24ch}
+.more{margin-top:auto;padding-top:18px;display:inline-flex;align-items:center;gap:10px;font-size:15.5px;color:var(--teal-deep)}
+.more svg{transition:transform .3s ease}
+.prod:hover .more svg{transform:translateX(5px)}
+
+/* ---------- Решения по индустрии ---------- */
+.solutions{background:linear-gradient(180deg,rgba(243,236,221,0),rgba(243,236,221,.75) 22%,rgba(243,236,221,0));}
+.sol-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.sol{background:var(--paper);padding:30px 28px;transition:background .35s ease}
+.sol:hover{background:var(--gold-wash)}
+.sol h3{font-family:var(--display);font-weight:500;font-size:20px;margin:0 0 8px;color:var(--teal-deep)}
+.sol p{margin:0;font-size:15.5px;color:var(--ink-soft)}
+.sol .k{font-family:var(--util);font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--gold);text-transform:uppercase}
+
+/* ---------- Процес ---------- */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;position:relative}
+.steps::before{content:"";position:absolute;left:6%;right:6%;top:19px;height:1px;background:linear-gradient(90deg,var(--gold),rgba(217,164,65,.15))}
+.step{position:relative;padding-top:56px}
+.step .node{
+  position:absolute;top:8px;left:0;width:24px;height:24px;border-radius:50%;
+  background:var(--paper);border:1px solid var(--gold);display:grid;place-items:center;
+  font-family:var(--util);font-size:11px;font-weight:700;color:var(--teal-deep);
+  box-shadow:0 0 0 6px var(--ivory);
+}
+.step h3{font-family:var(--display);font-weight:500;font-size:20px;margin:0 0 8px;color:var(--teal-deep)}
+.step p{margin:0;font-size:15.5px;color:var(--ink-soft)}
+
+/* ---------- Работа / NB Method ---------- */
+.work{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);padding:44px;box-shadow:var(--shadow-m)}
+.work h2{font-family:var(--display);font-weight:500;font-size:clamp(26px,3vw,36px);margin:14px 0 14px;color:var(--teal-deep)}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.chip{font-family:var(--util);font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:var(--r-pill);
+  background:var(--gold-wash);border:1px solid var(--line);color:var(--teal-deep)}
+.preview{background:linear-gradient(160deg,#10493d,#0b3229);border-radius:var(--r-md);padding:30px;color:#f4ede0;position:relative;overflow:hidden}
+.preview::after{content:"";position:absolute;inset:auto -30% -60% auto;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(232,118,58,.35),transparent 65%)}
+.preview .pv-slogan{font-family:var(--display);font-size:26px;line-height:1.25;margin:0 0 6px}
+.preview .pv-sub{font-size:14.5px;opacity:.72;margin:0}
+.credit{margin-top:26px;display:inline-flex;align-items:center;gap:10px;padding:9px 15px;border-radius:var(--r-pill);
+  background:rgba(244,237,224,.10);border:1px solid rgba(244,237,224,.25);font-family:var(--util);font-size:12.5px;letter-spacing:.02em;position:relative;z-index:1}
+
+/* ---------- Контакти ---------- */
+.contact-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:40px;align-items:start}
+.field{margin-bottom:16px}
+.field label{display:block;font-family:var(--util);font-size:12.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:7px}
+.field input,.field textarea,.field select{
+  width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line);
+  background:var(--paper);font-family:var(--body);font-size:16px;color:var(--ink);
+  transition:border-color .3s ease, box-shadow .3s ease;
+}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--teal-bright);box-shadow:0 0 0 4px rgba(47,201,166,.12)}
+.field textarea{min-height:130px;resize:vertical}
+.info-row{display:flex;gap:14px;align-items:flex-start;padding:16px 0;border-bottom:1px solid var(--line-soft)}
+.info-row:last-child{border-bottom:0}
+.info-row .k{font-family:var(--util);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);min-width:96px;padding-top:3px}
+.note{font-family:var(--util);font-size:13px;color:var(--ink-soft);margin-top:12px}
+
+/* ---------- Долна лента ---------- */
+footer{background:linear-gradient(180deg,rgba(243,236,221,0),rgba(238,229,209,.9));padding:60px 0 34px;position:relative;z-index:1}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:30px}
+.foot h4{font-family:var(--util);font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin:0 0 14px}
+.foot a{display:block;font-size:15.5px;color:var(--ink-soft);padding:5px 0;transition:color .25s ease}
+.foot a:hover{color:var(--teal)}
+.foot-bottom{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center;
+  margin-top:40px;padding-top:22px;border-top:1px solid var(--line);font-size:14.5px;color:var(--ink-soft)}
+
+/* ---------- Появяване при скрол ---------- */
+.rise{opacity:0;transform:translateY(24px);transition:opacity .7s ease, transform .7s cubic-bezier(.2,.7,.3,1)}
+.rise.in{opacity:1;transform:none}
+
+/* ---------- Адаптивност ---------- */
+@media (max-width:1080px){
+  .card-row,.prod-row{grid-template-columns:repeat(2,1fr)}
+  .sol-grid{grid-template-columns:repeat(2,1fr)}
+  .steps{grid-template-columns:repeat(2,1fr);row-gap:34px}
+  .steps::before{display:none}
+}
+@media (max-width:900px){
+  .nav{display:none}
+  .burger{display:block}
+  .hero-grid{grid-template-columns:1fr}
+  .emblem{order:-1;min-height:300px}
+  .emblem svg{width:min(78%,340px)}
+  .work,.contact-grid{grid-template-columns:1fr;padding:28px;gap:28px}
+  .foot-grid{grid-template-columns:1fr 1fr}
+  .nav.open{
+    display:flex;flex-direction:column;align-items:flex-start;gap:6px;
+    position:absolute;left:0;right:0;top:calc(100% + 10px);
+    background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);padding:18px 22px;box-shadow:var(--shadow-l);
+  }
+  .topbar-inner{position:relative}
+}
+@media (max-width:620px){
+  body{font-size:16px}
+  section{padding:62px 0}
+  .card-row,.prod-row,.sol-grid{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr}
+  .hero p{max-width:none}
+  .brand-name{font-size:25px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition-duration:.01ms!important}
+  html{scroll-behavior:auto}
+  .rise{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<!-- фонова мрежа -->
+<div class="atmos" aria-hidden="true">
+  <svg viewBox="0 0 900 700" fill="none">
+    <g stroke="#2fc9a6" stroke-width="1" opacity=".33">
+      <path d="M900 90 H700 V240 H560"/><path d="M900 190 H780 V330"/>
+      <path d="M900 300 H660 V430 H520"/><path d="M480 0 V150 H620"/>
+      <path d="M600 0 V90"/><path d="M760 0 V60 H900"/>
+      <path d="M900 420 H720 V520"/><path d="M540 210 V320 H430"/>
+    </g>
+    <g fill="#d9a441" opacity=".55">
+      <circle cx="700" cy="240" r="3.5"/><circle cx="780" cy="330" r="3.5"/>
+      <circle cx="660" cy="430" r="3.5"/><circle cx="620" cy="150" r="3.5"/>
+      <circle cx="720" cy="520" r="3.5"/><circle cx="430" cy="320" r="3.5"/>
+    </g>
+  </svg>
+</div>
+
+<!-- ШАПКА -->
+<header class="topbar">
+  <div class="shell">
+    <div class="topbar-inner">
+      <a class="brand" href="#top" aria-label="Givera — начало">
+        <svg width="46" height="46" viewBox="0 0 100 100" aria-hidden="true">
+          <defs>
+            <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#2fc9a6"/><stop offset="1" stop-color="#0a5f4e"/>
+            </linearGradient>
+            <linearGradient id="lg2" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" stop-color="#d9a441"/><stop offset="1" stop-color="#f0cd80"/>
+            </linearGradient>
+          </defs>
+          <path d="M78 30a34 34 0 1 0 5 22H55" fill="none" stroke="url(#lg1)" stroke-width="9" stroke-linecap="round"/>
+          <path d="M34 36h34L51 68z" fill="none" stroke="url(#lg2)" stroke-width="6" stroke-linejoin="round"/>
+          <g stroke="#2fc9a6" stroke-width="3" fill="none"><path d="M70 34l14-12M76 44l16-6"/></g>
+          <g fill="#d9a441"><circle cx="86" cy="20" r="4"/><circle cx="94" cy="37" r="4"/></g>
+        </svg>
+        <span class="brand-name">Givera</span>
+      </a>
+
+      <nav class="nav" id="nav">
+        <a href="#services">Услуги</a>
+        <a href="#products">Продукти</a>
+        <a href="#solutions">Решения</a>
+        <a href="#about">За нас</a>
+        <a href="#contact">Контакти</a>
+      </nav>
+
+      <div style="display:flex;gap:10px;align-items:center">
+        <a class="orb" href="#contact" aria-label="Започни проект"><i></i></a>
+        <button class="burger" id="burger" aria-label="Меню" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ГЕРОЙ -->
+<section class="hero">
+  <div class="shell hero-grid">
+    <div>
+      <span class="eyebrow">AI решения за устойчив бизнес растеж</span>
+      <h1>Растеж чрез<br><span class="soft">Интелигентност и Визия</span></h1>
+      <div class="hero-rule"><span class="l"></span><span class="d"></span></div>
+      <p>Givera създава интелигентни AI решения, които трансформират данните в действия и бизнеса – в бъдеще.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#solutions">Разгледай решенията
+          <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><path d="M1 6h15M11 1l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="btn" href="#contact">Свържи се с нас
+          <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><path d="M1 6h15M11 1l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Емблема: подписът на страницата -->
+    <div class="emblem" aria-hidden="true">
+      <svg viewBox="0 0 500 560">
+        <defs>
+          <linearGradient id="gTeal" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#45dcb4"/><stop offset=".55" stop-color="#0a5f4e"/><stop offset="1" stop-color="#08463a"/>
+          </linearGradient>
+          <linearGradient id="gGold" x1="0" y1="1" x2="1" y2="0">
+            <stop offset="0" stop-color="#c9922f"/><stop offset=".5" stop-color="#f6dc9d"/><stop offset="1" stop-color="#d9a441"/>
+          </linearGradient>
+          <radialGradient id="glow" cx=".5" cy=".5">
+            <stop offset="0" stop-color="#a8f5dd" stop-opacity=".55"/><stop offset="1" stop-color="#a8f5dd" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="7"/>
+          </filter>
+        </defs>
+
+        <ellipse cx="250" cy="330" rx="215" ry="80" fill="url(#glow)"/>
+        <g class="spin" opacity=".55">
+          <ellipse cx="250" cy="330" rx="200" ry="66" fill="none" stroke="#7fffd4" stroke-width="1.4" stroke-dasharray="5 12"/>
+        </g>
+        <g class="spin-rev" opacity=".45">
+          <ellipse cx="250" cy="330" rx="150" ry="48" fill="none" stroke="#d9a441" stroke-width="1.2" stroke-dasharray="3 14"/>
+        </g>
+        <ellipse cx="250" cy="330" rx="104" ry="32" fill="none" stroke="#7fffd4" stroke-width="1.2" opacity=".6"/>
+
+        <g class="float">
+          <g filter="url(#soft)" opacity=".35">
+            <path d="M330 120a115 115 0 1 0 18 74H250" fill="none" stroke="#0a5f4e" stroke-width="34" stroke-linecap="round"/>
+          </g>
+          <path d="M330 120a115 115 0 1 0 18 74H250" fill="none" stroke="url(#gTeal)" stroke-width="30" stroke-linecap="round"/>
+          <path d="M330 120a115 115 0 1 0 18 74H250" fill="none" stroke="url(#gGold)" stroke-width="4" stroke-linecap="round" opacity=".95"/>
+          <path d="M182 148h136l-68 118z" fill="none" stroke="url(#gGold)" stroke-width="9" stroke-linejoin="round"/>
+          <path d="M182 148h136l-68 118z" fill="none" stroke="#0a5f4e" stroke-width="2" stroke-linejoin="round" opacity=".5"/>
+
+          <g stroke="#2fc9a6" stroke-width="3.4" fill="none" stroke-linecap="round">
+            <path d="M320 128l52-44"/><path d="M340 168l64-24"/><path d="M346 206l60 6"/>
+          </g>
+          <g fill="#d9a441">
+            <circle class="pulse" cx="374" cy="82" r="6"/>
+            <circle class="pulse-2" cx="406" cy="142" r="6"/>
+            <circle class="pulse-3" cx="408" cy="213" r="6"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- УСЛУГИ -->
+<section class="services" id="services">
+  <div class="shell">
+    <div class="card-row">
+
+      <article class="card rise">
+        <div class="card-top">
+          <div class="ico">
+            <svg width="38" height="38" viewBox="0 0 40 40" fill="none">
+              <rect x="7" y="22" width="5" height="11" rx="1.5" fill="#0f8a72"/>
+              <rect x="16" y="17" width="5" height="16" rx="1.5" fill="#0f8a72"/>
+              <rect x="25" y="12" width="5" height="21" rx="1.5" fill="#0f8a72"/>
+              <path d="M8 16l8-6 7 5 10-9" stroke="#d9a441" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              <path d="M28 6h6v6" stroke="#d9a441" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </div>
+          <div>
+            <h3>AI Аналитика</h3>
+            <p>Данни, които разкриват възможности и движат реални резултати.</p>
+          </div>
+        </div>
+        <span class="card-go" aria-hidden="true"><svg width="15" height="11" viewBox="0 0 18 12" fill="none"><path d="M1 6h15M11 1l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </article>
+
+      <article class="card rise">
+        <div class="card-top">
+          <div class="ico">
+            <svg width="38" height="38" viewBox="0 0 40 40" fill="none">
+              <rect x="5" y="8" width="30" height="21" rx="3" stroke="#0f8a72" stroke-width="2.4"/>
+              <path d="M5 14h30" stroke="#0f8a72" stroke-width="2.4"/>
+              <path d="M16 33h8" stroke="#0f8a72" stroke-width="2.4" stroke-linecap="round"/>
+              <path d="M15 19l-3 3 3 3M25 19l3 3-3 3" stroke="#d9a441" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <h3>Интелигентен Уеб Дизайн</h3>
+            <p>Уеб решения, съчетаващи производителност, естетика и интелигентност.</p>
+          </div>
+        </div>
+        <span class="card-go" aria-hidden="true"><svg width="15" height="11" viewBox="0 0 18 12" fill="none"><path d="M1 6h15M11 1l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </article>
+
+      <article class="card rise">
+        <div class="card-top">
+          <div class="ico">
+            <svg width="38" height="38" viewBox="0 0 40 40" fill="none">
+              <path d="M20 7l3 3.4 4.4-1.2 1 4.4 4.4 1-1.2 4.4L35 22l-3.4 3 1.2 4.4-4.4 1-1 4.4-4.4-1.2L20 37l-3-3.4-4.4 1.2-1-4.4-4.4-1L8.4 25 5 22l3.4-3-1.2-4.4 4.4-1 1-4.4L17 10.4z" stroke="#0f8a72" stroke-width="2.2" stroke-linejoin="round"/>
+              <path d="M15 21.5l3.6 3.6L26 17.6" stroke="#d9a441" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <h3>Автоматизация на Процеси</h3>
+            <p>Оптимизирайте операции, намалете разходи и увеличете ефективността.</p>
+          </div>
+        </div>
+        <span class="card-go" aria-hidden="true"><svg width="15" height="11" viewBox="0 0 18 12" fill="none"><path d="M1 6h15M11 1l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </article>
+
+      <article class="card rise">
+        <div class="card-top">
+          <div class="ico">
+            <svg width="38" height="38" viewBox="0 0 40 40" fill="none">
+              <circle cx="20" cy="15" r="7" stroke="#0f8a72" stroke-width="2.4"/>
+              <path d="M8 33c1.6-6.4 6.4-9.6 12-9.6S30.4 26.6 32 33" stroke="#0f8a72" stroke-width="2.4" stroke-linecap="round"/>
+              <circle cx="31" cy="9" r="4.4" stroke="#d9a441" stroke-width="2.3"/>
+              <path d="M34.2 12.4L37 15.2" stroke="#d9a441" stroke-width="2.3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <h3>AI Консултации</h3>
+            <p>Стратегически насоки и AI експертиза за устойчив бизнес растеж.</p>
+          </div>
+        </div>
+        <span class="card-go" aria-hidden="true"><svg width="15" height="11" viewBox="0 0 18 12" fill="none"><path d="M1 6h15M11 1l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ПРОДУКТИ -->
+<section id="products">
+  <div class="shell">
+    <div class="sec-head">
+      <h2 class="sec-title">
+        <svg class="wire" viewBox="0 0 46 12" fill="none" aria-hidden="true">
+          <path d="M0 6h30l8-4" stroke="#d9a441" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="41" cy="4" r="4" fill="#d9a441"/>
+        </svg>
+        Най-нови AI Продукти
+      </h2>
+      <a class="btn" href="#contact">Виж всички продукти
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><path d="M1 6h15M11 1l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+
+    <div class="prod-row">
+      <article class="prod rise">
+        <span class="tag">НОВО</span>
+        <svg class="art" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+          <rect x="10" y="18" width="86" height="56" rx="4" fill="#fffdf6" stroke="#d9a441" stroke-width="1.6"/>
+          <path d="M20 62l16-16 12 9 22-25" stroke="#d9a441" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M62 30h9v9" stroke="#d9a441" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="4" y="76" width="98" height="8" rx="4" fill="#f6e4bb"/>
+        </svg>
+        <h3>Givera Insight AI</h3>
+        <p>AI платформа за анализ на данни и бизнес интелигентност.</p>
+        <span class="more">Научи повече <svg width="16" height="11" viewBox="0 0 18 12" fill="none"><path d="M1 6h15M11 1l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </article>
+
+      <article class="prod rise">
+        <span class="tag">НОВО</span>
+        <svg class="art" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+          <rect x="16" y="6" width="76" height="88" rx="8" fill="#fffdf6" stroke="#d9a441" stroke-width="1.6"/>
+          <rect x="26" y="18" width="56" height="7" rx="3.5" fill="#f0d69a"/>
+          <rect x="26" y="32" width="56" height="24" rx="4" fill="#f7ead0"/>
+          <rect x="26" y="62" width="26" height="22" rx="4" fill="#f7ead0"/>
+          <rect x="56" y="62" width="26" height="22" rx="4" fill="#f7ead0"/>
+        </svg>
+        <h3>Givera WebCore AI</h3>
+        <p>AI-базиран конструктор за умни и адаптивни уебсайтове.</p>
+        <span class="more">Научи повече <svg width="16" height="11" viewBox="0 0 18 12" fill="none"><path d="M1 6h15M11 1l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </article>
+
+      <article class="prod rise">
+        <span class="tag">НОВО</span>
+        <svg class="art" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+          <path d="M34 24h30v52h-30" stroke="#d9a441" stroke-width="1.8" fill="none"/>
+          <circle cx="34" cy="24" r="11" fill="#fffdf6" stroke="#d9a441" stroke-width="1.8"/>
+          <circle cx="34" cy="76" r="11" fill="#fffdf6" stroke="#d9a441" stroke-width="1.8"/>
+          <rect x="64" y="38" width="26" height="24" rx="5" fill="#fffdf6" stroke="#d9a441" stroke-width="1.8"/>
+          <path d="M29 24l4 4 7-8M29 76l4 4 7-8" stroke="#0f8a72" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M70 45h14M70 51h14M70 57h9" stroke="#d9a441" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <h3>Givera Automate AI</h3>
+        <p>Интелигентна автоматизация на процеси и работни потоци.</p>
+        <span class="more">Научи повече <svg width="16" height="11" viewBox="0 0 18 12" fill="none"><path d="M1 6h15M11 1l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </article>
+
+      <article class="prod rise">
+        <span class="tag">НОВО</span>
+        <svg class="art" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+          <circle cx="58" cy="50" r="42" fill="none" stroke="#f0d69a" stroke-width="1.4"/>
+          <circle cx="58" cy="50" r="30" fill="none" stroke="#e8c67f" stroke-width="1.4"/>
+          <circle cx="58" cy="50" r="17" fill="#0f8a72" opacity=".85"/>
+          <circle cx="52" cy="44" r="5" fill="#c8f7e4"/>
+          <path d="M16 20h10M90 20h10M16 80h10M90 80h10" stroke="#d9a441" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <h3>Givera Vision AI</h3>
+        <p>Компютърно зрение за контрол, качество и разпознаване.</p>
+        <span class="more">Научи повече <svg width="16" height="11" viewBox="0 0 18 12" fill="none"><path d="M1 6h15M11 1l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- РЕШЕНИЯ ПО ИНДУСТРИИ -->
+<section class="solutions" id="solutions">
+  <div class="shell">
+    <div class="sec-head">
+      <h2 class="sec-title">
+        <svg class="wire" viewBox="0 0 46 12" fill="none" aria-hidden="true">
+          <path d="M0 6h30l8-4" stroke="#d9a441" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="41" cy="4" r="4" fill="#d9a441"/>
+        </svg>
+        Решения по индустрии
+      </h2>
+      <p class="lead" style="max-width:44ch;margin:0">Едни и същи технологии, различни цели. Ето къде AI носи най-бърза възвръщаемост.</p>
+    </div>
+
+    <div class="sol-grid rise">
+      <div class="sol"><span class="k">Туризъм</span><h3>Хотели и туроператори</h3><p>Многоезични сайти, автоматични оферти, чатбот за резервации и анализ на сезонността.</p></div>
+      <div class="sol"><span class="k">Търговия</span><h3>E-commerce</h3><p>Персонализирани препоръки, автоматично описание на продукти, прогноза на наличности.</p></div>
+      <div class="sol"><span class="k">Производство</span><h3>Качество и контрол</h3><p>Компютърно зрение на конвейера, ранно откриване на дефекти, отчети в реално време.</p></div>
+      <div class="sol"><span class="k">Услуги</span><h3>Здраве и спорт</h3><p>Клиентски портали, проследяване на прогрес, автоматични планове и напомняния.</p></div>
+      <div class="sol"><span class="k">Маркетинг</span><h3>Съдържание и SEO</h3><p>Генериране на съдържание с контрол на тона, техническо SEO и мониторинг на позиции.</p></div>
+      <div class="sol"><span class="k">Администрация</span><h3>Документи и бекофис</h3><p>Извличане на данни от фактури и договори, автоматични работни потоци, интеграции.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ПРОЦЕС -->
+<section id="about">
+  <div class="shell">
+    <div class="sec-head">
+      <h2 class="sec-title">
+        <svg class="wire" viewBox="0 0 46 12" fill="none" aria-hidden="true">
+          <path d="M0 6h30l8-4" stroke="#d9a441" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="41" cy="4" r="4" fill="#d9a441"/>
+        </svg>
+        Как работим
+      </h2>
+    </div>
+
+    <div class="steps rise">
+      <div class="step"><span class="node">01</span><h3>Диагностика</h3><p>Разглеждаме процесите и данните ви. Излизаме с кратък списък от възможности, подредени по ефект.</p></div>
+      <div class="step"><span class="node">02</span><h3>Прототип</h3><p>За 2–3 седмици правим работещ прототип на най-силната идея, за да го тествате с реални данни.</p></div>
+      <div class="step"><span class="node">03</span><h3>Внедряване</h3><p>Пускаме решението в реална среда, обучаваме екипа и свързваме съществуващите ви системи.</p></div>
+      <div class="step"><span class="node">04</span><h3>Развитие</h3><p>Следим резултатите, доразвиваме моделите и разширяваме обхвата стъпка по стъпка.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ПРОЕКТ: NB METHOD -->
+<section>
+  <div class="shell">
+    <div class="work rise">
+      <div>
+        <span class="eyebrow">Избран проект</span>
+        <h2>NB Method — платформа за онлайн треньорство</h2>
+        <p class="lead">Уеб приложение за коуч Недко Богданов: клиентски профили, тренировъчни и хранителни планове, здравни показатели и лабораторни резултати, панел за треньора. Изградено от Givera.</p>
+        <div class="chips">
+          <span class="chip">Клиентски портал</span>
+          <span class="chip">Панел за треньора</span>
+          <span class="chip">Здравни показатели</span>
+          <span class="chip">Supabase</span>
+          <span class="chip">Български език</span>
+        </div>
+      </div>
+      <div class="preview">
+        <p class="pv-slogan">Твоята форма.<br>Моята отговорност.</p>
+        <p class="pv-sub">NB Method · Nedko Bogdanov Coaching</p>
+        <span class="credit">
+          <svg width="18" height="18" viewBox="0 0 100 100" aria-hidden="true">
+            <path d="M78 30a34 34 0 1 0 5 22H55" fill="none" stroke="#7fffd4" stroke-width="9" stroke-linecap="round"/>
+            <path d="M34 36h34L51 68z" fill="none" stroke="#d9a441" stroke-width="6" stroke-linejoin="round"/>
+          </svg>
+          Създадено от Givera
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- КОНТАКТИ -->
+<section id="contact">
+  <div class="shell">
+    <div class="sec-head">
+      <h2 class="sec-title">
+        <svg class="wire" viewBox="0 0 46 12" fill="none" aria-hidden="true">
+          <path d="M0 6h30l8-4" stroke="#d9a441" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="41" cy="4" r="4" fill="#d9a441"/>
+        </svg>
+        Да започнем разговор
+      </h2>
+    </div>
+
+    <div class="contact-grid">
+      <div class="rise">
+        <p class="lead">Разкажете накратко какво ви спъва днес. Връщаме отговор до 24 часа с първи идеи и ориентировъчен обхват — без ангажимент.</p>
+        <div style="margin-top:22px">
+          <div class="info-row"><span class="k">Имейл</span><a href="mailto:hello@givera.bg">hello@givera.bg</a></div>
+          <div class="info-row"><span class="k">Телефон</span><a href="tel:+359000000000">+359 00 000 0000</a></div>
+          <div class="info-row"><span class="k">База</span><span>Бургас · Черноморие, България</span></div>
+          <div class="info-row"><span class="k">Езици</span><span>Български · English · Русский</span></div>
+        </div>
+      </div>
+
+      <form class="rise" id="form" novalidate>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="field"><label for="name">Име</label><input id="name" name="name" required></div>
+          <div class="field"><label for="email">Имейл</label><input id="email" name="email" type="email" required></div>
+        </div>
+        <div class="field">
+          <label for="topic">Тема</label>
+          <select id="topic" name="topic">
+            <option>AI аналитика</option>
+            <option>Уеб платформа или сайт</option>
+            <option>Автоматизация на процеси</option>
+            <option>Компютърно зрение</option>
+            <option>Консултация</option>
+          </select>
+        </div>
+        <div class="field"><label for="msg">Съобщение</label><textarea id="msg" name="msg" required></textarea></div>
+        <button class="btn btn-primary" type="submit">Изпрати запитване
+          <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><path d="M1 6h15M11 1l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <p class="note" id="formNote">Формата е демо. За да работи наистина, свържи я с Formspree, Netlify Forms или Supabase таблица.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="shell">
+    <div class="foot-grid">
+      <div>
+        <div class="brand" style="margin-bottom:12px">
+          <svg width="40" height="40" viewBox="0 0 100 100" aria-hidden="true">
+            <path d="M78 30a34 34 0 1 0 5 22H55" fill="none" stroke="#0f8a72" stroke-width="9" stroke-linecap="round"/>
+            <path d="M34 36h34L51 68z" fill="none" stroke="#d9a441" stroke-width="6" stroke-linejoin="round"/>
+          </svg>
+          <span class="brand-name">Givera</span>
+        </div>
+        <p style="max-width:34ch;color:var(--ink-soft);font-size:15.5px;margin:0">AI решения, уеб продукти и автоматизации за компании, които искат да растат с ясна визия.</p>
+      </div>
+      <div class="foot">
+        <h4>Услуги</h4>
+        <a href="#services">AI Аналитика</a><a href="#services">Уеб дизайн</a><a href="#services">Автоматизация</a><a href="#services">Консултации</a>
+      </div>
+      <div class="foot">
+        <h4>Продукти</h4>
+        <a href="#products">Insight AI</a><a href="#products">WebCore AI</a><a href="#products">Automate AI</a><a href="#products">Vision AI</a>
+      </div>
+      <div class="foot">
+        <h4>Компания</h4>
+        <a href="#about">За нас</a><a href="#solutions">Решения</a><a href="#contact">Контакти</a><a href="#contact">Кариери</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="yr">2026</span> Givera. Всички права запазени.</span>
+      <span>Политика за поверителност · Условия за ползване</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+/* Мобилно меню */
+var burger = document.getElementById('burger'), nav = document.getElementById('nav');
+burger.addEventListener('click', function(){
+  var open = nav.classList.toggle('open');
+  burger.setAttribute('aria-expanded', open);
+});
+nav.addEventListener('click', function(e){
+  if(e.target.tagName === 'A'){ nav.classList.remove('open'); burger.setAttribute('aria-expanded', false); }
+});
+
+/* Появяване при скрол */
+var io = new IntersectionObserver(function(entries){
+  entries.forEach(function(en){
+    if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
+  });
+}, {threshold:.12, rootMargin:'0px 0px -60px'});
+document.querySelectorAll('.rise').forEach(function(el, i){
+  el.style.transitionDelay = (i % 4) * 90 + 'ms';
+  io.observe(el);
+});
+
+/* Демо форма */
+document.getElementById('form').addEventListener('submit', function(e){
+  e.preventDefault();
+  var note = document.getElementById('formNote');
+  var ok = this.name.value.trim() && this.email.value.trim() && this.msg.value.trim();
+  note.textContent = ok
+    ? 'Запитването е готово за изпращане. Свържи формата с Formspree или Supabase, за да тръгне.'
+    : 'Попълни име, имейл и съобщение, за да изпратиш запитването.';
+  note.style.color = ok ? '#0f8a72' : '#b4541f';
+});
+</script>
+</body>
+</html>
