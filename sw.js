@@ -1,12 +1,16 @@
-const CACHE = "nb-method-v2026-07";
+const CACHE = "nb-method-v2026-08";
 const STATIC = [
   "./app.html",
   "./login.html",
-  "./body-female.png",
-  "./body-male.png",
-  "./body-other.png",
-  "./icon-192.png",
-  "./icon-512.png",
+  "./images/body-female.webp",
+  "./images/body-male.webp",
+  "./images/body-other.webp",
+  "./images/logo-big.svg",
+  "./images/logo-small.svg",
+  "./images/apps/icon-192.png",
+  "./images/apps/icon-512.png",
+  "./images/apps/icon-512-maskable.png",
+  "./images/apps/apple-touch-icon.png",
   "./manifest.webmanifest"
 ];
 
